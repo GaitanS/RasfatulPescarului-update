@@ -10,7 +10,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('main', '0015_alter_orderitem_quantity_alter_orderitem_unit_price'),
+        ('main', '0014_alter_lake_options_alter_product_options_and_more'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 

@@ -1,6 +1,5 @@
 from django.contrib import admin
-from django.utils.html import format_html
-from .models import Profile, SiteSettings
+from .models import SiteSettings, County, Lake, Video
 
 @admin.register(SiteSettings)
 class SiteSettingsAdmin(admin.ModelAdmin):
@@ -14,9 +13,20 @@ class SiteSettingsAdmin(admin.ModelAdmin):
         # Prevent deletion of the only instance
         return False
 
-@admin.register(Profile)
-class ProfileAdmin(admin.ModelAdmin):
-    list_display = ['user', 'phone', 'city', 'is_email_verified']
-    list_filter = ['is_email_verified']
-    search_fields = ['user__email', 'phone', 'city']
-    readonly_fields = ['is_email_verified']
+@admin.register(County)
+class CountyAdmin(admin.ModelAdmin):
+    list_display = ['name', 'region', 'created_at']
+    prepopulated_fields = {'slug': ('name',)}
+    search_fields = ['name', 'region']
+
+@admin.register(Lake)
+class LakeAdmin(admin.ModelAdmin):
+    list_display = ['name', 'county', 'price_per_day', 'is_active']
+    list_filter = ['county', 'is_active']
+    search_fields = ['name', 'description', 'fish_types']
+
+@admin.register(Video)
+class VideoAdmin(admin.ModelAdmin):
+    list_display = ['title', 'is_active', 'is_featured', 'created_at']
+    list_filter = ['is_active', 'is_featured']
+    search_fields = ['title', 'description']

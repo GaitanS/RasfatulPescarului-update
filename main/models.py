@@ -1,7 +1,5 @@
 from django.db import models
-from django.conf import settings
 from django.utils.text import slugify
-from django.contrib.auth.models import User
 
 class County(models.Model):
     name = models.CharField(max_length=100)
@@ -31,83 +29,6 @@ class County(models.Model):
         if not self.slug:
             self.slug = slugify(self.name)
         super().save(*args, **kwargs)
-
-class Category(models.Model):
-    name = models.CharField(max_length=100)
-    slug = models.SlugField(max_length=100, unique=True)
-    parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children')
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        verbose_name_plural = 'categories'
-        ordering = ['name']
-
-    def __str__(self):
-        return self.name
-
-class Brand(models.Model):
-    name = models.CharField(max_length=100)
-    slug = models.SlugField(max_length=100, unique=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        ordering = ['name']
-
-    def __str__(self):
-        return self.name
-
-class Product(models.Model):
-    name = models.CharField(max_length=200)
-    slug = models.SlugField(max_length=200, unique=True)
-    description = models.TextField(blank=True)
-    price = models.DecimalField(max_digits=10, decimal_places=2)
-    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
-    brand = models.ForeignKey(Brand, on_delete=models.SET_NULL, null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return self.name
-
-class ProductAttribute(models.Model):
-    name = models.CharField(max_length=100)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return self.name
-
-class ProductAttributeValue(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='attribute_values')
-    attribute = models.ForeignKey(ProductAttribute, on_delete=models.CASCADE)
-    value = models.CharField(max_length=100)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        unique_together = ('product', 'attribute')
-
-    def __str__(self):
-        return f'{self.product.name} - {self.attribute.name}: {self.value}'
-
-class Profile(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    phone = models.CharField(max_length=20, blank=True)
-    address = models.TextField(blank=True)
-    city = models.CharField(max_length=100, blank=True)
-    postal_code = models.CharField(max_length=10, blank=True)
-    avatar = models.ImageField(upload_to='avatars/', default='images/logo.png', null=True, blank=True)
-    is_email_verified = models.BooleanField(default=False)
-
-    def __str__(self):
-        return self.user.email
-
-    def get_avatar_url(self):
-        if self.avatar and hasattr(self.avatar, 'url'):
-            return self.avatar.url
-        return '/static/images/logo.png'
 
 class SiteSettings(models.Model):
     site_name = models.CharField(max_length=100, default='Răsfățul Pescarului')

@@ -40,7 +40,6 @@ Răsfățul Pescarului is a comprehensive online platform for fishing enthusiast
 - Password reset functionality
 - User profiles
 - Order history
-- reCAPTCHA protection
 
 ## Technology Stack
 

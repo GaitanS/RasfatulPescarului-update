@@ -4,7 +4,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('main', '0009_add_order_bank_transfer_ref'),
+        ('main', '0008_add_lake_location_fields'),
     ]
 
     operations = [

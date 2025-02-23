@@ -19,22 +19,6 @@ urlpatterns = [
     path('tutorials/', views.tutorials, name='tutorials'),
     path('tutorials/<int:video_id>/', views.video_detail, name='video_detail'),
     
-    # Account
-    path('login/', views.login_view, name='login'),
-    path('register/', views.register, name='register'),
-    path('verify-email/<str:uidb64>/<str:token>/', views.verify_email, name='verify_email'),
-    path('password-reset/', views.password_reset, name='password_reset'),
-    path('password-reset/<str:uidb64>/<str:token>/', views.password_reset_confirm, name='password_reset_confirm'),
-    path('logout/', views.logout_view, name='logout'),
-    path('profile/', views.profile, name='profile'),
-    path('profile/edit/', views.edit_profile, name='edit_profile'),
-    path('profile/change-password/', views.change_password, name='change_password'),
-    
-    # Orders
-    path('orders/', views.orders, name='orders'),
-    path('orders/<int:order_id>/', views.order_detail, name='order_detail'),
-    path('orders/<int:order_id>/cancel/', views.order_cancel, name='order_cancel'),
-    
     # Pages
     path('about/', views.about, name='about'),
     path('contact/', views.contact, name='contact'),

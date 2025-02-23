@@ -35,13 +35,13 @@ a:hover {
 }
 
 .btn-success {
-    background-color: #198653;
-    border-color: #198653;
+    background-color: #198653 !important;
+    border-color: #198653 !important;
 }
 
 .btn-success:hover {
-    background-color: #157347;
-    border-color: #157347;
+    background-color: #157347 !important;
+    border-color: #157347 !important;
 }
 
 /* Rest of the existing styles */
@@ -241,7 +241,6 @@ body {
 
 .hero-text .btn-success {
     font-size: 1.2rem;
-    padding: 1rem 2.5rem;
     text-transform: uppercase;
     font-weight: 600;
     border-radius: 50px;
