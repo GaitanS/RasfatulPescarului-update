@@ -38,6 +38,7 @@ urlpatterns = [
     # Pages
     path('about/', views.about, name='about'),
     path('contact/', views.contact, name='contact'),
+    path('privacy/', views.privacy, name='privacy'),
     path('api/solunar-data/', views.solunar_data, name='solunar_data'),
     path('solunar-calendar/', views.solunar_calendar, name='solunar_calendar'),
     path('terms/', views.terms, name='terms'),

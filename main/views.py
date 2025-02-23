@@ -1057,3 +1057,7 @@ def solunar_calendar(request):
 def terms(request):
     """View pentru pagina de termeni și condiții"""
     return render(request, 'pages/terms.html')
+
+def privacy(request):
+    """View function for the privacy policy page."""
+    return render(request, 'pages/privacy.html')
