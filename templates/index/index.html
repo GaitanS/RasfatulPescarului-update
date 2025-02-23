@@ -74,7 +74,7 @@
     <div class="container text-center">
         <h2 class="mb-4">Pregătit să începi aventura?</h2>
         <p class="lead mb-4">Alătură-te comunității noastre și descoperă cele mai bune locuri de pescuit!</p>
-        <a href="#" class="btn btn-light btn-lg">Descoperă mai multe</a>
+        <a href="https://www.facebook.com/rasfatulpescarului" class="btn btn-light btn-lg">Descoperă mai multe</a>
     </div>
 </section>
 
@@ -202,38 +202,4 @@
     </div>
 </section>
 
-<!-- Testimonials -->
-<section class="testimonials py-5">
-    <div class="container">
-        <h2 class="text-center mb-4">Ce spun clienții noștri</h2>
-        <div class="row">
-            {% for testimonial in testimonials %}
-            <div class="col-md-4 mb-4">
-                <div class="card h-100">
-                    <div class="card-body">
-                        <div class="d-flex align-items-center mb-3">
-                            {% if testimonial.image %}
-                            <img src="{{ testimonial.image.url }}" alt="{{ testimonial.name }}" 
-                                 class="rounded-circle me-3" style="width: 60px; height: 60px; object-fit: cover;">
-                            {% else %}
-                            <img src="{% static 'images/user-placeholder.png' %}" alt="{{ testimonial.name }}"
-                                 class="rounded-circle me-3" style="width: 60px; height: 60px; object-fit: cover;">
-                            {% endif %}
-                            <div>
-                                <h5 class="card-title mb-0">{{ testimonial.name }}</h5>
-                                <div class="text-warning">
-                                    {% for i in ""|ljust:testimonial.rating %}
-                                    <i class="fas fa-star"></i>
-                                    {% endfor %}
-                                </div>
-                            </div>
-                        </div>
-                        <p class="card-text">{{ testimonial.content }}</p>
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-    </div>
-</section>
 {% endblock %}
