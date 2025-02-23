@@ -163,11 +163,11 @@ def send_password_reset_email(request, user):
         raise
 
 def send_contact_confirmation_email(email, name):
-    """Send contact form confirmation email"""
+    """Send confirmation email to contact form submitter"""
     try:
         send_email(
             to_email=email,
-            subject='Am primit mesajul tău',
+            subject='Am primit mesajul tău - Răsfățul Pescarului',
             template='emails/contact_confirmation.html',
             context={'name': name}
         )
@@ -175,7 +175,7 @@ def send_contact_confirmation_email(email, name):
         logger.error(f'Error sending contact confirmation email to {email}: {str(e)}')
         raise
 
-def send_contact_admin_email(name, email, message):
+def send_contact_admin_email(name, email, subject, message):
     """Send contact form notification to admin"""
     try:
         send_email(
@@ -185,11 +185,13 @@ def send_contact_admin_email(name, email, message):
             context={
                 'name': name,
                 'email': email,
-                'message': message
+                'message': message,
+                'subject': subject
             }
         )
     except Exception as e:
         logger.error(f'Error sending contact admin email: {str(e)}')
+        logger.exception('Detailed error trace:')
         raise
 
 def send_order_cancelled_email(request, order):
@@ -216,6 +218,5 @@ def send_order_cancelled_admin_email(order):
         )
     except Exception as e:
         logger.error(f'Error sending order cancelled admin email for order #{order.id}: {str(e)}')
-        raise
-
+        logger.exception('Detailed error trace:')
         raise

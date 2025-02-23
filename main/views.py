@@ -953,12 +953,29 @@ def contact(request):
     if request.method == 'POST':
         name = request.POST.get('name')
         email = request.POST.get('email')
+        subject = request.POST.get('subject')
         message = request.POST.get('message')
+        
+        # Store form data in case of error
+        form_data = {
+            'name': name,
+            'email': email,
+            'subject': subject,
+            'message': message
+        }
+        
+        # Basic validation
+        if not all([name, email, subject, message]):
+            messages.error(
+                request,
+                'Te rugăm să completezi toate câmpurile obligatorii.'
+            )
+            return render(request, 'pages/contact.html', {'form_data': form_data})
         
         try:
             # Send contact emails
             send_contact_confirmation_email(email, name)
-            send_contact_admin_email(name, email, message)
+            send_contact_admin_email(name, email, subject, message)
             
             messages.success(
                 request,
@@ -966,10 +983,16 @@ def contact(request):
             )
             return redirect('main:contact')
         except Exception as e:
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.error(f'Error sending contact form emails: {str(e)}')
+            logger.exception('Full traceback:')
+            
             messages.error(
                 request,
                 'A apărut o eroare la trimiterea mesajului. Te rugăm să încerci din nou.'
             )
+            return render(request, 'pages/contact.html', {'form_data': form_data})
     
     return render(request, 'pages/contact.html')
 
