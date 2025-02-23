@@ -5,178 +5,165 @@
 [![Django](https://img.shields.io/badge/Django-5.1.5-green.svg)](https://www.djangoproject.com/)
 [![Bootstrap](https://img.shields.io/badge/Bootstrap-5.3-purple.svg)](https://getbootstrap.com/)
 
-Un magazin online pentru pescari, cu locații de pescuit și tutoriale video. Proiectul este dezvoltat folosind Django și oferă o experiență completă de cumpărături online, cu sistem de autentificare securizat, procesare plăți și gestionare comenzi.
+Răsfățul Pescarului is a comprehensive online platform for fishing enthusiasts in Romania. The project combines an e-commerce system with interactive fishing location maps, video tutorials, and a solunar calendar to provide a complete fishing experience.
 
-## Funcționalități
+## Features
 
-### Magazin
-- Listare produse cu filtrare pe categorii
-- Detalii produs
-- Coș de cumpărături
-- Checkout cu plată prin card sau transfer bancar
-- Sistem de comenzi și facturare
+### 🎣 Fishing Locations
+- Interactive map with fishing spots across Romania
+- Detailed location information (facilities, rules, prices)
+- Filtering by county and region
+- User reviews and ratings
 
-### Autentificare
-- Înregistrare cu verificare email
-- Autentificare cu protecție împotriva atacurilor brute force
-- Resetare parolă
-- Profil utilizator
-- Istoric comenzi
+### 🛒 E-commerce
+- Product catalog with categories and filters
+- Shopping cart functionality
+- Secure checkout process
+- Multiple payment methods (Stripe, bank transfer)
+- Order tracking and history
 
-### Locații de pescuit
-- Hartă interactivă
-- Filtrare pe județe
-- Detalii locație (facilități, reguli, prețuri)
+### 📹 Video Tutorials
+- Fishing techniques and tips
+- Categorized video content
+- Embedded video player
+- Expert fishing advice
 
-### Tutoriale
-- Galerie video
-- Categorii tutoriale
-- Player video încorporat
+### 🌙 Solunar Calendar
+- Daily fishing predictions
+- Moon phase tracking
+- Best fishing times
+- Location-based calculations
 
-## Tehnologii
+### 👤 User Features
+- Secure authentication system
+- Email verification
+- Password reset functionality
+- User profiles
+- Order history
+- reCAPTCHA protection
 
+## Technology Stack
+
+### Backend
 - Python 3.12
 - Django 5.1.5
+- Django REST Framework
+- Celery for async tasks
+- Redis for caching
+
+### Frontend
 - Bootstrap 5.3
-- SQLite
-- Stripe pentru plăți
+- Font Awesome icons
+- JavaScript/jQuery
+- Leaflet.js for maps
+
+### Database & Storage
+- SQLite (development)
+- PostgreSQL (production ready)
+- Django Storages for media files
+
+### Services
+- Stripe for payment processing
 - Google reCAPTCHA
-- Google Maps API
+- SMTP email service
+- Solunar calculations (Astral)
 
-## Instalare
+## Installation
 
-1. Clonați repository-ul:
+1. Clone the repository:
 ```bash
-git clone https://github.com/GaitanS/Rasfatul-Pescarului.git
+git clone https://github.com/yourusername/RasfatulPescarului.git
 cd RasfatulPescarului
 ```
 
-2. Creați și activați un mediu virtual:
+2. Create and activate a virtual environment:
 ```bash
-python -m venv .venv
-source .venv/bin/activate  # Linux/Mac
-.venv\Scripts\activate     # Windows
+python -m venv venv
+venv\Scripts\activate  # Windows
+source venv/bin/activate  # Linux/macOS
 ```
 
-3. Instalați dependențele:
+3. Install dependencies:
 ```bash
 pip install -r requirements.txt
 ```
 
-4. Creați fișierul .env și configurați variabilele de mediu:
-```env
-# Django settings
-SECRET_KEY=your-secret-key
-DEBUG=True
-ALLOWED_HOSTS=localhost,127.0.0.1
-
-# Email settings
-EMAIL_HOST=smtp.gmail.com
-EMAIL_PORT=587
-EMAIL_USE_TLS=True
-EMAIL_HOST_USER=your-email@gmail.com
-EMAIL_HOST_PASSWORD=your-app-password
-DEFAULT_FROM_EMAIL=your-name <your-email@gmail.com>
-
-# Email verification
-EMAIL_VERIFICATION_TIMEOUT_DAYS=1
-EMAIL_VERIFICATION_URL=http://localhost:8000/verify-email/
-
-# reCAPTCHA settings
-RECAPTCHA_PUBLIC_KEY=your-recaptcha-public-key
-RECAPTCHA_PRIVATE_KEY=your-recaptcha-private-key
-RECAPTCHA_REQUIRED_SCORE=0.85
-
-# Stripe settings
-STRIPE_PUBLIC_KEY=your-stripe-public-key
-STRIPE_SECRET_KEY=your-stripe-secret-key
-STRIPE_WEBHOOK_SECRET=your-stripe-webhook-secret
+4. Create a .env file in the project root with the following variables:
+```
+SECRET_KEY=your_secret_key
+STRIPE_PUBLIC_KEY=your_stripe_public_key
+STRIPE_SECRET_KEY=your_stripe_secret_key
+STRIPE_WEBHOOK_SECRET=your_stripe_webhook_secret
+RECAPTCHA_PUBLIC_KEY=your_recaptcha_public_key
+RECAPTCHA_PRIVATE_KEY=your_recaptcha_private_key
+EMAIL_HOST_USER=your_email
+EMAIL_HOST_PASSWORD=your_email_password
 ```
 
-Pentru a obține cheile necesare:
-- [Creați un cont Gmail și generați o parolă pentru aplicație](https://support.google.com/accounts/answer/185833?hl=ro)
-- [Obțineți chei reCAPTCHA](https://www.google.com/recaptcha/admin)
-- [Creați un cont Stripe și obțineți cheile API](https://stripe.com/docs/keys)
-
-5. Aplicați migrările:
+5. Run migrations:
 ```bash
 python manage.py migrate
 ```
 
-6. Creați un superuser:
+6. Create a superuser:
 ```bash
 python manage.py createsuperuser
 ```
 
-7. Populați baza de date cu date inițiale:
-```bash
-python manage.py populate_db
-```
-
-8. Rulați serverul de dezvoltare:
+7. Start the development server:
 ```bash
 python manage.py runserver
 ```
 
-## Structura proiectului
+## Configuration
 
-```
-RasfatulPescarului/
-├── main/                   # Aplicația principală
-│   ├── management/        # Comenzi personalizate
-│   ├── migrations/        # Migrări bază de date
-│   ├── templatetags/      # Tag-uri template personalizate
-│   ├── utils/            # Utilități (email, plăți, etc.)
-│   ├── models.py         # Modele bază de date
-│   ├── views.py          # View-uri
-│   └── urls.py           # URL-uri
-├── static/                # Fișiere statice
-│   ├── css/
-│   ├── js/
-│   └── images/
-├── templates/             # Template-uri
-│   ├── account/          # Template-uri cont utilizator
-│   ├── emails/           # Template-uri email
-│   ├── locations/        # Template-uri locații
-│   ├── shop/            # Template-uri magazin
-│   └── tutorials/        # Template-uri tutoriale
-├── media/                # Fișiere încărcate
-├── requirements.txt      # Dependențe Python
-└── manage.py            # Script management Django
+### Email Setup
+The project uses SMTP for email notifications. Configure your email settings in settings.py or .env file:
+```python
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 ```
 
-## Securitate
+### Payment Integration
+Stripe is used for payment processing. Set up your Stripe keys in the .env file:
+```
+STRIPE_PUBLIC_KEY=your_stripe_public_key
+STRIPE_SECRET_KEY=your_stripe_secret_key
+STRIPE_WEBHOOK_SECRET=your_stripe_webhook_secret
+```
 
-- Protecție CSRF
-- Rate limiting pentru autentificare
-- Validare parolă complexă
-- Verificare email
-- Sesiuni securizate
-- Sanitizare input
-- XSS protection
+### Security
+- reCAPTCHA protection for forms
+- CSRF protection enabled
+- Secure password hashing
+- Email verification required
+- Session security settings
 
-## Contribuție
+## Production Deployment
 
-1. Fork repository-ul
-2. Creați un branch nou (`git checkout -b feature/AmazingFeature`)
-3. Faceți modificările dorite
-4. Rulați testele și asigurați-vă că totul funcționează
-5. Commit modificările (`git commit -m 'Add some AmazingFeature'`)
-6. Push la branch (`git push origin feature/AmazingFeature`)
-7. Deschideți un Pull Request
+1. Set DEBUG=False in settings.py
+2. Configure PostgreSQL database
+3. Set up static files serving with whitenoise
+4. Configure proper email backend
+5. Set up proper domain in ALLOWED_HOSTS
+6. Configure SSL/HTTPS
+7. Set up proper media storage
 
-### Ghid de contribuție
+## Contributing
 
-1. Asigurați-vă că codul respectă standardele PEP 8
-2. Adăugați comentarii și docstrings pentru cod nou
-3. Actualizați documentația dacă este necesar
-4. Adăugați teste pentru funcționalități noi
-5. Verificați că toate testele existente trec
+1. Fork the repository
+2. Create a feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a Pull Request
 
-## Securitate
+## License
 
-Dacă descoperiți o vulnerabilitate de securitate, vă rugăm să trimiteți un email la security@rasfatulpescarului.ro în loc să deschideți un issue public.
+This project is licensed under the MIT License - see the LICENSE file for details.
 
-## Licență
+## Support
 
-Distribuit sub licența MIT. Vezi `LICENSE` pentru mai multe informații.
+For support, email contact@rasfatulpescarului.ro or create an issue in the repository.
