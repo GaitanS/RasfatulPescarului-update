@@ -51,6 +51,24 @@ class SiteSettings(models.Model):
     def get_settings(cls):
         return cls.objects.first()
 
+class FooterSettings(models.Model):
+    contact_info = models.CharField(max_length=200, default='Contact')
+    address = models.TextField(default='Strada Exemplu, Nr. 123, București')
+    phone = models.CharField(max_length=20, default='+40 123 456 789')
+    email = models.EmailField(default='contact@rasfatulpescarului.ro')
+    working_hours = models.CharField(max_length=100, default='Luni - Vineri: 09:00 - 18:00')
+
+    class Meta:
+        verbose_name = 'Footer Settings'
+        verbose_name_plural = 'Footer Settings'
+
+    def __str__(self):
+        return 'Footer Settings'
+
+    @classmethod
+    def get_settings(cls):
+        return cls.objects.first()
+
 class Lake(models.Model):
     name = models.CharField(max_length=200)
     description = models.TextField(blank=True)
@@ -89,3 +107,21 @@ class Video(models.Model):
 
     def __str__(self):
         return self.title
+
+class HeroSection(models.Model):
+    main_button_text = models.CharField(max_length=100, default='Alaturati-va grupului')
+    main_button_url = models.URLField(default='https://www.facebook.com/rasfatulpescarului')
+    facebook_url = models.URLField(default='https://www.facebook.com/rasfatulpescarului')
+    tiktok_url = models.URLField(default='https://www.tiktok.com/@rasfatulpescarului')
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = 'Hero Section'
+        verbose_name_plural = 'Hero Section'
+
+    def __str__(self):
+        return 'Hero Section Settings'
+
+    @classmethod
+    def get_settings(cls):
+        return cls.objects.first()

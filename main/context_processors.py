@@ -7,10 +7,16 @@ def cart_processor(request):
         'debug': settings.DEBUG
     }
 
+from .models import HeroSection
+
+from .models import HeroSection, FooterSettings
+
 def site_settings(request):
-    """Make site settings available to all templates"""
+    """Make site settings, HeroSection, and FooterSettings available to all templates"""
     try:
         settings_obj = SiteSettings.objects.first()
-        return {'site_settings': settings_obj}
+        hero_obj = HeroSection.objects.first()
+        footer_obj = FooterSettings.objects.first()
+        return {'site_settings': settings_obj, 'hero': hero_obj, 'footer': footer_obj}
     except:
-        return {'site_settings': None}
+        return {'site_settings': None, 'hero': None, 'footer': None}
