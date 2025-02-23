@@ -7,7 +7,6 @@
             <!-- Company Info -->
             <div class="col-lg-4 mb-4">
                 <div class="footer-brand mb-4">
-                    <img src="{% static 'images/logo.png' %}" alt="Răsfățul Pescarului Logo" class="footer-logo mb-3">
                     <h4 class="text-white fw-bold">Răsfățul Pescarului</h4>
                 </div>
                 <p class="text-light">
@@ -89,48 +88,10 @@
                     </li>
                 </ul>
             </div>
-
-            <!-- Newsletter -->
-            <div class="col-lg-2 mb-4">
-                <h5 class="text-white mb-4">Newsletter</h5>
-                <p class="text-light mb-3">Abonează-te pentru a primi noutăți și oferte speciale!</p>
-                <form id="newsletter-form" class="newsletter-form">
-                    {% csrf_token %}
-                    <div class="input-group mb-3">
-                        <input type="email" class="form-control" placeholder="Email" required>
-                        <button class="btn btn-success" type="submit">
-                            <i class="fas fa-paper-plane"></i>
-                        </button>
-                    </div>
-                    <small class="form-text text-light">
-                        Te poți dezabona oricând printr-un simplu click.
-                    </small>
-                </form>
-            </div>
-        </div>
-
-        <!-- Payment Methods -->
-        <div class="row mt-4">
-            <div class="col-12">
-                <h5 class="text-white mb-3">Metode de Plată Acceptate</h5>
-                <div class="payment-methods">
-                    <i class="fab fa-cc-visa fa-2x me-3"></i>
-                    <i class="fab fa-cc-mastercard fa-2x me-3"></i>
-                    <i class="fab fa-cc-paypal fa-2x me-3"></i>
-                    <i class="fas fa-money-bill-wave fa-2x"></i>
-                </div>
-            </div>
-        </div>
-
-        <hr class="my-4 opacity-25">
-
         <!-- Copyright -->
         <div class="row">
             <div class="col-md-6 text-center text-md-start">
                 <p class="mb-0">&copy; {% now "Y" %} Răsfățul Pescarului. Toate drepturile rezervate.</p>
-            </div>
-            <div class="col-md-6 text-center text-md-end">
-                <img src="{% static 'images/romania.svg' %}" alt="Romania Flag" class="footer-flag">
             </div>
         </div>
     </div>
