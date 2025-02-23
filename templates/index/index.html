@@ -1,0 +1,247 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="hero-image">
+        <img src="{% static 'images/hero.png' %}" alt="Hero Background">
+    </div>
+    <div class="hero-overlay"></div>
+    <div class="hero-text">
+        <h1>Bine ai venit la Răsfățul Pescarului</h1>
+        <p>Descoperă cele mai bune locuri de pescuit și echipamente de calitate pentru pasiunea ta!</p>
+        {% if user.is_authenticated %}
+            <a href="{% url 'main:profile' %}" class="btn btn-success btn-lg">
+                Accesează profilul
+            </a>
+        {% else %}
+            <a href="{% url 'main:register' %}" class="btn btn-success btn-lg">
+                Alăturați-vă clubului
+            </a>
+        {% endif %}
+    </div>
+
+    <!-- Valuri animate -->
+    <div class="waves-container">
+        <svg class="waves" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+             viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto">
+            <defs>
+                <path id="gentle-wave"
+                      d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z"></path>
+            </defs>
+            <g class="parallax">
+                <use xlink:href="#gentle-wave" x="48" y="0" fill="rgba(222, 244, 252,0.7)"></use>
+                <use xlink:href="#gentle-wave" x="48" y="3" fill="rgba(222, 244, 252,0.5)"></use>
+                <use xlink:href="#gentle-wave" x="48" y="5" fill="rgba(222, 244, 252,0.3)"></use>
+                <use xlink:href="#gentle-wave" x="48" y="7" fill="#fff"></use>
+            </g>
+        </svg>
+    </div>
+</section>
+
+<!-- Welcome Section -->
+<section class="welcome-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-5 image-container">
+                <img src="{% static 'images/logo.png' %}" alt="Răsfățul Pescarului Logo" class="img-fluid">
+            </div>
+            <div class="col-lg-7 text-container">
+                <h2>Bine ați venit pe Răsfățul Pescarului</h2>
+                <p class="lead">Platforma dedicată pasionaților de pescuit din toată țara! Aici, veți descoperi o resursă unică pentru iubitorii de pescuit: un serviciu inovator care vă permite să explorați toate speciile de pești și baltițele din România.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Explore Section -->
+<section class="fishing-explore-section">
+    <div class="container">
+        <div class="fishing-explore-container">
+            <div class="fishing-text-content">
+                <h2>Explorați cu noi<br>lumea captivantă<br>a pescuitului.</h2>
+                <p class="mt-4">Fie că sunteți în căutarea unui loc de pescuit perfect sau doriți să aflați mai multe despre speciile de pești din apele noastre, Răsfățul Pescarului vă oferă toate informațiile necesare pentru a vă planifica o experiență de pescuit de neuitat. Alăturați-vă comunității noastre și începeți aventura pe ape!</p>
+            </div>
+            <div class="fishing-image-container">
+                <img src="{% static 'images/img_4.png' %}" alt="Peisaj de pescuit" class="img-fluid">
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Call to Action -->
+<section class="cta py-5 bg-success text-white border-top">
+    <div class="container text-center">
+        <h2 class="mb-4">Pregătit să începi aventura?</h2>
+        <p class="lead mb-4">Alătură-te comunității noastre și descoperă cele mai bune locuri de pescuit!</p>
+        {% if user.is_authenticated %}
+            <a href="{% url 'main:profile' %}" class="btn btn-light btn-lg">
+                Accesează profilul
+            </a>
+        {% else %}
+            <a href="{% url 'main:register' %}" class="btn btn-light btn-lg">
+                Creează cont gratuit
+            </a>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Solunar Section -->
+<section class="solunar-section py-5 bg-light">
+    <div class="container">
+        <h2 class="text-center mb-4">Calendar Solunar</h2>
+        <p class="text-center mb-5">Află cele mai bune perioade pentru pescuit bazate pe fazele lunii</p>
+        
+        <div class="row">
+            {% for prediction in solunar_predictions %}
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 solunar-card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="moon-phase-icon me-3">
+                                {% if prediction.moon_phase < 0.125 %}
+                                    <svg width="60" height="60" viewBox="0 0 60 60">
+                                        <circle cx="30" cy="30" r="28" fill="#1a1a1a" stroke="#333" stroke-width="2"/>
+                                    </svg>
+                                {% elif prediction.moon_phase < 0.375 %}
+                                    <svg width="60" height="60" viewBox="0 0 60 60">
+                                        <circle cx="30" cy="30" r="28" fill="#f8f9fa" stroke="#333" stroke-width="2"/>
+                                        <path d="M30 2A28 28 0 0 1 30 58A28 28 0 0 0 30 2" fill="#1a1a1a"/>
+                                    </svg>
+                                {% elif prediction.moon_phase < 0.625 %}
+                                    <svg width="60" height="60" viewBox="0 0 60 60">
+                                        <circle cx="30" cy="30" r="28" fill="#f8f9fa" stroke="#333" stroke-width="2"/>
+                                    </svg>
+                                {% elif prediction.moon_phase < 0.875 %}
+                                    <svg width="60" height="60" viewBox="0 0 60 60">
+                                        <circle cx="30" cy="30" r="28" fill="#f8f9fa" stroke="#333" stroke-width="2"/>
+                                        <path d="M30 2A28 28 0 0 0 30 58A28 28 0 0 1 30 2" fill="#1a1a1a"/>
+                                    </svg>
+                                {% else %}
+                                    <svg width="60" height="60" viewBox="0 0 60 60">
+                                        <circle cx="30" cy="30" r="28" fill="#1a1a1a" stroke="#333" stroke-width="2"/>
+                                    </svg>
+                                {% endif %}
+                            </div>
+                            <div>
+                                <h5 class="card-title mb-0">
+                                    {% if forloop.first %}
+                                        Solunar azi
+                                    {% else %}
+                                        {{ prediction.date|date:"l, j F" }}
+                                    {% endif %}
+                                </h5>
+                                <div class="text-muted">Rating: {{ prediction.rating|floatformat:2 }}/5</div>
+                            </div>
+                        </div>
+                        
+                        <div class="fishing-times mb-3">
+                            <h6 class="text-success">Orar pescuit favorabil:</h6>
+                            <div class="d-flex justify-content-around">
+                                <span>{{ prediction.major_start|time:"H:i" }}</span>
+                                <span>{{ prediction.major_end|time:"H:i" }}</span>
+                            </div>
+                            
+                            <h6 class="text-danger mt-3">Orar pescuit nefavorabil:</h6>
+                            <div class="d-flex justify-content-around">
+                                <span>{{ prediction.minor_start|time:"H:i" }}</span>
+                                <span>{{ prediction.minor_end|time:"H:i" }}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="fishing-rating text-center">
+                            <div class="fish-icons">
+                                {% with ''|center:5 as range %}
+                                {% for _ in range %}
+                                    <i class="fas fa-fish {% if forloop.counter <= prediction.rating %}text-primary{% else %}text-muted{% endif %}"></i>
+                                {% endfor %}
+                                {% endwith %}
+                            </div>
+                            <small class="text-muted">Șanse de pescuit: {{ prediction.rating_text }}</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- County Selection Section -->
+<section class="county-selection-section py-5">
+    <div class="container">
+        <h2 class="text-center mb-3">Selecteaza judetul</h2>
+        <p class="text-center mb-5">Selecteaza judetul in care te afli pentru a vedea zonele de pescuit plus ce tipuri de pestii poti gasi in ele.</p>
+        <div class="map-container text-center">
+            <a href="{% url 'main:locations_map' %}" class="map-link">
+                <img src="{% static 'images/romania.svg' %}" alt="Harta Romaniei" class="romania-map img-fluid">
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Videos -->
+<section class="featured-videos py-5 bg-light">
+    <div class="container">
+        <h2 class="text-center mb-4">Tutoriale recente</h2>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            {% for video in featured_videos %}
+            <div class="col">
+                <div class="card h-100">
+                    <div class="ratio ratio-16x9">
+                        <iframe src="{{ video.embed_url }}" title="{{ video.title }}" allowfullscreen></iframe>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">{{ video.title }}</h5>
+                        <p class="card-text">{{ video.description|truncatechars:100 }}</p>
+                        <a href="{% url 'main:video_detail' video.id %}" class="btn btn-outline-success">
+                            Vezi tutorialul
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="text-center mt-4">
+            <a href="{% url 'main:tutorials' %}" class="btn btn-outline-success btn-lg">
+                Vezi toate tutorialele
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials -->
+<section class="testimonials py-5">
+    <div class="container">
+        <h2 class="text-center mb-4">Ce spun clienții noștri</h2>
+        <div class="row">
+            {% for testimonial in testimonials %}
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            {% if testimonial.image %}
+                            <img src="{{ testimonial.image.url }}" alt="{{ testimonial.name }}" 
+                                 class="rounded-circle me-3" style="width: 60px; height: 60px; object-fit: cover;">
+                            {% else %}
+                            <img src="{% static 'images/user-placeholder.png' %}" alt="{{ testimonial.name }}"
+                                 class="rounded-circle me-3" style="width: 60px; height: 60px; object-fit: cover;">
+                            {% endif %}
+                            <div>
+                                <h5 class="card-title mb-0">{{ testimonial.name }}</h5>
+                                <div class="text-warning">
+                                    {% for i in ""|ljust:testimonial.rating %}
+                                    <i class="fas fa-star"></i>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        <p class="card-text">{{ testimonial.content }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}
