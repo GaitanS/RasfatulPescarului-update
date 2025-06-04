@@ -38,16 +38,22 @@ def calculate_solunar_data(date):
         moonrise = moon.moonrise(location.observer, date)
         moonset = moon.moonset(location.observer, date)
         
+        moonrise_dt = None
         if moonrise:
             moonrise_dt = datetime.datetime.combine(date, moonrise.time())
+        
+        moonset_dt = None
+        if moonset:
+            moonset_dt = datetime.datetime.combine(date, moonset.time())
+
+        if moonrise_dt:
             major_start = (moonrise_dt - timedelta(hours=1)).time()
             major_end = (moonrise_dt + timedelta(hours=1)).time()
         else:
             major_start = (solar_noon - timedelta(hours=1)).time()
             major_end = (solar_noon + timedelta(hours=1)).time()
         
-        if moonset:
-            moonset_dt = datetime.datetime.combine(date, moonset.time())
+        if moonset_dt:
             minor_start = (moonset_dt - timedelta(hours=1)).time()
             minor_end = (moonset_dt + timedelta(hours=1)).time()
         else:
