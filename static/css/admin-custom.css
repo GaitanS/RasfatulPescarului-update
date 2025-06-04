@@ -1,0 +1,11 @@
+.style-scope-login-logo {
+    max-width: 10% !important;
+    height: auto !important;
+}
+
+/* Target the picture tag in the login form */
+.login #header picture img,
+.login #header picture source {
+    max-width: 10% !important;
+    height: auto !important;
+}
