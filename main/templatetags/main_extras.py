@@ -1,5 +1,4 @@
 from django import template
-from datetime import datetime
 
 register = template.Library()
 
@@ -68,3 +67,11 @@ def divide(value, arg):
         return float(value) / float(arg)
     except (ValueError, TypeError, ZeroDivisionError):
         return value
+
+@register.filter
+def length_is(value, arg):
+    """Return True if the length of the value is equal to the argument"""
+    try:
+        return len(value) == int(arg)
+    except (ValueError, TypeError):
+        return False

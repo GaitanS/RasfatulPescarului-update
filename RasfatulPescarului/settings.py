@@ -4,7 +4,6 @@ Django settings for RasfatulPescarului project.
 
 from pathlib import Path
 import os
-from datetime import datetime
 from dotenv import load_dotenv
 
 # Load environment variables
@@ -59,6 +58,9 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'main.context_processors.site_settings',
             ],
+            'builtins': [
+                'main.templatetags.main_extras',
+            ],
         },
     },
 ]
@@ -90,7 +92,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 # Internationalization
-LANGUAGE_CODE = 'ro'
+LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'Europe/Bucharest'
 USE_I18N = True
 USE_TZ = True
@@ -127,7 +129,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Jazzmin settings
 JAZZMIN_SETTINGS = {
     # title of the window (Will default to current_admin_site.site_title if absent or None)
-    "site_title": "Răsfățul Pescarului Admin",
+    "site_title": "Administrare Răsfățul Pescarului",
     # Title on the login screen (19 chars max) (defaults to current_admin_site.site_header if absent or None)
     "site_header": "Răsfățul Pescarului",
     # Title on the brand (19 chars max) (defaults to current_admin_site.site_header if absent or None)
@@ -143,9 +145,9 @@ JAZZMIN_SETTINGS = {
     # Relative path to a favicon for your site, will default to site_logo if absent
     "site_icon": None,
     # Welcome text on the login screen
-    "welcome_sign": "Bine ați venit la Răsfățul Pescarului",
+    "welcome_sign": "Bine ați venit la panoul de administrare",
     # Copyright on the footer
-    "copyright": "Răsfățul Pescarului © 2023",
+    "copyright": "Răsfățul Pescarului © 2025",
     # The model admin to search from the search bar, search bar omitted if excluded
     "search_model": "main.Lake",
     # Field name on user model that contains avatar ImageField/URLField/Charfield or a callable that receives the user
@@ -156,16 +158,17 @@ JAZZMIN_SETTINGS = {
     # Links to put along the top menu
     "topmenu_links": [
         # Url that gets reversed (Permissions can be added)
-        {"name": "Acasă", "url": "admin:index", "permissions": ["auth.view_user"]},
+        {"name": "Panou principal", "url": "admin:index", "permissions": ["auth.view_user"]},
         # external url that opens in a new window (Permissions can be added)
-        {"name": "Site", "url": "/", "new_window": True},
+        {"name": "Vizualizează site-ul", "url": "/", "new_window": True},
     ],
     #############
     # User Menu #
     #############
     # Additional links to include in the user menu on the top right ("app" url type is not allowed)
     "usermenu_links": [
-        {"name": "Site", "url": "/", "new_window": True},
+        {"name": "Vizualizează site-ul", "url": "/", "new_window": True},
+        {"name": "Schimbă parola", "url": "admin:password_change", "icon": "fas fa-key"},
     ],
     #############
     # Side Menu #
