@@ -13,7 +13,8 @@ urlpatterns = [
     path('api/filter-lakes/', views.filter_lakes, name='filter_lakes'),
     path('api/nearby-lakes/', views.nearby_lakes, name='nearby_lakes'),
     path('locations/county/<slug:county_slug>/', views.county_lakes, name='county_lakes'),
-    path('locations/lake/<int:lake_id>/', views.lake_detail, name='lake_detail'),
+    path('locations/lake/<slug:slug>/', views.lake_detail, name='lake_detail'),
+    path('locations/lake/<int:lake_id>/add-review/', views.add_review, name='add_review'),
     
     # Tutorials
     path('tutorials/', views.tutorials, name='tutorials'),

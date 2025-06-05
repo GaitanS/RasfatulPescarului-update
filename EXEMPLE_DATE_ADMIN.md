@@ -9,8 +9,11 @@
 - **Județul:** Ilfov (trebuie să existe în listă)
 - **Latitudine:** 44.70472213456789
 - **Longitudine:** 26.17555612345678
+- **Cod embed Google Maps:** (opțional - lasă gol pentru a folosi coordonatele)
+- **Tipul bălții:** Baltă publică
 - **Tipuri de pești:** Crap, Șalău, Știucă, Caras, Roșioară, Biban
 - **Facilități:** parcare cazare restaurant toalete
+- **Program de funcționare:** Luni-Vineri: 06:00-22:00, Sâmbătă-Duminică: 05:00-23:00. Pescuit nocturn permis cu acordul administratorului.
 - **Preț pe zi:** 45.00
 - **Reguli de pescuit:** Permis de pescuit obligatoriu. Program: 06:00 - 22:00. Se permite pescuitul din barcă. Interzis pescuitul cu plase. Capturile sub 40cm se eliberează.
 - **Activ:** ✓ (bifat)
@@ -22,8 +25,11 @@
 - **Județul:** Argeș
 - **Latitudine:** 44.95000012345678
 - **Longitudine:** 24.86670098765432
+- **Cod embed Google Maps:** (opțional)
+- **Tipul bălții:** Baltă cu regim mixt (reținere + catch & release)
 - **Tipuri de pești:** Crap, Șalău, Știucă, Clean
 - **Facilități:** parcare cazare toalete
+- **Program de funcționare:** Program: 05:00-23:00. Acces restricționat în timpul sezonului de reproducere (aprilie-mai).
 - **Preț pe zi:** 60.00
 - **Reguli de pescuit:** Permis obligatoriu. Se permite pescuitul din barcă cu restricții. Program: 05:00 - 23:00. Maxim 2 undițe per persoană.
 - **Activ:** ✓ (bifat)
@@ -35,8 +41,11 @@
 - **Județul:** Neamț
 - **Latitudine:** 46.92830045678901
 - **Longitudine:** 26.10240087654321
+- **Cod embed Google Maps:** <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2848.123!2d26.102400!3d46.928300!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNDbCsDU1JzQyLjAiTiAyNsKwMDYnMDguNiJF!5e0!3m2!1sro!2sro!4v1234567890" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+- **Tipul bălții:** Baltă naturală
 - **Tipuri de pești:** Crap, Șalău, Știucă, Clean, Biban, Păstrăv
 - **Facilități:** parcare cazare restaurant toalete
+- **Program de funcționare:** Deschis 24/7. Acces cu mașina până la 22:00. Zona de camping cu rezervare obligatorie.
 - **Preț pe zi:** 55.00
 - **Reguli de pescuit:** Permis de pescuit obligatoriu. Program: 24/7. Se permite pescuitul din barcă și de pe mal. Zona de camping disponibilă cu rezervare.
 - **Activ:** ✓ (bifat)
@@ -114,6 +123,15 @@
 4. Selectează coordonatele (vor fi afișate ca: 45.39189813235069, 24.62707585690222)
 5. Prima cifră este latitudinea, a doua este longitudinea
 6. Poți introduce toate cifrele zecimale pentru precizie maximă (până la 15 cifre după virgulă)
+
+### Pentru tipul bălții:
+Alege tipul corespunzător:
+- **Baltă privată:** Administrare privată, acces cu permisiune
+- **Baltă publică:** Deschisă publicului, administrare de stat
+- **Baltă pentru competiții:** Destinată concursurilor de pescuit
+- **Baltă cu regim "catch & release":** Toate capturile se eliberează
+- **Baltă cu regim mixt:** Unele specii se rețin, altele se eliberează
+- **Baltă naturală:** Lac natural, fără amenajări artificiale
 
 ### Pentru tipuri de pești:
 Folosește numele românești standard:

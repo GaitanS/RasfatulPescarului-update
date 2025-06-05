@@ -45,12 +45,12 @@
                     <h5 class="card-title">{{ lake.name }}</h5>
                     <p class="card-text">{{ lake.description|truncatechars:100 }}</p>
                     <ul class="list-unstyled">
-                        <li><i class="fas fa-fish me-2"></i>{{ lake.fish_types }}</li>
+                        <li><i class="fas fa-fish me-2"></i>{% for fish in lake.fish_species.all %}{{ fish.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</li>
                         <li><i class="fas fa-coins me-2"></i>{{ lake.price_per_day }} Lei/zi</li>
                         <li><i class="fas fa-map-marker-alt me-2"></i>{{ lake.address }}</li>
                     </ul>
                     <div class="d-grid">
-                        <a href="{% url 'main:lake_detail' lake.id %}" class="btn btn-success">
+                        <a href="{% url 'main:lake_detail' lake.slug %}" class="btn btn-success">
                             Vezi detalii
                         </a>
                     </div>

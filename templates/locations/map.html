@@ -396,10 +396,10 @@
                                     <div class="nearby-lake-card">
                                         <h5>${lake.name}</h5>
                                         <p class="mb-2"><i class="fas fa-map-marker-alt me-2"></i>${lake.address}</p>
-                                        <p class="mb-2"><i class="fas fa-fish me-2"></i>${lake.fish_types}</p>
+                                        <p class="mb-2"><i class="fas fa-fish me-2"></i>${lake.fish_species.map(fish => fish.name).join(', ')}</p>
                                         <p class="distance mb-3"><i class="fas fa-route me-2"></i>${lake.distance} km</p>
                                         <div class="d-flex gap-2">
-                                            <a href="/locations/lake/${lake.id}/" class="btn btn-success flex-grow-1">
+                                            <a href="/locations/lake/${lake.slug}/" class="btn btn-success flex-grow-1">
                                                 Vezi detalii
                                             </a>
                                             <a href="https://www.google.com/maps/dir/?api=1&destination=${lake.latitude},${lake.longitude}" 
@@ -437,16 +437,16 @@
                         <div class="lake-popup">
                             <h5>${lake.name}</h5>
                             <p><i class="fas fa-map-marker-alt me-2"></i>${lake.address}</p>
-                            <p><i class="fas fa-fish me-2"></i>${lake.fish_types}</p>
+                            <p><i class="fas fa-fish me-2"></i>${lake.fish_species.map(fish => fish.name).join(', ')}</p>
                             <p class="price"><i class="fas fa-tag me-2"></i>${lake.price_per_day} RON/zi</p>
                             <div class="facilities">
                                 ${lake.facilities.map(facility => `
                                     <span class="facility">
-                                        <i class="fas fa-check me-1"></i>${facility}
+                                        <i class="${facility.icon_class} me-1"></i>${facility.name}
                                     </span>
                                 `).join('')}
                             </div>
-                            <a href="/locations/lake/${lake.id}/" class="btn btn-success">Vezi detalii</a>
+                            <a href="/locations/lake/${lake.slug}/" class="btn btn-success">Vezi detalii</a>
                         </div>
                     `);
                 marker.addTo(map);

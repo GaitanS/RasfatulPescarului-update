@@ -49,13 +49,13 @@
                         {{ lake.description|linebreaks }}
                     </div>
 
-                    <!-- Fish Types -->
+                    <!-- Fish Species -->
                     <div class="mb-4">
                         <h5 class="mb-3">Specii de pești</h5>
                         <div class="d-flex flex-wrap gap-2">
-                            {% for fish in lake.fish_types.split %}
-                            <span class="badge bg-success">
-                                <i class="fas fa-fish me-1"></i>{{ fish|title }}
+                            {% for fish in lake.fish_species.all %}
+                            <span class="badge" style="background-color: #198754 !important;">
+                                <i class="fas fa-fish me-1"></i>{{ fish.name }}
                             </span>
                             {% endfor %}
                         </div>
@@ -64,26 +64,49 @@
                     <!-- Facilities -->
                     <div class="mb-4">
                         <h5 class="mb-3">Facilități</h5>
-                        <div class="d-flex flex-wrap gap-3">
-                            {% for facility in lake.facilities.split %}
-                            <div class="facility-item">
-                                {% if facility == 'parcare' %}
-                                <i class="fas fa-parking text-success"></i>
-                                <span>Parcare</span>
-                                {% elif facility == 'cazare' %}
-                                <i class="fas fa-bed text-success"></i>
-                                <span>Cazare</span>
-                                {% elif facility == 'restaurant' %}
-                                <i class="fas fa-utensils text-success"></i>
-                                <span>Restaurant</span>
-                                {% elif facility == 'toalete' %}
-                                <i class="fas fa-restroom text-success"></i>
-                                <span>Toalete</span>
-                                {% endif %}
+                        {% regroup lake.facilities.all by category as facility_groups %}
+                        {% for group in facility_groups %}
+                        <div class="mb-3">
+                            <h6 class="text-muted mb-2">{{ group.grouper|capfirst }}</h6>
+                            <div class="d-flex flex-wrap gap-2">
+                                {% for facility in group.list %}
+                                <div class="facility-item">
+                                    <i class="{{ facility.icon_class }} text-success"></i>
+                                    <span>{{ facility.name }}</span>
+                                </div>
+                                {% endfor %}
                             </div>
-                            {% endfor %}
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Lake Type -->
+                    <div class="mb-4">
+                        <h5 class="mb-3">Tipul bălții</h5>
+                        <span class="badge fs-6" style="background-color: #198754;">
+                            <i class="fas fa-tag me-2"></i>{{ lake.get_lake_type_display }}
+                        </span>
+                    </div>
+
+                    <!-- Rating -->
+                    {% if lake.total_reviews > 0 %}
+                    <div class="mb-4">
+                        <h5 class="mb-3">Rating</h5>
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="rating-stars">
+                                {% for i in "12345" %}
+                                    {% if forloop.counter <= lake.average_rating %}
+                                        <i class="fas fa-star" style="color: #ffc107;"></i>
+                                    {% else %}
+                                        <i class="far fa-star" style="color: #e9ecef;"></i>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            <span class="fw-bold">{{ lake.average_rating }}</span>
+                            <span class="text-muted">({{ lake.total_reviews }} recenzi{% if lake.total_reviews == 1 %}e{% else %}i{% endif %})</span>
                         </div>
                     </div>
+                    {% endif %}
 
                     <!-- Price -->
                     <div class="mb-4">
@@ -93,13 +116,155 @@
                         </p>
                     </div>
 
+                    <!-- Operating Hours -->
+                    {% if lake.operating_hours %}
+                    <div class="mb-4">
+                        <h5 class="mb-3">Program de funcționare</h5>
+                        <div class="operating-hours-content">
+                            <i class="fas fa-clock me-2"></i>
+                            <div class="table-responsive">
+                                <table class="table table-sm mb-0">
+                                    <tbody>
+                                        <tr>
+                                            <td><strong>Luni</strong></td>
+                                            <td>
+                                                {% if lake.operating_hours.monday_is_open %}
+                                                    {% if lake.operating_hours.monday_is_24h %}
+                                                        <span class="badge bg-success">24 ore</span>
+                                                    {% else %}
+                                                        {{ lake.operating_hours.monday_opening_time|time:"H:i"|default:"--" }} - {{ lake.operating_hours.monday_closing_time|time:"H:i"|default:"--" }}
+                                                    {% endif %}
+                                                    {% if lake.operating_hours.monday_special_notes %}
+                                                        <small class="text-muted d-block">{{ lake.operating_hours.monday_special_notes }}</small>
+                                                    {% endif %}
+                                                {% else %}
+                                                    <span class="badge bg-danger">Închis</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Marți</strong></td>
+                                            <td>
+                                                {% if lake.operating_hours.tuesday_is_open %}
+                                                    {% if lake.operating_hours.tuesday_is_24h %}
+                                                        <span class="badge bg-success">24 ore</span>
+                                                    {% else %}
+                                                        {{ lake.operating_hours.tuesday_opening_time|time:"H:i"|default:"--" }} - {{ lake.operating_hours.tuesday_closing_time|time:"H:i"|default:"--" }}
+                                                    {% endif %}
+                                                    {% if lake.operating_hours.tuesday_special_notes %}
+                                                        <small class="text-muted d-block">{{ lake.operating_hours.tuesday_special_notes }}</small>
+                                                    {% endif %}
+                                                {% else %}
+                                                    <span class="badge bg-danger">Închis</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Miercuri</strong></td>
+                                            <td>
+                                                {% if lake.operating_hours.wednesday_is_open %}
+                                                    {% if lake.operating_hours.wednesday_is_24h %}
+                                                        <span class="badge bg-success">24 ore</span>
+                                                    {% else %}
+                                                        {{ lake.operating_hours.wednesday_opening_time|time:"H:i"|default:"--" }} - {{ lake.operating_hours.wednesday_closing_time|time:"H:i"|default:"--" }}
+                                                    {% endif %}
+                                                    {% if lake.operating_hours.wednesday_special_notes %}
+                                                        <small class="text-muted d-block">{{ lake.operating_hours.wednesday_special_notes }}</small>
+                                                    {% endif %}
+                                                {% else %}
+                                                    <span class="badge bg-danger">Închis</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Joi</strong></td>
+                                            <td>
+                                                {% if lake.operating_hours.thursday_is_open %}
+                                                    {% if lake.operating_hours.thursday_is_24h %}
+                                                        <span class="badge bg-success">24 ore</span>
+                                                    {% else %}
+                                                        {{ lake.operating_hours.thursday_opening_time|time:"H:i"|default:"--" }} - {{ lake.operating_hours.thursday_closing_time|time:"H:i"|default:"--" }}
+                                                    {% endif %}
+                                                    {% if lake.operating_hours.thursday_special_notes %}
+                                                        <small class="text-muted d-block">{{ lake.operating_hours.thursday_special_notes }}</small>
+                                                    {% endif %}
+                                                {% else %}
+                                                    <span class="badge bg-danger">Închis</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Vineri</strong></td>
+                                            <td>
+                                                {% if lake.operating_hours.friday_is_open %}
+                                                    {% if lake.operating_hours.friday_is_24h %}
+                                                        <span class="badge bg-success">24 ore</span>
+                                                    {% else %}
+                                                        {{ lake.operating_hours.friday_opening_time|time:"H:i"|default:"--" }} - {{ lake.operating_hours.friday_closing_time|time:"H:i"|default:"--" }}
+                                                    {% endif %}
+                                                    {% if lake.operating_hours.friday_special_notes %}
+                                                        <small class="text-muted d-block">{{ lake.operating_hours.friday_special_notes }}</small>
+                                                    {% endif %}
+                                                {% else %}
+                                                    <span class="badge bg-danger">Închis</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Sâmbătă</strong></td>
+                                            <td>
+                                                {% if lake.operating_hours.saturday_is_open %}
+                                                    {% if lake.operating_hours.saturday_is_24h %}
+                                                        <span class="badge bg-success">24 ore</span>
+                                                    {% else %}
+                                                        {{ lake.operating_hours.saturday_opening_time|time:"H:i"|default:"--" }} - {{ lake.operating_hours.saturday_closing_time|time:"H:i"|default:"--" }}
+                                                    {% endif %}
+                                                    {% if lake.operating_hours.saturday_special_notes %}
+                                                        <small class="text-muted d-block">{{ lake.operating_hours.saturday_special_notes }}</small>
+                                                    {% endif %}
+                                                {% else %}
+                                                    <span class="badge bg-danger">Închis</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Duminică</strong></td>
+                                            <td>
+                                                {% if lake.operating_hours.sunday_is_open %}
+                                                    {% if lake.operating_hours.sunday_is_24h %}
+                                                        <span class="badge bg-success">24 ore</span>
+                                                    {% else %}
+                                                        {{ lake.operating_hours.sunday_opening_time|time:"H:i"|default:"--" }} - {{ lake.operating_hours.sunday_closing_time|time:"H:i"|default:"--" }}
+                                                    {% endif %}
+                                                    {% if lake.operating_hours.sunday_special_notes %}
+                                                        <small class="text-muted d-block">{{ lake.operating_hours.sunday_special_notes }}</small>
+                                                    {% endif %}
+                                                {% else %}
+                                                    <span class="badge bg-danger">Închis</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            {% if lake.operating_hours.general_notes %}
+                            <div class="mt-2">
+                                <small class="text-muted">{{ lake.operating_hours.general_notes|linebreaks }}</small>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+
                     <!-- Rules -->
+                    {% if lake.rules %}
                     <div class="mb-4">
                         <h5 class="mb-3">Reguli</h5>
                         <div class="rules-content">
                             {{ lake.rules|linebreaks }}
                         </div>
                     </div>
+                    {% endif %}
 
                     <!-- Navigation Button -->
                     <div class="d-grid">
@@ -116,13 +281,19 @@
                 <div class="card-body">
                     <h5 class="card-title mb-3">Locație</h5>
                     <div class="map-container">
-                        <iframe
-                            src="https://maps.google.com/maps?q={{ lake.latitude }},{{ lake.longitude }}&hl=ro&z=15&output=embed"
-                            style="border:0;"
-                            allowfullscreen=""
-                            loading="lazy"
-                            referrerpolicy="no-referrer-when-downgrade">
-                        </iframe>
+                        {% if lake.get_safe_google_maps_embed %}
+                            <!-- Custom Google Maps embed -->
+                            {{ lake.get_safe_google_maps_embed }}
+                        {% else %}
+                            <!-- Default coordinate-based map -->
+                            <iframe
+                                src="https://maps.google.com/maps?q={{ lake.latitude }},{{ lake.longitude }}&hl=ro&z=15&output=embed"
+                                style="border:0;"
+                                allowfullscreen=""
+                                loading="lazy"
+                                referrerpolicy="no-referrer-when-downgrade">
+                            </iframe>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -136,7 +307,7 @@
                     {% if nearby_lakes %}
                     {% for nearby in nearby_lakes %}
                     <div class="mb-3">
-                        <a href="{% url 'main:lake_detail' nearby.id %}" class="text-decoration-none">
+                        <a href="{% url 'main:lake_detail' nearby.slug %}" class="text-decoration-none">
                             <div class="ratio ratio-16x9 mb-2">
                                 {% if nearby.image %}
                                 <img src="{{ nearby.image.url }}" alt="{{ nearby.name }}" class="img-fluid rounded">
@@ -157,6 +328,116 @@
                     {% endif %}
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Reviews Section -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title mb-4">Recenzii</h5>
+
+                    {% if lake.reviews.all %}
+                    <div class="reviews-list">
+                        {% for review in lake.reviews.all %}
+                        {% if review.is_approved and not review.is_spam %}
+                        <div class="review-card mb-4 p-3 border rounded">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <h6 class="mb-1">{{ review.title }}</h6>
+                                    <div class="d-flex align-items-center gap-2 mb-1">
+                                        <div class="rating-stars">
+                                            {% for i in "12345" %}
+                                                {% if forloop.counter <= review.rating %}
+                                                    <i class="fas fa-star" style="color: #ffc107;"></i>
+                                                {% else %}
+                                                    <i class="far fa-star" style="color: #e9ecef;"></i>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                        <span class="fw-bold">{{ review.rating }}/5</span>
+                                    </div>
+                                    <small class="text-muted">de {{ review.reviewer_name }} • {{ review.visit_date|date:"d M Y" }}</small>
+                                </div>
+                                <small class="text-muted">{{ review.created_at|date:"d M Y" }}</small>
+                            </div>
+                            <p class="mb-0">{{ review.comment }}</p>
+                        </div>
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-muted text-center py-4">Nu există recenzii pentru acest lac încă. Fii primul care lasă o recenzie!</p>
+                    {% endif %}
+
+                    <!-- Add Review Button -->
+                    <div class="text-center mt-4">
+                        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#reviewModal">
+                            <i class="fas fa-plus me-2"></i>Adaugă o recenzie
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Review Modal -->
+<div class="modal fade" id="reviewModal" tabindex="-1" aria-labelledby="reviewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="reviewModalLabel">Adaugă o recenzie pentru {{ lake.name }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" action="{% url 'main:add_review' lake.id %}">
+                <div class="modal-body">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="reviewer_name" class="form-label">Numele dvs. *</label>
+                            <input type="text" class="form-control" id="reviewer_name" name="reviewer_name" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="reviewer_email" class="form-label">Email *</label>
+                            <input type="email" class="form-control" id="reviewer_email" name="reviewer_email" required>
+                            <div class="form-text">Nu va fi afișat public</div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="rating" class="form-label">Rating *</label>
+                            <select class="form-select" id="rating" name="rating" required>
+                                <option value="">Selectează rating</option>
+                                <option value="5">⭐⭐⭐⭐⭐ (5 stele)</option>
+                                <option value="4">⭐⭐⭐⭐ (4 stele)</option>
+                                <option value="3">⭐⭐⭐ (3 stele)</option>
+                                <option value="2">⭐⭐ (2 stele)</option>
+                                <option value="1">⭐ (1 stea)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="visit_date" class="form-label">Data vizitei *</label>
+                            <input type="date" class="form-control" id="visit_date" name="visit_date" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Titlul recenziei *</label>
+                        <input type="text" class="form-control" id="title" name="title" maxlength="200" required>
+                        <div class="form-text">Titlu scurt pentru experiența dvs.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="comment" class="form-label">Comentariu *</label>
+                        <textarea class="form-control" id="comment" name="comment" rows="4" maxlength="1000" required></textarea>
+                        <div class="form-text">Descrieți experiența dvs. la acest lac (minim 20 caractere)</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anulează</button>
+                    <button type="submit" class="btn btn-success">Trimite recenzia</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -183,6 +464,43 @@
     background: #f8f9fa;
     padding: 1rem;
     border-radius: 0.5rem;
+}
+
+.operating-hours-content {
+    background: #e8f5e8;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    border-left: 4px solid #198754;
+}
+
+.map-container iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    border-radius: 0.5rem;
+}
+
+.review-card {
+    background: #f8f9fa;
+    transition: all 0.3s ease;
+}
+
+.review-card:hover {
+    background: #e9ecef;
+    transform: translateY(-2px);
+}
+
+.rating-stars i {
+    font-size: 1rem;
+}
+
+.operating-hours-content table {
+    background: white;
+    border-radius: 0.25rem;
+}
+
+.operating-hours-content table tr:nth-child(even) {
+    background-color: #f8f9fa;
 }
 </style>
 {% endblock %}

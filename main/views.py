@@ -105,34 +105,28 @@ from django.db.models import Q
 @require_http_methods(['GET'])
 def filter_lakes(request):
     """API endpoint pentru filtrarea lacurilor"""
-    lakes = Lake.objects.filter(is_active=True)
-    
+    lakes = Lake.objects.filter(is_active=True).select_related('county').prefetch_related('fish_species', 'facilities')
+
     # Apply county filter
     county_id = request.GET.get('county')
     if county_id:
         lakes = lakes.filter(county_id=county_id)
-    
+
     # Apply fish types filter
     fish_types = request.GET.getlist('fish_types[]')
     if fish_types:
-        q_objects = Q()
-        for fish in fish_types:
-            q_objects |= Q(fish_types__icontains=fish)
-        lakes = lakes.filter(q_objects)
-    
+        lakes = lakes.filter(fish_species__name__in=fish_types).distinct()
+
     # Apply price filter
     max_price = request.GET.get('max_price')
     if max_price:
         lakes = lakes.filter(price_per_day__lte=max_price)
-    
+
     # Apply facilities filter
     facilities = request.GET.getlist('facilities[]')
     if facilities:
-        q_objects = Q()
-        for facility in facilities:
-            q_objects |= Q(facilities__icontains=facility)
-        lakes = lakes.filter(q_objects)
-    
+        lakes = lakes.filter(facilities__name__in=facilities).distinct()
+
     # Format lake data for response
     lakes_data = [{
         'id': lake.id,
@@ -141,21 +135,21 @@ def filter_lakes(request):
         'county': lake.county.name,
         'latitude': float(lake.latitude),
         'longitude': float(lake.longitude),
-        'fish_types': lake.fish_types,
-        'facilities': lake.facilities.split(),
+        'fish_types': [fish.name for fish in lake.fish_species.all()],
+        'facilities': [facility.name for facility in lake.facilities.all()],
         'price_per_day': float(lake.price_per_day),
         'image_url': lake.image.url if lake.image else None
     } for lake in lakes]
-    
+
     return JsonResponse({'lakes': lakes_data})
 
 from .models import Lake, County
 
 def locations_map(request):
     """View pentru harta locațiilor"""
-    lakes = Lake.objects.filter(is_active=True).select_related('county')
+    lakes = Lake.objects.filter(is_active=True).select_related('county').prefetch_related('fish_species', 'facilities')
     counties = County.objects.all().order_by('name')
-    
+
     # Serialize lakes data for JavaScript
     lakes_data = [{
         'id': lake.id,
@@ -164,12 +158,12 @@ def locations_map(request):
         'county': lake.county.name,
         'latitude': float(lake.latitude),
         'longitude': float(lake.longitude),
-        'fish_types': lake.fish_types,
-        'facilities': lake.facilities.split(),
+        'fish_types': [fish.name for fish in lake.fish_species.all()],
+        'facilities': [facility.name for facility in lake.facilities.all()],
         'price_per_day': float(lake.price_per_day),
         'image_url': lake.image.url if lake.image else '/static/images/lake-placeholder.jpg'
     } for lake in lakes]
-    
+
     return render(request, 'locations/map.html', {
         'lakes_json': json.dumps(lakes_data),
         'lakes': lakes,
@@ -191,9 +185,9 @@ def nearby_lakes(request):
     try:
         user_lat = float(request.GET.get('lat'))
         user_lng = float(request.GET.get('lng'))
-        
-        lakes = Lake.objects.filter(is_active=True).select_related('county')
-        
+
+        lakes = Lake.objects.filter(is_active=True).select_related('county').prefetch_related('fish_species', 'facilities')
+
         # Calculate distances and sort by proximity
         lakes_with_distance = []
         for lake in lakes:
@@ -204,7 +198,7 @@ def nearby_lakes(request):
             a = sin(dlat/2)**2 + cos(radians(user_lat)) * cos(radians(float(lake.latitude))) * sin(dlon/2)**2
             c = 2 * atan2(sqrt(a), sqrt(1-a))
             distance = R * c
-            
+
             lakes_with_distance.append({
                 'id': lake.id,
                 'name': lake.name,
@@ -212,36 +206,69 @@ def nearby_lakes(request):
                 'county': lake.county.name,
                 'latitude': float(lake.latitude),
                 'longitude': float(lake.longitude),
-                'fish_types': lake.fish_types,
-                'facilities': lake.facilities.split(),
+                'fish_types': [fish.name for fish in lake.fish_species.all()],
+                'facilities': [facility.name for facility in lake.facilities.all()],
                 'price_per_day': float(lake.price_per_day),
                 'image_url': lake.image.url if lake.image else None,
                 'distance': round(distance, 1)
             })
-        
+
         # Sort by distance and limit to 6 nearest lakes
         lakes_with_distance.sort(key=lambda x: x['distance'])
         nearest_lakes = lakes_with_distance[:6]
-        
+
         return JsonResponse({'lakes': nearest_lakes})
     except (ValueError, TypeError):
         return JsonResponse({'error': 'Invalid coordinates'}, status=400)
 
-def lake_detail(request, lake_id):
+def lake_detail(request, slug):
     """View pentru detaliile unui lac"""
-    lake = get_object_or_404(Lake.objects.select_related('county'), id=lake_id, is_active=True)
-    
+    lake = get_object_or_404(Lake.objects.select_related('county'), slug=slug, is_active=True)
+
     # Get nearby lakes (within same county for now)
     nearby_lakes = Lake.objects.filter(
         county=lake.county,
         is_active=True
     ).exclude(id=lake.id)[:3]
-    
+
     context = {
         'lake': lake,
         'nearby_lakes': nearby_lakes
     }
     return render(request, 'locations/lake_detail.html', context)
+
+def add_review(request, lake_id):
+    """Add a review for a lake"""
+    if request.method == 'POST':
+        from .models import LakeReview
+
+        lake = get_object_or_404(Lake, id=lake_id, is_active=True)
+
+        # Get client IP
+        x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+        if x_forwarded_for:
+            ip = x_forwarded_for.split(',')[0]
+        else:
+            ip = request.META.get('REMOTE_ADDR')
+
+        try:
+            review = LakeReview.objects.create(
+                lake=lake,
+                reviewer_name=request.POST.get('reviewer_name'),
+                reviewer_email=request.POST.get('reviewer_email'),
+                rating=int(request.POST.get('rating')),
+                title=request.POST.get('title'),
+                comment=request.POST.get('comment'),
+                visit_date=request.POST.get('visit_date'),
+                ip_address=ip
+            )
+            messages.success(request, 'Recenzia dvs. a fost trimisă cu succes! Va fi publicată după aprobare.')
+        except Exception as e:
+            messages.error(request, 'A apărut o eroare la trimiterea recenziei. Vă rugăm să încercați din nou.')
+
+        return redirect('main:lake_detail', slug=lake.slug)
+
+    return redirect('main:fishing_locations')
 
 def tutorials(request):
     """View pentru lista de tutoriale video"""

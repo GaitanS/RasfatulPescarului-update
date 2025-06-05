@@ -42,8 +42,11 @@ Acest ghid te va ajuta să folosești panoul de administrare pentru site-ul Răs
     2. Fă click dreapta pe locația lacului
     3. Selectează coordonatele care apar (ex: 45.39189813235069, 24.62707585690222)
     4. Copiază și lipește în câmpuri - prima cifră este latitudinea, a doua longitudinea
+  - **Cod embed Google Maps:** Alternativă la coordonate - copiază codul iframe complet de la Google Maps
+- **Tipul bălții:** Selectează tipul corespunzător (privată, publică, competiții, etc.)
 - **Tipuri de pești:** Separate prin virgulă (ex: Crap, Șalău, Știucă, Caras)
 - **Facilități:** Separate prin spații (ex: parcare cazare restaurant toalete)
+- **Program de funcționare:** Programul detaliat de lucru (ex: Luni-Vineri: 06:00-22:00)
 - **Preț pe zi:** În lei românești (ex: 50.00)
 - **Reguli de pescuit:** Regulile și restricțiile pentru pescuit (ex: Permis obligatoriu, Program: 06:00-22:00)
 - **Imagine:** Format recomandat JPG/PNG, max 2MB
@@ -105,9 +108,12 @@ Acest ghid te va ajuta să folosești panoul de administrare pentru site-ul Răs
 
 ### Pentru Lacuri:
 1. **Coordonate GPS:** Folosește Google Maps pentru precizie
-2. **Imagini:** Folosește imagini de calitate, landscape orientation
-3. **Descriere:** Fii descriptiv - include informații despre adâncime, specii, reguli
-4. **Facilități:** Folosește termenii standard: parcare, cazare, restaurant, toalete
+2. **Google Maps Embed:** Pentru hărți personalizate, copiază codul iframe de la Google Maps
+3. **Tipul bălții:** Alege tipul corect pentru a ajuta pescarii să înțeleagă regulamentul
+4. **Program de funcționare:** Specifică orele exacte și condițiile speciale
+5. **Imagini:** Folosește imagini de calitate, landscape orientation
+6. **Descriere:** Fii descriptiv - include informații despre adâncime, specii, reguli
+7. **Facilități:** Folosește termenii standard: parcare, cazare, restaurant, toalete
 
 ### Pentru Videoclipuri:
 1. **Link-uri YouTube:** Copiază link-ul complet din bara de adrese
@@ -134,6 +140,15 @@ Acest ghid te va ajuta să folosești panoul de administrare pentru site-ul Răs
 - Folosește "Vezi pe site" pentru a vedea cum arată pe site-ul public
 
 ## Probleme comune și soluții
+
+### Cum să obții cod embed Google Maps:
+1. Deschide Google Maps în browser
+2. Caută locația lacului
+3. Click pe "Share" (Partajează)
+4. Selectează "Embed a map" (Încorporează o hartă)
+5. Alege dimensiunea dorită
+6. Copiază codul iframe complet
+7. Lipește în câmpul "Cod embed Google Maps"
 
 ### Coordonatele nu sunt corecte:
 - Verifică că ai copiat ambele coordonate (latitudine și longitudine)

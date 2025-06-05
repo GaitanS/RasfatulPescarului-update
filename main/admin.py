@@ -1,5 +1,73 @@
 from django.contrib import admin
-from .models import SiteSettings, County, Lake, Video, HeroSection, FooterSettings
+from django.contrib.admin.widgets import AdminTimeWidget
+from django import forms
+from django.db import models
+from .models import (
+    SiteSettings, County, Lake, Video, HeroSection, FooterSettings,
+    FishSpecies, Facility, OperatingHours, LakeReview
+)
+
+class OperatingHoursForm(forms.ModelForm):
+    """Custom form for OperatingHours with time picker widgets"""
+
+    class Meta:
+        model = OperatingHours
+        fields = '__all__'
+        widgets = {
+            # Monday
+            'monday_opening_time': AdminTimeWidget(format='%H:%M'),
+            'monday_closing_time': AdminTimeWidget(format='%H:%M'),
+            # Tuesday
+            'tuesday_opening_time': AdminTimeWidget(format='%H:%M'),
+            'tuesday_closing_time': AdminTimeWidget(format='%H:%M'),
+            # Wednesday
+            'wednesday_opening_time': AdminTimeWidget(format='%H:%M'),
+            'wednesday_closing_time': AdminTimeWidget(format='%H:%M'),
+            # Thursday
+            'thursday_opening_time': AdminTimeWidget(format='%H:%M'),
+            'thursday_closing_time': AdminTimeWidget(format='%H:%M'),
+            # Friday
+            'friday_opening_time': AdminTimeWidget(format='%H:%M'),
+            'friday_closing_time': AdminTimeWidget(format='%H:%M'),
+            # Saturday
+            'saturday_opening_time': AdminTimeWidget(format='%H:%M'),
+            'saturday_closing_time': AdminTimeWidget(format='%H:%M'),
+            # Sunday
+            'sunday_opening_time': AdminTimeWidget(format='%H:%M'),
+            'sunday_closing_time': AdminTimeWidget(format='%H:%M'),
+        }
+
+class CustomFacilityForm(forms.ModelForm):
+    """Custom form for Lake with grouped facility selection"""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Group facilities by Romanian category for better display
+        if 'facilities' in self.fields:
+            from .models import Facility
+            facilities = Facility.objects.filter(is_active=True).order_by('category', 'name')
+
+            # Create grouped choices
+            grouped_choices = []
+            current_category = None
+            current_group = []
+
+            for facility in facilities:
+                category_ro = facility.get_category_display_romanian()
+                if current_category != category_ro:
+                    if current_group:
+                        grouped_choices.append((current_category, current_group))
+                    current_category = category_ro
+                    current_group = []
+                current_group.append((facility.pk, facility.name))
+
+            # Add the last group
+            if current_group:
+                grouped_choices.append((current_category, current_group))
+
+            # Update the field choices
+            self.fields['facilities'].choices = grouped_choices
 
 @admin.register(SiteSettings)
 class SiteSettingsAdmin(admin.ModelAdmin):
@@ -70,25 +138,114 @@ class CountyAdmin(admin.ModelAdmin):
         return obj.lakes.count()
     get_lakes_count.short_description = 'Numărul de lacuri'
 
+@admin.register(FishSpecies)
+class FishSpeciesAdmin(admin.ModelAdmin):
+    list_display = ['name', 'scientific_name', 'category', 'is_active', 'created_at']
+    list_filter = ['category', 'is_active', 'created_at']
+    search_fields = ['name', 'scientific_name']
+    readonly_fields = ['created_at', 'updated_at']
+    list_editable = ['is_active']
+
+    fieldsets = (
+        ('Informații specie', {
+            'fields': ('name', 'scientific_name', 'category')
+        }),
+        ('Setări', {
+            'fields': ('is_active',)
+        }),
+        ('Informații sistem', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
+
+@admin.register(Facility)
+class FacilityAdmin(admin.ModelAdmin):
+    list_display = ['name', 'get_category_display_romanian', 'icon_class', 'is_active', 'created_at']
+    list_filter = ['category', 'is_active', 'created_at']
+    search_fields = ['name', 'description']
+    readonly_fields = ['created_at', 'updated_at']
+    list_editable = ['is_active']
+
+    def get_category_display_romanian(self, obj):
+        return obj.get_category_display_romanian()
+    get_category_display_romanian.short_description = 'Categoria'
+
+    fieldsets = (
+        ('Informații facilitate', {
+            'fields': ('name', 'icon_class', 'category', 'description')
+        }),
+        ('Setări', {
+            'fields': ('is_active',)
+        }),
+        ('Informații sistem', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
+
+class OperatingHoursInline(admin.StackedInline):
+    model = OperatingHours
+    form = OperatingHoursForm
+    extra = 0
+    max_num = 1
+
+    fieldsets = (
+        ('Luni', {
+            'fields': ('monday_is_open', 'monday_opening_time', 'monday_closing_time', 'monday_is_24h', 'monday_special_notes'),
+            'classes': ('collapse',)
+        }),
+        ('Marți', {
+            'fields': ('tuesday_is_open', 'tuesday_opening_time', 'tuesday_closing_time', 'tuesday_is_24h', 'tuesday_special_notes'),
+            'classes': ('collapse',)
+        }),
+        ('Miercuri', {
+            'fields': ('wednesday_is_open', 'wednesday_opening_time', 'wednesday_closing_time', 'wednesday_is_24h', 'wednesday_special_notes'),
+            'classes': ('collapse',)
+        }),
+        ('Joi', {
+            'fields': ('thursday_is_open', 'thursday_opening_time', 'thursday_closing_time', 'thursday_is_24h', 'thursday_special_notes'),
+            'classes': ('collapse',)
+        }),
+        ('Vineri', {
+            'fields': ('friday_is_open', 'friday_opening_time', 'friday_closing_time', 'friday_is_24h', 'friday_special_notes'),
+            'classes': ('collapse',)
+        }),
+        ('Sâmbătă', {
+            'fields': ('saturday_is_open', 'saturday_opening_time', 'saturday_closing_time', 'saturday_is_24h', 'saturday_special_notes'),
+            'classes': ('collapse',)
+        }),
+        ('Duminică', {
+            'fields': ('sunday_is_open', 'sunday_opening_time', 'sunday_closing_time', 'sunday_is_24h', 'sunday_special_notes'),
+            'classes': ('collapse',)
+        }),
+        ('Note generale', {
+            'fields': ('general_notes',)
+        }),
+    )
+
 @admin.register(Lake)
 class LakeAdmin(admin.ModelAdmin):
-    list_display = ['name', 'county', 'price_per_day', 'is_active', 'created_at']
-    list_filter = ['county', 'is_active', 'created_at']
-    search_fields = ['name', 'description', 'fish_types', 'address', 'rules']
+    form = CustomFacilityForm
+    list_display = ['name', 'county', 'lake_type', 'price_per_day', 'is_active', 'created_at']
+    list_filter = ['county', 'lake_type', 'is_active', 'created_at']
+    search_fields = ['name', 'description', 'address', 'rules']
     readonly_fields = ['created_at', 'updated_at']
     list_editable = ['is_active']
     list_per_page = 20
+    filter_horizontal = ['fish_species', 'facilities']
+    inlines = [OperatingHoursInline]
 
     fieldsets = (
         ('Informații de bază', {
-            'fields': ('name', 'county', 'address', 'description')
+            'fields': ('name', 'slug', 'county', 'address', 'description')
         }),
         ('Localizare', {
-            'fields': ('latitude', 'longitude'),
-            'description': 'Coordonatele GPS ale lacului. Poți găsi coordonatele pe Google Maps făcând click dreapta pe locație.'
+            'fields': ('latitude', 'longitude', 'google_maps_embed'),
+            'description': 'Coordonatele GPS ale lacului sau cod embed Google Maps. Poți găsi coordonatele pe Google Maps făcând click dreapta pe locație.'
         }),
         ('Detalii pescuit', {
-            'fields': ('fish_types', 'facilities', 'price_per_day', 'rules')
+            'fields': ('lake_type', 'fish_species', 'facilities', 'price_per_day', 'rules')
         }),
         ('Media și vizibilitate', {
             'fields': ('image', 'is_active')
@@ -146,3 +303,43 @@ class HeroSectionAdmin(admin.ModelAdmin):
     def has_delete_permission(self, request, obj=None):
         # Prevent deletion of the only instance
         return False
+
+@admin.register(LakeReview)
+class LakeReviewAdmin(admin.ModelAdmin):
+    list_display = ['reviewer_name', 'lake', 'rating', 'title', 'visit_date', 'is_approved', 'is_spam', 'created_at']
+    list_filter = ['rating', 'is_approved', 'is_spam', 'visit_date', 'created_at', 'lake__county']
+    search_fields = ['reviewer_name', 'reviewer_email', 'title', 'comment', 'lake__name']
+    readonly_fields = ['created_at', 'updated_at', 'ip_address']
+    list_editable = ['is_approved', 'is_spam']
+    list_per_page = 25
+    date_hierarchy = 'created_at'
+
+    fieldsets = (
+        ('Informații recenzie', {
+            'fields': ('lake', 'reviewer_name', 'reviewer_email', 'rating', 'title', 'comment', 'visit_date')
+        }),
+        ('Moderare', {
+            'fields': ('is_approved', 'is_spam')
+        }),
+        ('Informații sistem', {
+            'fields': ('ip_address', 'created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
+
+    actions = ['approve_reviews', 'mark_as_spam', 'mark_as_not_spam']
+
+    def approve_reviews(self, request, queryset):
+        updated = queryset.update(is_approved=True, is_spam=False)
+        self.message_user(request, f'{updated} recenzii au fost aprobate.')
+    approve_reviews.short_description = 'Aprobă recenziile selectate'
+
+    def mark_as_spam(self, request, queryset):
+        updated = queryset.update(is_spam=True, is_approved=False)
+        self.message_user(request, f'{updated} recenzii au fost marcate ca spam.')
+    mark_as_spam.short_description = 'Marchează ca spam'
+
+    def mark_as_not_spam(self, request, queryset):
+        updated = queryset.update(is_spam=False)
+        self.message_user(request, f'{updated} recenzii au fost demarcate ca spam.')
+    mark_as_not_spam.short_description = 'Demarchează ca spam'
