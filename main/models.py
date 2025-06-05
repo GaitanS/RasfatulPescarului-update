@@ -165,16 +165,16 @@ class Lake(models.Model):
         help_text="Județul în care se află lacul"
     )
     latitude = models.DecimalField(
-        max_digits=9,
-        decimal_places=6,
+        max_digits=18,
+        decimal_places=15,
         verbose_name="Latitudine",
-        help_text="Coordonata latitudine (ex: 44.123456). Folosește Google Maps pentru a găsi coordonatele"
+        help_text="Coordonata latitudine cu precizie mare (ex: 45.39189813235069). Folosește Google Maps pentru a găsi coordonatele"
     )
     longitude = models.DecimalField(
-        max_digits=9,
-        decimal_places=6,
+        max_digits=18,
+        decimal_places=15,
         verbose_name="Longitudine",
-        help_text="Coordonata longitudine (ex: 26.123456). Folosește Google Maps pentru a găsi coordonatele"
+        help_text="Coordonata longitudine cu precizie mare (ex: 24.62707585690222). Folosește Google Maps pentru a găsi coordonatele"
     )
     fish_types = models.CharField(
         max_length=500,
@@ -191,6 +191,11 @@ class Lake(models.Model):
         decimal_places=2,
         verbose_name="Preț pe zi (RON)",
         help_text="Prețul pentru o zi de pescuit în lei românești (ex: 50.00)"
+    )
+    rules = models.TextField(
+        blank=True,
+        verbose_name="Reguli de pescuit",
+        help_text="Regulile și restricțiile pentru pescuitul pe acest lac (ex: Permis obligatoriu, Se permite pescuitul din barcă, Program: 06:00-22:00)"
     )
     image = models.ImageField(
         upload_to='lakes/',

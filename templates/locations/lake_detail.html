@@ -101,15 +101,11 @@
                         </div>
                     </div>
 
-                    <!-- Navigation Buttons -->
-                    <div class="btn-group w-100">
-                        <a href="https://www.google.com/maps/dir/?api=1&destination={{ lake.latitude }},{{ lake.longitude }}" 
+                    <!-- Navigation Button -->
+                    <div class="d-grid">
+                        <a href="https://www.google.com/maps/dir/?api=1&destination={{ lake.latitude }},{{ lake.longitude }}"
                            class="btn btn-success" target="_blank">
-                            <i class="fab fa-google me-2"></i>Google Maps
-                        </a>
-                        <a href="https://waze.com/ul?ll={{ lake.latitude }},{{ lake.longitude }}&navigate=yes" 
-                           class="btn btn-success" target="_blank">
-                            <i class="fab fa-waze me-2"></i>Waze
+                            <i class="fab fa-google me-2"></i>Navigare cu Google Maps
                         </a>
                     </div>
                 </div>
@@ -121,7 +117,7 @@
                     <h5 class="card-title mb-3">Locație</h5>
                     <div class="map-container">
                         <iframe
-                            src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d4689.560780351744!2d{{ lake.longitude|stringformat:'f' }}!3d{{ lake.latitude|stringformat:'f' }}!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x474cd9332db023a5%3A0xd953c09db90dfa87!2s{{ lake.name|urlencode }}!5e0!3m2!1sro!2sro!4v1739735917908!5m2!1sro!2sro"
+                            src="https://maps.google.com/maps?q={{ lake.latitude }},{{ lake.longitude }}&hl=ro&z=15&output=embed"
                             style="border:0;"
                             allowfullscreen=""
                             loading="lazy"

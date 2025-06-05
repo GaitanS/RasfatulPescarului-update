@@ -7,11 +7,12 @@
 - **Descriere:** Lac natural situat în județul Ilfov, cunoscut pentru pescuitul la crap și șalău. Lacul are o suprafață de aproximativ 5.75 km² și o adâncime maximă de 8.5 metri. Facilități moderne de pescuit, pontoane amenajate și zonă de camping.
 - **Adresa:** Comuna Snagov, Județul Ilfov
 - **Județul:** Ilfov (trebuie să existe în listă)
-- **Latitudine:** 44.704722
-- **Longitudine:** 26.175556
+- **Latitudine:** 44.70472213456789
+- **Longitudine:** 26.17555612345678
 - **Tipuri de pești:** Crap, Șalău, Știucă, Caras, Roșioară, Biban
 - **Facilități:** parcare cazare restaurant toalete
 - **Preț pe zi:** 45.00
+- **Reguli de pescuit:** Permis de pescuit obligatoriu. Program: 06:00 - 22:00. Se permite pescuitul din barcă. Interzis pescuitul cu plase. Capturile sub 40cm se eliberează.
 - **Activ:** ✓ (bifat)
 
 ### Lac 2: Balta Budeasa
@@ -19,11 +20,12 @@
 - **Descriere:** Lac de acumulare pe râul Argeș, ideal pentru pescuitul sportiv. Zona liniștită cu peisaje montane, facilități complete pentru pescari. Permis de pescuit obligatoriu. Se permite pescuitul din barcă cu restricții.
 - **Adresa:** Comuna Budeasa, Județul Argeș
 - **Județul:** Argeș
-- **Latitudine:** 44.950000
-- **Longitudine:** 24.866700
+- **Latitudine:** 44.95000012345678
+- **Longitudine:** 24.86670098765432
 - **Tipuri de pești:** Crap, Șalău, Știucă, Clean
 - **Facilități:** parcare cazare toalete
 - **Preț pe zi:** 60.00
+- **Reguli de pescuit:** Permis obligatoriu. Se permite pescuitul din barcă cu restricții. Program: 05:00 - 23:00. Maxim 2 undițe per persoană.
 - **Activ:** ✓ (bifat)
 
 ### Lac 3: Lacul Bicaz
@@ -31,11 +33,12 @@
 - **Descriere:** Cel mai mare lac de acumulare din România, cu o suprafață de peste 3.000 hectare. Peisaje spectaculoase în Carpații Orientali. Facilități turistice complete, zonă de camping, restaurant cu specific local.
 - **Adresa:** Comuna Bicaz-Chei, Județul Neamț
 - **Județul:** Neamț
-- **Latitudine:** 46.928300
-- **Longitudine:** 26.102400
+- **Latitudine:** 46.92830045678901
+- **Longitudine:** 26.10240087654321
 - **Tipuri de pești:** Crap, Șalău, Știucă, Clean, Biban, Păstrăv
 - **Facilități:** parcare cazare restaurant toalete
 - **Preț pe zi:** 55.00
+- **Reguli de pescuit:** Permis de pescuit obligatoriu. Program: 24/7. Se permite pescuitul din barcă și de pe mal. Zona de camping disponibilă cu rezervare.
 - **Activ:** ✓ (bifat)
 
 ## Exemple pentru Videoclipuri
@@ -108,8 +111,9 @@
 1. Deschide Google Maps
 2. Caută locația lacului
 3. Fă click dreapta pe lac
-4. Selectează coordonatele (vor fi afișate ca: 44.704722, 26.175556)
+4. Selectează coordonatele (vor fi afișate ca: 45.39189813235069, 24.62707585690222)
 5. Prima cifră este latitudinea, a doua este longitudinea
+6. Poți introduce toate cifrele zecimale pentru precizie maximă (până la 15 cifre după virgulă)
 
 ### Pentru tipuri de pești:
 Folosește numele românești standard:

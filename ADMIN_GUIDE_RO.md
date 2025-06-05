@@ -40,11 +40,12 @@ Acest ghid te va ajuta să folosești panoul de administrare pentru site-ul Răs
   - **Latitudine/Longitudine:** Găsește coordonatele pe Google Maps:
     1. Deschide Google Maps
     2. Fă click dreapta pe locația lacului
-    3. Selectează coordonatele care apar
-    4. Copiază și lipește în câmpuri
+    3. Selectează coordonatele care apar (ex: 45.39189813235069, 24.62707585690222)
+    4. Copiază și lipește în câmpuri - prima cifră este latitudinea, a doua longitudinea
 - **Tipuri de pești:** Separate prin virgulă (ex: Crap, Șalău, Știucă, Caras)
 - **Facilități:** Separate prin spații (ex: parcare cazare restaurant toalete)
 - **Preț pe zi:** În lei românești (ex: 50.00)
+- **Reguli de pescuit:** Regulile și restricțiile pentru pescuit (ex: Permis obligatoriu, Program: 06:00-22:00)
 - **Imagine:** Format recomandat JPG/PNG, max 2MB
 - **Activ:** Bifează pentru a afișa pe site
 

@@ -74,7 +74,7 @@ class CountyAdmin(admin.ModelAdmin):
 class LakeAdmin(admin.ModelAdmin):
     list_display = ['name', 'county', 'price_per_day', 'is_active', 'created_at']
     list_filter = ['county', 'is_active', 'created_at']
-    search_fields = ['name', 'description', 'fish_types', 'address']
+    search_fields = ['name', 'description', 'fish_types', 'address', 'rules']
     readonly_fields = ['created_at', 'updated_at']
     list_editable = ['is_active']
     list_per_page = 20
@@ -88,7 +88,7 @@ class LakeAdmin(admin.ModelAdmin):
             'description': 'Coordonatele GPS ale lacului. Poți găsi coordonatele pe Google Maps făcând click dreapta pe locație.'
         }),
         ('Detalii pescuit', {
-            'fields': ('fish_types', 'facilities', 'price_per_day')
+            'fields': ('fish_types', 'facilities', 'price_per_day', 'rules')
         }),
         ('Media și vizibilitate', {
             'fields': ('image', 'is_active')
