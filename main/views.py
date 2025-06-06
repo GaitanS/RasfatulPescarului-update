@@ -127,6 +127,20 @@ def filter_lakes(request):
     if facilities:
         lakes = lakes.filter(facilities__name__in=facilities).distinct()
 
+    # Apply rating filter
+    min_rating = request.GET.get('min_rating')
+    if min_rating:
+        try:
+            min_rating_value = float(min_rating)
+            # Filter lakes that have at least the minimum rating
+            # We need to calculate average rating for each lake and filter
+            from django.db.models import Avg, Q
+            lakes = lakes.annotate(
+                avg_rating=Avg('reviews__rating', filter=Q(reviews__is_approved=True, reviews__is_spam=False))
+            ).filter(avg_rating__gte=min_rating_value)
+        except (ValueError, TypeError):
+            pass  # Invalid rating value, ignore filter
+
     # Format lake data for response
     lakes_data = [{
         'id': lake.id,
@@ -139,7 +153,9 @@ def filter_lakes(request):
         'fish_species': [{'name': fish.name} for fish in lake.fish_species.all()],
         'facilities': [{'name': facility.name, 'icon_class': facility.icon_class} for facility in lake.facilities.all()],
         'price_per_day': float(lake.price_per_day),
-        'image_url': lake.image.url if lake.image else None
+        'image_url': lake.image.url if lake.image else None,
+        'average_rating': lake.average_rating,
+        'total_reviews': lake.total_reviews
     } for lake in lakes]
 
     return JsonResponse({'lakes': lakes_data})
@@ -160,7 +176,9 @@ def debug_lakes(request):
         'fish_species': [{'name': fish.name} for fish in lake.fish_species.all()],
         'facilities': [{'name': facility.name, 'icon_class': facility.icon_class} for facility in lake.facilities.all()],
         'price_per_day': float(lake.price_per_day),
-        'image_url': lake.image.url if lake.image else '/static/images/lake-placeholder.jpg'
+        'image_url': lake.image.url if lake.image else '/static/images/lake-placeholder.jpg',
+        'average_rating': lake.average_rating,
+        'total_reviews': lake.total_reviews
     } for lake in lakes]
 
     return JsonResponse({
@@ -187,7 +205,9 @@ def locations_map(request):
         'fish_species': [{'name': fish.name} for fish in lake.fish_species.all()],
         'facilities': [{'name': facility.name, 'icon_class': facility.icon_class} for facility in lake.facilities.all()],
         'price_per_day': float(lake.price_per_day),
-        'image_url': lake.image.url if lake.image else '/static/images/lake-placeholder.jpg'
+        'image_url': lake.image.url if lake.image else '/static/images/lake-placeholder.jpg',
+        'average_rating': lake.average_rating,
+        'total_reviews': lake.total_reviews
     } for lake in lakes]
 
     return render(request, 'locations/map.html', {
@@ -237,7 +257,9 @@ def nearby_lakes(request):
                 'facilities': [{'name': facility.name, 'icon_class': facility.icon_class} for facility in lake.facilities.all()],
                 'price_per_day': float(lake.price_per_day),
                 'image_url': lake.image.url if lake.image else None,
-                'distance': round(distance, 1)
+                'distance': round(distance, 1),
+                'average_rating': lake.average_rating,
+                'total_reviews': lake.total_reviews
             })
 
         # Sort by distance and limit to 6 nearest lakes

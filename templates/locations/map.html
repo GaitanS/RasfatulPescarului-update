@@ -173,6 +173,43 @@
         margin-top: 15px;
         width: 100%;
     }
+
+    /* Rating stars in popup */
+    .lake-popup .rating-stars {
+        display: flex;
+        align-items: center;
+        gap: 2px;
+        margin: 8px 0;
+    }
+
+    .lake-popup .rating-stars i {
+        color: #ffc107;
+        font-size: 1rem;
+        width: auto;
+    }
+
+    .lake-popup .rating-info {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 8px 0;
+        color: #666;
+    }
+
+    .lake-popup .rating-value {
+        font-weight: 600;
+        color: #ffc107;
+    }
+
+    /* User location pin marker */
+    .user-location-pin {
+        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+        z-index: 1000;
+    }
+
+    .user-location-pin svg {
+        cursor: pointer;
+    }
 </style>
 {% endblock %}
 
@@ -230,6 +267,19 @@
                             <input type="range" class="form-range" id="priceRange" min="0" max="200" step="10" value="100">
                         </div>
 
+                        <!-- Rating Filter -->
+                        <div class="mb-3">
+                            <label for="ratingFilter" class="form-label">Rating minim</label>
+                            <select class="form-select" id="ratingFilter" name="min_rating">
+                                <option value="">Toate rating-urile</option>
+                                <option value="1">⭐ 1+ stele</option>
+                                <option value="2">⭐⭐ 2+ stele</option>
+                                <option value="3">⭐⭐⭐ 3+ stele</option>
+                                <option value="4">⭐⭐⭐⭐ 4+ stele</option>
+                                <option value="5">⭐⭐⭐⭐⭐ 5 stele</option>
+                            </select>
+                        </div>
+
                         <!-- Facilities Filter -->
                         <div class="mb-3">
                             <label class="form-label">Facilități</label>
@@ -282,7 +332,7 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" onclick="handleLocationDenied()"></button>
             </div>
             <div class="modal-body">
                 <i class="fas fa-location-dot location-icon"></i>
@@ -290,7 +340,7 @@
                 <p>Pentru a vă arăta bălțile și lacurile din apropiere, avem nevoie de permisiunea de a vă accesa locația.</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Nu acum</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="handleLocationDenied()">Nu acum</button>
                 <button type="button" class="btn btn-success" onclick="requestLocation()">Permite accesul</button>
             </div>
         </div>
@@ -312,6 +362,15 @@
 
         // Show location permission modal on page load
         var locationModal = new bootstrap.Modal(document.getElementById('locationModal'));
+        var initialMapSetupComplete = false;
+
+        // Handle modal being dismissed without choosing location
+        document.getElementById('locationModal').addEventListener('hidden.bs.modal', function () {
+            if (!initialMapSetupComplete) {
+                showFullRomaniaView();
+            }
+        });
+
         locationModal.show();
         var map = L.map('map', {
             zoomControl: true,
@@ -354,12 +413,11 @@
                     interactive: false
                 }).addTo(map);
 
-                // Create initial view of Romania
-                const bounds = L.geoJSON(data).getBounds();
-                map.fitBounds(bounds, {
-                    animate: false,
-                    padding: [20, 20]
-                });
+                // Store Romania bounds for later use
+                window.romaniaBounds = L.geoJSON(data).getBounds();
+
+                // Don't set initial view yet - wait for user location choice
+                // The view will be set based on location permission response
 
                 // After national borders are loaded, load county boundaries
                 return fetch('/static/data/romania-counties.geojson');
@@ -403,14 +461,68 @@
 
         // Store all markers in an array
         var markers = [];
-        
+        var userLocationMarker = null;
+
+        // Function to show full Romania view
+        function showFullRomaniaView() {
+            if (window.romaniaBounds) {
+                map.fitBounds(window.romaniaBounds, {
+                    animate: true,
+                    padding: [20, 20]
+                });
+            } else {
+                // Fallback to Romania center if bounds not available
+                map.setView(romaniaCenter, 7);
+            }
+            initialMapSetupComplete = true;
+        }
+
+        // Function to handle location permission denied
+        window.handleLocationDenied = function() {
+            showFullRomaniaView();
+        };
+
         // Function to request location
         window.requestLocation = function() {
             if ("geolocation" in navigator) {
                 navigator.geolocation.getCurrentPosition(function(position) {
                     const userLat = position.coords.latitude;
                     const userLng = position.coords.longitude;
-                    
+
+                    // Remove existing user location marker to prevent duplicates
+                    if (userLocationMarker) {
+                        map.removeLayer(userLocationMarker);
+                        userLocationMarker = null;
+                    }
+
+                    // Create custom white pin icon for user location (same shape as lake markers)
+                    const userLocationIcon = L.divIcon({
+                        className: 'user-location-pin',
+                        html: `
+                            <svg width="25" height="41" viewBox="0 0 25 41" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12.5 0C5.6 0 0 5.6 0 12.5C0 19.4 12.5 41 12.5 41S25 19.4 25 12.5C25 5.6 19.4 0 12.5 0Z"
+                                      fill="white" stroke="#198754" stroke-width="2"/>
+                                <circle cx="12.5" cy="12.5" r="6" fill="#198754"/>
+                            </svg>
+                        `,
+                        iconSize: [25, 41],
+                        iconAnchor: [12, 41],
+                        popupAnchor: [1, -34]
+                    });
+
+                    userLocationMarker = L.marker([userLat, userLng], { icon: userLocationIcon })
+                        .bindPopup('<div style="text-align: center; font-weight: bold; color: #198754;"><strong>Locația mea</strong></div>')
+                        .addTo(map);
+
+                    // Center map on user location with optimal zoom level
+                    // Zoom level 11 provides good balance between showing user location
+                    // prominently and displaying nearby lake markers in the surrounding area
+                    map.setView([userLat, userLng], 11, {
+                        animate: true
+                    });
+
+                    initialMapSetupComplete = true;
+
                     // Fetch nearby lakes
                     fetch(`/api/nearby-lakes/?lat=${userLat}&lng=${userLng}`)
                         .then(response => response.json())
@@ -420,29 +532,52 @@
                             
                             // Populate nearby lakes
                             const nearbyLakesList = document.getElementById('nearbyLakesList');
-                            nearbyLakesList.innerHTML = data.lakes.map(lake => `
-                                <div class="col-md-6 mb-3">
-                                    <div class="nearby-lake-card">
-                                        <h5>${lake.name}</h5>
-                                        <p class="mb-2"><i class="fas fa-map-marker-alt me-2"></i>${lake.address}</p>
-                                        <p class="mb-2"><i class="fas fa-fish me-2"></i>${lake.fish_species.map(fish => fish.name).join(', ')}</p>
-                                        <p class="distance mb-3"><i class="fas fa-route me-2"></i>${lake.distance} km</p>
-                                        <div class="d-flex gap-2">
-                                            <a href="/locations/lake/${lake.slug}/" class="btn btn-success flex-grow-1">
-                                                Vezi detalii
-                                            </a>
-                                            <a href="https://www.google.com/maps/dir/?api=1&destination=${lake.latitude},${lake.longitude}" 
-                                               class="btn btn-outline-success" target="_blank">
-                                                <i class="fab fa-google"></i>
-                                            </a>
-                                            <a href="https://waze.com/ul?ll=${lake.latitude},${lake.longitude}&navigate=yes" 
-                                               class="btn btn-outline-success" target="_blank">
-                                                <i class="fab fa-waze"></i>
-                                            </a>
+                            nearbyLakesList.innerHTML = data.lakes.map(lake => {
+                                // Generate rating HTML for nearby lakes
+                                let ratingHtml = '';
+                                if (lake.total_reviews > 0) {
+                                    const fullStars = Math.floor(lake.average_rating);
+                                    const hasHalfStar = lake.average_rating % 1 >= 0.5;
+                                    const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+
+                                    ratingHtml = `
+                                        <div class="rating-info mb-2">
+                                            <div class="rating-stars">
+                                                ${'<i class="fas fa-star" style="color: #ffc107;"></i>'.repeat(fullStars)}
+                                                ${hasHalfStar ? '<i class="fas fa-star-half-alt" style="color: #ffc107;"></i>' : ''}
+                                                ${'<i class="far fa-star" style="color: #e9ecef;"></i>'.repeat(emptyStars)}
+                                            </div>
+                                            <span class="rating-value">${lake.average_rating}</span>
+                                            <span>(${lake.total_reviews})</span>
+                                        </div>
+                                    `;
+                                }
+
+                                return `
+                                    <div class="col-md-6 mb-3">
+                                        <div class="nearby-lake-card">
+                                            <h5>${lake.name}</h5>
+                                            <p class="mb-2"><i class="fas fa-map-marker-alt me-2"></i>${lake.address}</p>
+                                            <p class="mb-2"><i class="fas fa-fish me-2"></i>${lake.fish_species.map(fish => fish.name).join(', ')}</p>
+                                            ${ratingHtml}
+                                            <p class="distance mb-3"><i class="fas fa-route me-2"></i>${lake.distance} km</p>
+                                            <div class="d-flex gap-2">
+                                                <a href="/locations/lake/${lake.slug}/" class="btn btn-success flex-grow-1">
+                                                    Vezi detalii
+                                                </a>
+                                                <a href="https://www.google.com/maps/dir/?api=1&destination=${lake.latitude},${lake.longitude}"
+                                                   class="btn btn-outline-success" target="_blank">
+                                                    <i class="fab fa-google"></i>
+                                                </a>
+                                                <a href="https://waze.com/ul?ll=${lake.latitude},${lake.longitude}&navigate=yes"
+                                                   class="btn btn-outline-success" target="_blank">
+                                                    <i class="fab fa-waze"></i>
+                                                </a>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            `).join('');
+                                `;
+                            }).join('');
                         });
 
                     // Close modal if open
@@ -450,7 +585,31 @@
                     if (locationModal) {
                         locationModal.hide();
                     }
+                }, function(error) {
+                    // Handle geolocation errors
+                    console.error('Geolocation error:', error);
+                    alert('Nu am putut obține locația dvs. Vă rugăm să verificați setările de locație din browser.');
+
+                    // Show full Romania view on error
+                    showFullRomaniaView();
+
+                    // Close modal if open
+                    const locationModal = bootstrap.Modal.getInstance(document.getElementById('locationModal'));
+                    if (locationModal) {
+                        locationModal.hide();
+                    }
                 });
+            } else {
+                alert('Geolocation nu este suportat de acest browser.');
+
+                // Show full Romania view if geolocation not supported
+                showFullRomaniaView();
+
+                // Close modal if open
+                const locationModal = bootstrap.Modal.getInstance(document.getElementById('locationModal'));
+                if (locationModal) {
+                    locationModal.hide();
+                }
             }
         };
 
@@ -465,12 +624,33 @@
             }
 
             lakes.forEach(lake => {
+                // Generate rating stars HTML
+                let ratingHtml = '';
+                if (lake.total_reviews > 0) {
+                    const fullStars = Math.floor(lake.average_rating);
+                    const hasHalfStar = lake.average_rating % 1 >= 0.5;
+                    const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+
+                    ratingHtml = `
+                        <div class="rating-info">
+                            <div class="rating-stars">
+                                ${'<i class="fas fa-star"></i>'.repeat(fullStars)}
+                                ${hasHalfStar ? '<i class="fas fa-star-half-alt"></i>' : ''}
+                                ${'<i class="far fa-star"></i>'.repeat(emptyStars)}
+                            </div>
+                            <span class="rating-value">${lake.average_rating}</span>
+                            <span>(${lake.total_reviews} recenzi${lake.total_reviews === 1 ? 'e' : 'i'})</span>
+                        </div>
+                    `;
+                }
+
                 const marker = L.marker([lake.latitude, lake.longitude])
                     .bindPopup(`
                         <div class="lake-popup">
                             <h5>${lake.name}</h5>
                             <p><i class="fas fa-map-marker-alt me-2"></i>${lake.address}</p>
                             <p><i class="fas fa-fish me-2"></i>${lake.fish_species.map(fish => fish.name).join(', ')}</p>
+                            ${ratingHtml}
                             <p class="price"><i class="fas fa-tag me-2"></i>${lake.price_per_day} RON/zi</p>
                             <div class="facilities">
                                 ${lake.facilities.map(facility => `
@@ -492,16 +672,18 @@
             const lakesData = JSON.parse('{{ lakes_json|escapejs }}');
             addMarkers(lakesData);
 
-            // If we have lakes, zoom to show them
-            if (lakesData && lakesData.length > 0) {
+            // Only set initial view if user hasn't made a location choice yet
+            // This prevents overriding the user's location-based view
+            if (!initialMapSetupComplete && lakesData && lakesData.length > 0) {
                 if (lakesData.length === 1) {
                     // Single lake - center on it
                     map.setView([lakesData[0].latitude, lakesData[0].longitude], 12);
                 } else {
-                    // Multiple lakes - fit bounds
+                    // Multiple lakes - fit bounds only if no location choice made
                     const group = new L.featureGroup(markers);
                     map.fitBounds(group.getBounds().pad(0.1));
                 }
+                initialMapSetupComplete = true;
             }
         } catch (error) {
             console.error('Error parsing lakes data:', error);
@@ -510,7 +692,7 @@
         // Filter form submission
         document.getElementById('filterForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            
+
             // Get form values
             const county = document.getElementById('county').value;
             const fishTypes = Array.from(document.querySelectorAll('input[type="checkbox"]:checked'))
@@ -520,13 +702,15 @@
             const facilities = Array.from(document.querySelectorAll('input[type="checkbox"]:checked'))
                 .filter(cb => ['parcare', 'cazare', 'restaurant', 'toalete'].includes(cb.value))
                 .map(cb => cb.value);
-            
+            const minRating = document.getElementById('ratingFilter').value;
+
             // Build query string
             const params = new URLSearchParams();
             if (county) params.append('county', county);
             fishTypes.forEach(type => params.append('fish_types[]', type));
             if (maxPrice) params.append('max_price', maxPrice);
             facilities.forEach(facility => params.append('facilities[]', facility));
+            if (minRating) params.append('min_rating', minRating);
             
             // Fetch filtered lakes
             fetch(`/api/filter-lakes/?${params.toString()}`)

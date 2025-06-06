@@ -44,6 +44,26 @@
                 <div class="card-body">
                     <h5 class="card-title">{{ lake.name }}</h5>
                     <p class="card-text">{{ lake.description|truncatechars:100 }}</p>
+
+                    <!-- Rating Display -->
+                    {% if lake.total_reviews > 0 %}
+                    <div class="mb-2">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="rating-stars">
+                                {% for i in "12345" %}
+                                    {% if forloop.counter <= lake.average_rating %}
+                                        <i class="fas fa-star" style="color: #ffc107;"></i>
+                                    {% else %}
+                                        <i class="far fa-star" style="color: #e9ecef;"></i>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            <span class="fw-bold" style="color: #ffc107;">{{ lake.average_rating }}</span>
+                            <small class="text-muted">({{ lake.total_reviews }})</small>
+                        </div>
+                    </div>
+                    {% endif %}
+
                     <ul class="list-unstyled">
                         <li><i class="fas fa-fish me-2"></i>{% for fish in lake.fish_species.all %}{{ fish.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</li>
                         <li><i class="fas fa-coins me-2"></i>{{ lake.price_per_day }} Lei/zi</li>
