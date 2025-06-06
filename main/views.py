@@ -130,18 +130,43 @@ def filter_lakes(request):
     # Format lake data for response
     lakes_data = [{
         'id': lake.id,
+        'slug': lake.slug,
         'name': lake.name,
         'address': lake.address,
         'county': lake.county.name,
         'latitude': float(lake.latitude),
         'longitude': float(lake.longitude),
-        'fish_types': [fish.name for fish in lake.fish_species.all()],
-        'facilities': [facility.name for facility in lake.facilities.all()],
+        'fish_species': [{'name': fish.name} for fish in lake.fish_species.all()],
+        'facilities': [{'name': facility.name, 'icon_class': facility.icon_class} for facility in lake.facilities.all()],
         'price_per_day': float(lake.price_per_day),
         'image_url': lake.image.url if lake.image else None
     } for lake in lakes]
 
     return JsonResponse({'lakes': lakes_data})
+
+@require_http_methods(['GET'])
+def debug_lakes(request):
+    """Debug endpoint to check lakes data"""
+    lakes = Lake.objects.filter(is_active=True).select_related('county').prefetch_related('fish_species', 'facilities')
+
+    lakes_data = [{
+        'id': lake.id,
+        'slug': lake.slug,
+        'name': lake.name,
+        'address': lake.address,
+        'county': lake.county.name,
+        'latitude': float(lake.latitude),
+        'longitude': float(lake.longitude),
+        'fish_species': [{'name': fish.name} for fish in lake.fish_species.all()],
+        'facilities': [{'name': facility.name, 'icon_class': facility.icon_class} for facility in lake.facilities.all()],
+        'price_per_day': float(lake.price_per_day),
+        'image_url': lake.image.url if lake.image else '/static/images/lake-placeholder.jpg'
+    } for lake in lakes]
+
+    return JsonResponse({
+        'count': len(lakes_data),
+        'lakes': lakes_data
+    }, indent=2)
 
 from .models import Lake, County
 
@@ -153,13 +178,14 @@ def locations_map(request):
     # Serialize lakes data for JavaScript
     lakes_data = [{
         'id': lake.id,
+        'slug': lake.slug,
         'name': lake.name,
         'address': lake.address,
         'county': lake.county.name,
         'latitude': float(lake.latitude),
         'longitude': float(lake.longitude),
-        'fish_types': [fish.name for fish in lake.fish_species.all()],
-        'facilities': [facility.name for facility in lake.facilities.all()],
+        'fish_species': [{'name': fish.name} for fish in lake.fish_species.all()],
+        'facilities': [{'name': facility.name, 'icon_class': facility.icon_class} for facility in lake.facilities.all()],
         'price_per_day': float(lake.price_per_day),
         'image_url': lake.image.url if lake.image else '/static/images/lake-placeholder.jpg'
     } for lake in lakes]
@@ -201,13 +227,14 @@ def nearby_lakes(request):
 
             lakes_with_distance.append({
                 'id': lake.id,
+                'slug': lake.slug,
                 'name': lake.name,
                 'address': lake.address,
                 'county': lake.county.name,
                 'latitude': float(lake.latitude),
                 'longitude': float(lake.longitude),
-                'fish_types': [fish.name for fish in lake.fish_species.all()],
-                'facilities': [facility.name for facility in lake.facilities.all()],
+                'fish_species': [{'name': fish.name} for fish in lake.fish_species.all()],
+                'facilities': [{'name': facility.name, 'icon_class': facility.icon_class} for facility in lake.facilities.all()],
                 'price_per_day': float(lake.price_per_day),
                 'image_url': lake.image.url if lake.image else None,
                 'distance': round(distance, 1)

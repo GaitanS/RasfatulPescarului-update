@@ -14,16 +14,20 @@
         width: 100%;
         border-radius: 8px;
         box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        background: #198653;
+        background: #198754 !important;
         overflow: hidden;
     }
 
+    .leaflet-container {
+        background: #198754 !important;
+    }
+
     .leaflet-tile-container {
-        background-color: #198653 !important;
+        background-color: #198754 !important;
     }
 
     .leaflet-tile-pane {
-        opacity: 0.7;
+        display: none !important; /* Hide tile layer completely */
     }
 
     .leaflet-control-attribution {
@@ -316,43 +320,36 @@
             doubleClickZoom: true,
             boxZoom: true,
             touchZoom: true,
-            minZoom: 7,
-            maxZoom: 7,
+            minZoom: 6,
+            maxZoom: 18,
             dragging: true
         }).setView(romaniaCenter, 7);
 
-        // Set map background color
-        map.getContainer().style.background = '#198653';
+        // Set map background color to green - no tile layer needed
+        map.getContainer().style.background = '#198754';
 
-        // Load GeoJSON data for Romania's borders
+        // Load GeoJSON data for Romania's national borders first
         fetch('/static/data/romania-borders.geojson')
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    console.log('National borders GeoJSON file not found, skipping border display');
+                    return null;
+                }
+                return response.json();
+            })
             .then(data => {
-                // Create double border effect
-                // First layer - outer white border
-                L.geoJSON(data, {
-                    style: {
-                        color: 'white',
-                        weight: 12,
-                        fillColor: 'transparent',
-                        fillOpacity: 0,
-                        opacity: 1,
-                        lineCap: 'round',
-                        lineJoin: 'round'
-                    },
-                    interactive: false
-                }).addTo(map);
+                if (!data) return;
 
-                // Second layer - inner fill
+                console.log('National borders data loaded successfully');
+
+                // Create the country shape with green fill
                 L.geoJSON(data, {
                     style: {
-                        color: '#198653',
-                        weight: 10,
-                        fillColor: '#198653',
+                        color: '#198754',
+                        weight: 0,
+                        fillColor: '#198754',
                         fillOpacity: 1,
-                        opacity: 1,
-                        lineCap: 'round',
-                        lineJoin: 'round'
+                        opacity: 1
                     },
                     interactive: false
                 }).addTo(map);
@@ -363,6 +360,38 @@
                     animate: false,
                     padding: [20, 20]
                 });
+
+                // After national borders are loaded, load county boundaries
+                return fetch('/static/data/romania-counties.geojson');
+            })
+            .then(response => {
+                if (!response || !response.ok) {
+                    console.log('Counties GeoJSON file not found, skipping county borders');
+                    return null;
+                }
+                return response.json();
+            })
+            .then(countiesData => {
+                if (!countiesData) return;
+
+                console.log('Counties data loaded successfully:', countiesData.features.length, 'counties');
+
+                // Add county boundaries with thin white lines on top
+                L.geoJSON(countiesData, {
+                    style: {
+                        color: 'white',
+                        weight: 1,
+                        fillColor: 'transparent',
+                        fillOpacity: 0,
+                        opacity: 0.7,
+                        lineCap: 'round',
+                        lineJoin: 'round'
+                    },
+                    interactive: false
+                }).addTo(map);
+            })
+            .catch(error => {
+                console.log('Error loading GeoJSON data:', error);
             });
 
         // Price range display
@@ -430,7 +459,11 @@
             // Clear existing markers
             markers.forEach(marker => marker.remove());
             markers = [];
-            
+
+            if (!lakes || lakes.length === 0) {
+                return;
+            }
+
             lakes.forEach(lake => {
                 const marker = L.marker([lake.latitude, lake.longitude])
                     .bindPopup(`
@@ -455,7 +488,24 @@
         }
         
         // Initial markers
-        addMarkers(JSON.parse('{{ lakes_json|escapejs }}'));
+        try {
+            const lakesData = JSON.parse('{{ lakes_json|escapejs }}');
+            addMarkers(lakesData);
+
+            // If we have lakes, zoom to show them
+            if (lakesData && lakesData.length > 0) {
+                if (lakesData.length === 1) {
+                    // Single lake - center on it
+                    map.setView([lakesData[0].latitude, lakesData[0].longitude], 12);
+                } else {
+                    // Multiple lakes - fit bounds
+                    const group = new L.featureGroup(markers);
+                    map.fitBounds(group.getBounds().pad(0.1));
+                }
+            }
+        } catch (error) {
+            console.error('Error parsing lakes data:', error);
+        }
         
         // Filter form submission
         document.getElementById('filterForm').addEventListener('submit', function(e) {
