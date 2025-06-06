@@ -80,14 +80,22 @@ def calculate_solunar_data(date):
 def home(request):
     today = timezone.now().date()
     solunar_predictions = []
-    
+
     for i in range(3):
         date = today + timedelta(days=i)
         prediction = calculate_solunar_data(date)
         solunar_predictions.append(prediction)
-    
+
+    # Get random lakes for the homepage
+    random_lakes = Lake.objects.filter(is_active=True).select_related('county').prefetch_related('fish_species', 'facilities').order_by('?')[:3]
+
+    # Get featured videos for the homepage
+    featured_videos = Video.objects.filter(is_active=True, is_featured=True)[:3]
+
     context = {
-        'solunar_predictions': solunar_predictions
+        'solunar_predictions': solunar_predictions,
+        'random_lakes': random_lakes,
+        'featured_videos': featured_videos,
     }
     return render(request, 'index/index.html', context)
 

@@ -69,6 +69,109 @@
         </div>
     </div>
 </section>
+
+<!-- Random Lakes Section -->
+<section class="random-lakes py-5">
+    <div class="container">
+        <h2 class="text-center mb-4">Bălți recomandate</h2>
+        <p class="text-center mb-5">Descoperă cele mai interesante locuri de pescuit din România</p>
+
+        {% if random_lakes %}
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            {% for lake in random_lakes %}
+            <div class="col">
+                <div class="card h-100 d-flex flex-column">
+                    <!-- Card Image - Fixed Height -->
+                    {% if lake.image %}
+                    <img src="{{ lake.image.url }}" class="card-img-top" alt="{{ lake.name }}" style="height: 200px; object-fit: cover;">
+                    {% else %}
+                    <img src="{% static 'images/lake-placeholder.jpg' %}" class="card-img-top" alt="{{ lake.name }}" style="height: 200px; object-fit: cover;">
+                    {% endif %}
+
+                    <!-- Card Body - Flexible Content -->
+                    <div class="card-body d-flex flex-column">
+                        <!-- Title - Fixed Height -->
+                        <h5 class="card-title mb-3" style="min-height: 2.5rem; line-height: 1.25;">{{ lake.name }}</h5>
+
+                        <!-- Description - Fixed Height -->
+                        <p class="card-text mb-3" style="min-height: 4.5rem; line-height: 1.5;">
+                            {% if lake.description %}
+                                {{ lake.description|truncatechars:100 }}
+                            {% else %}
+                                <span class="text-muted">Descriere indisponibilă</span>
+                            {% endif %}
+                        </p>
+
+                        <!-- Rating Section - Fixed Height -->
+                        <div class="mb-3" style="min-height: 1.5rem;">
+                            {% if lake.average_rating %}
+                            <div class="d-flex align-items-center gap-1">
+                                {% for i in "12345" %}
+                                    {% if forloop.counter <= lake.average_rating %}
+                                        <i class="fas fa-star" style="color: #ffc107;"></i>
+                                    {% else %}
+                                        <i class="far fa-star" style="color: #e9ecef;"></i>
+                                    {% endif %}
+                                {% endfor %}
+                                <span class="ms-1 fw-bold">{{ lake.average_rating|floatformat:1 }}</span>
+                                <small class="text-muted">({{ lake.total_reviews }} recenzii)</small>
+                            </div>
+                            {% else %}
+                            <div class="text-muted">
+                                <small>Fără recenzii încă</small>
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Lake Details - Fixed Structure -->
+                        <ul class="list-unstyled mb-4 flex-grow-1">
+                            <li class="mb-2" style="min-height: 1.5rem;">
+                                <i class="fas fa-fish me-2 text-success"></i>
+                                {% if lake.fish_species.all %}
+                                    {% for fish in lake.fish_species.all %}{{ fish.name }}{% if not forloop.last %}, {% endif %}{% endfor %}
+                                {% else %}
+                                    <span class="text-muted">Informații indisponibile</span>
+                                {% endif %}
+                            </li>
+                            <li class="mb-2" style="min-height: 1.5rem;">
+                                <i class="fas fa-coins me-2 text-warning"></i>
+                                {{ lake.price_per_day }} Lei/zi
+                            </li>
+                            <li class="mb-2" style="min-height: 1.5rem;">
+                                <i class="fas fa-map-marker-alt me-2 text-danger"></i>
+                                {{ lake.address }}
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Card Footer - Fixed Position at Bottom -->
+                    <div class="card-footer bg-transparent border-0 pt-0">
+                        <div class="d-grid">
+                            <a href="{% url 'main:lake_detail' lake.slug %}" class="btn btn-success">
+                                Vezi detalii
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="text-center mt-4">
+            <a href="{% url 'main:fishing_locations' %}" class="btn btn-outline-success btn-lg">
+                Vezi toate băltile
+            </a>
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+            <i class="fas fa-water fa-3x text-muted mb-3"></i>
+            <h3>Nu există bălți disponibile</h3>
+            <p class="text-muted">Momentan nu avem bălți de pescuit înregistrate în sistem.</p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
 <!-- Call to Action -->
 <section class="cta py-5 bg-success text-white border-top">
     <div class="container text-center">

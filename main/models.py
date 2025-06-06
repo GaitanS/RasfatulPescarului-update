@@ -453,6 +453,32 @@ class Video(models.Model):
     def __str__(self):
         return self.title
 
+    @property
+    def embed_url(self):
+        """Convert video URL to embeddable format"""
+        if not self.url:
+            return ''
+
+        # Handle YouTube URLs
+        if 'youtube.com/watch' in self.url:
+            # Extract video ID from URL like https://youtube.com/watch?v=VIDEO_ID
+            import re
+            match = re.search(r'[?&]v=([^&]+)', self.url)
+            if match:
+                video_id = match.group(1)
+                return f'https://www.youtube.com/embed/{video_id}'
+        elif 'youtu.be/' in self.url:
+            # Handle short YouTube URLs like https://youtu.be/VIDEO_ID
+            video_id = self.url.split('youtu.be/')[-1].split('?')[0]
+            return f'https://www.youtube.com/embed/{video_id}'
+        elif 'vimeo.com/' in self.url:
+            # Handle Vimeo URLs
+            video_id = self.url.split('vimeo.com/')[-1].split('?')[0]
+            return f'https://player.vimeo.com/video/{video_id}'
+
+        # Return original URL if no conversion needed
+        return self.url
+
 class HeroSection(models.Model):
     main_button_text = models.CharField(
         max_length=100,
