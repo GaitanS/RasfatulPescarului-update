@@ -2,6 +2,7 @@ from django.db import models
 from django.utils.text import slugify
 from django.utils.safestring import mark_safe
 from django.core.validators import MinLengthValidator, MaxValueValidator, MinValueValidator
+from django.core.exceptions import ValidationError
 from django.db.models import Avg, Count
 import re
 
@@ -409,6 +410,105 @@ class Lake(models.Model):
         for review in reviews:
             distribution[review.rating] += 1
         return distribution
+
+    def get_main_photo(self):
+        """Get the main photo from gallery, fallback to legacy image field"""
+        # First try to get main photo from gallery
+        main_photo = self.photos.filter(is_main=True).first()
+        if main_photo:
+            return main_photo.image
+
+        # Then try to get first photo from gallery
+        first_photo = self.photos.first()
+        if first_photo:
+            return first_photo.image
+
+        # Finally fallback to legacy image field
+        return self.image
+
+    def get_gallery_photos(self):
+        """Get all gallery photos ordered by order field"""
+        return self.photos.all().order_by('order', 'created_at')
+
+    def has_gallery(self):
+        """Check if lake has any gallery photos"""
+        return self.photos.exists()
+
+    def get_display_image(self):
+        """Get the best available image for display (for backward compatibility)"""
+        main_photo = self.get_main_photo()
+        return main_photo if main_photo else None
+
+class LakePhoto(models.Model):
+    """Model for storing multiple photos for each lake"""
+
+    lake = models.ForeignKey(
+        Lake,
+        on_delete=models.CASCADE,
+        related_name='photos',
+        verbose_name="Lac"
+    )
+    image = models.ImageField(
+        upload_to='lakes/gallery/',
+        verbose_name="Imagine",
+        help_text="Imaginea pentru galeria lacului (format recomandat: JPG, PNG, max 2MB)"
+    )
+    title = models.CharField(
+        max_length=200,
+        blank=True,
+        verbose_name="Titlu imagine",
+        help_text="Titlu descriptiv pentru imagine (generat automat)"
+    )
+    description = models.TextField(
+        blank=True,
+        verbose_name="Descriere imagine",
+        help_text="Descriere detaliată a imaginii (generat automat)"
+    )
+    is_main = models.BooleanField(
+        default=False,
+        verbose_name="Imagine principală",
+        help_text="Bifează pentru a seta această imagine ca principală în galerie"
+    )
+    order = models.PositiveIntegerField(
+        default=0,
+        verbose_name="Ordine",
+        help_text="Ordinea de afișare în galerie (generat automat)"
+    )
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Data creării")
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="Data actualizării")
+
+    class Meta:
+        verbose_name = "Fotografie lac"
+        verbose_name_plural = "Fotografii lac"
+        ordering = ['order', 'created_at']
+
+    def __str__(self):
+        return f"{self.lake.name} - Foto {self.order + 1}"
+
+    def clean(self):
+        """Validate that a lake doesn't have more than 10 photos"""
+        if self.lake_id:
+            existing_photos = LakePhoto.objects.filter(lake=self.lake)
+            if self.pk:
+                existing_photos = existing_photos.exclude(pk=self.pk)
+
+            if existing_photos.count() >= 10:
+                raise ValidationError("Un lac poate avea maximum 10 fotografii în galerie.")
+
+    def save(self, *args, **kwargs):
+        # If this is set as main photo, unset other main photos for this lake
+        if self.is_main:
+            LakePhoto.objects.filter(lake=self.lake, is_main=True).update(is_main=False)
+
+        # Auto-assign order if this is a new photo
+        if not self.pk:
+            last_photo = LakePhoto.objects.filter(lake=self.lake).order_by('-order').first()
+            if last_photo:
+                self.order = last_photo.order + 1
+            else:
+                self.order = 0
+
+        super().save(*args, **kwargs)
 
 class Video(models.Model):
     title = models.CharField(

@@ -161,7 +161,7 @@ def filter_lakes(request):
         'fish_species': [{'name': fish.name} for fish in lake.fish_species.all()],
         'facilities': [{'name': facility.name, 'icon_class': facility.icon_class} for facility in lake.facilities.all()],
         'price_per_day': float(lake.price_per_day),
-        'image_url': lake.image.url if lake.image else None,
+        'image_url': lake.get_display_image().url if lake.get_display_image() else None,
         'average_rating': lake.average_rating,
         'total_reviews': lake.total_reviews
     } for lake in lakes]
@@ -184,7 +184,7 @@ def debug_lakes(request):
         'fish_species': [{'name': fish.name} for fish in lake.fish_species.all()],
         'facilities': [{'name': facility.name, 'icon_class': facility.icon_class} for facility in lake.facilities.all()],
         'price_per_day': float(lake.price_per_day),
-        'image_url': lake.image.url if lake.image else '/static/images/lake-placeholder.jpg',
+        'image_url': lake.get_display_image().url if lake.get_display_image() else '/static/images/lake-placeholder.jpg',
         'average_rating': lake.average_rating,
         'total_reviews': lake.total_reviews
     } for lake in lakes]
@@ -213,7 +213,7 @@ def locations_map(request):
         'fish_species': [{'name': fish.name} for fish in lake.fish_species.all()],
         'facilities': [{'name': facility.name, 'icon_class': facility.icon_class} for facility in lake.facilities.all()],
         'price_per_day': float(lake.price_per_day),
-        'image_url': lake.image.url if lake.image else '/static/images/lake-placeholder.jpg',
+        'image_url': lake.get_display_image().url if lake.get_display_image() else '/static/images/lake-placeholder.jpg',
         'average_rating': lake.average_rating,
         'total_reviews': lake.total_reviews
     } for lake in lakes]
@@ -264,7 +264,7 @@ def nearby_lakes(request):
                 'fish_species': [{'name': fish.name} for fish in lake.fish_species.all()],
                 'facilities': [{'name': facility.name, 'icon_class': facility.icon_class} for facility in lake.facilities.all()],
                 'price_per_day': float(lake.price_per_day),
-                'image_url': lake.image.url if lake.image else None,
+                'image_url': lake.get_display_image().url if lake.get_display_image() else None,
                 'distance': round(distance, 1),
                 'average_rating': lake.average_rating,
                 'total_reviews': lake.total_reviews
@@ -280,7 +280,11 @@ def nearby_lakes(request):
 
 def lake_detail(request, slug):
     """View pentru detaliile unui lac"""
-    lake = get_object_or_404(Lake.objects.select_related('county'), slug=slug, is_active=True)
+    lake = get_object_or_404(
+        Lake.objects.select_related('county').prefetch_related('photos'),
+        slug=slug,
+        is_active=True
+    )
 
     # Get nearby lakes (within same county for now)
     nearby_lakes = Lake.objects.filter(

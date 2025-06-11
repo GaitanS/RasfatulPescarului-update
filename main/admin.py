@@ -4,7 +4,7 @@ from django import forms
 from django.db import models
 from .models import (
     SiteSettings, County, Lake, Video, HeroSection, FooterSettings,
-    FishSpecies, Facility, OperatingHours, LakeReview
+    FishSpecies, Facility, OperatingHours, LakeReview, LakePhoto
 )
 
 class OperatingHoursForm(forms.ModelForm):
@@ -224,6 +224,22 @@ class OperatingHoursInline(admin.StackedInline):
         }),
     )
 
+class LakePhotoInline(admin.TabularInline):
+    """Inline admin for managing lake photos"""
+    model = LakePhoto
+    extra = 1
+    max_num = 10
+    fields = ['image', 'is_main']
+    readonly_fields = ['created_at', 'updated_at']
+    verbose_name = "Fotografie"
+    verbose_name_plural = "Fotografii galerie (max 10)"
+
+    def get_extra(self, request, obj=None, **kwargs):
+        """Reduce extra forms if lake already has photos"""
+        if obj and obj.photos.exists():
+            return 0
+        return 1
+
 @admin.register(Lake)
 class LakeAdmin(admin.ModelAdmin):
     form = CustomFacilityForm
@@ -234,7 +250,7 @@ class LakeAdmin(admin.ModelAdmin):
     list_editable = ['is_active']
     list_per_page = 20
     filter_horizontal = ['fish_species', 'facilities']
-    inlines = [OperatingHoursInline]
+    inlines = [OperatingHoursInline, LakePhotoInline]
 
     fieldsets = (
         ('Informații de bază', {
@@ -248,7 +264,8 @@ class LakeAdmin(admin.ModelAdmin):
             'fields': ('lake_type', 'fish_species', 'facilities', 'price_per_day', 'rules')
         }),
         ('Media și vizibilitate', {
-            'fields': ('image', 'is_active')
+            'fields': ('image', 'is_active'),
+            'description': 'Imaginea principală (pentru compatibilitate) și galeria de fotografii (se gestionează mai jos în secțiunea "Fotografii galerie")'
         }),
         ('Informații sistem', {
             'fields': ('created_at', 'updated_at'),

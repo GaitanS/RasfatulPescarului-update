@@ -32,13 +32,61 @@
     </nav>
 
     <div class="row">
-        <!-- Lake Image and Details -->
+        <!-- Lake Gallery and Details -->
         <div class="col-lg-8">
             <div class="card shadow-sm mb-4">
-                {% if lake.image %}
-                <img src="{{ lake.image.url }}" alt="{{ lake.name }}" class="card-img-top">
+                <!-- Gallery Section -->
+                {% if lake.has_gallery %}
+                    {% with gallery_photos=lake.get_gallery_photos %}
+                    <div class="lake-gallery">
+                        <!-- Main Photo -->
+                        <div class="main-photo-container">
+                            {% with main_photo=lake.get_main_photo %}
+                            <img src="{{ main_photo.url }}"
+                                 alt="{{ lake.name }}"
+                                 class="card-img-top main-photo"
+                                 data-bs-toggle="modal"
+                                 data-bs-target="#galleryModal"
+                                 data-photo-index="0"
+                                 style="cursor: pointer;">
+                            {% endwith %}
+
+                            <!-- Photo Counter -->
+                            {% if gallery_photos|length > 1 %}
+                            <div class="photo-counter">
+                                <i class="fas fa-images me-1"></i>
+                                <span id="current-photo">1</span> / {{ gallery_photos|length }}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Thumbnail Navigation (if more than 1 photo) -->
+                        {% if gallery_photos|length > 1 %}
+                        <div class="thumbnail-nav mt-3">
+                            <div class="row g-2">
+                                {% for photo in gallery_photos %}
+                                <div class="col-2">
+                                    <img src="{{ photo.image.url }}"
+                                         alt="{{ lake.name }} - Foto {{ forloop.counter }}"
+                                         class="img-fluid thumbnail {% if forloop.first %}active{% endif %}"
+                                         data-photo-index="{{ forloop.counter0 }}"
+                                         data-bs-toggle="modal"
+                                         data-bs-target="#galleryModal"
+                                         style="cursor: pointer; border-radius: 0.25rem; aspect-ratio: 1; object-fit: cover;">
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endwith %}
                 {% else %}
-                <img src="{% static 'images/lake-placeholder.jpg' %}" alt="{{ lake.name }}" class="card-img-top">
+                    <!-- Fallback to legacy image or placeholder -->
+                    {% if lake.image %}
+                    <img src="{{ lake.image.url }}" alt="{{ lake.name }}" class="card-img-top">
+                    {% else %}
+                    <img src="{% static 'images/lake-placeholder.jpg' %}" alt="{{ lake.name }}" class="card-img-top">
+                    {% endif %}
                 {% endif %}
                 <div class="card-body">
                     <h1 class="card-title h2 mb-3">{{ lake.name }}</h1>
@@ -309,11 +357,13 @@
                     <div class="mb-3">
                         <a href="{% url 'main:lake_detail' nearby.slug %}" class="text-decoration-none">
                             <div class="ratio ratio-16x9 mb-2">
-                                {% if nearby.image %}
-                                <img src="{{ nearby.image.url }}" alt="{{ nearby.name }}" class="img-fluid rounded">
+                                {% with display_image=nearby.get_display_image %}
+                                {% if display_image %}
+                                <img src="{{ display_image.url }}" alt="{{ nearby.name }}" class="img-fluid rounded">
                                 {% else %}
                                 <img src="{% static 'images/lake-placeholder.jpg' %}" alt="{{ nearby.name }}" class="img-fluid rounded">
                                 {% endif %}
+                                {% endwith %}
                             </div>
                             <h6 class="mb-1">{{ nearby.name }}</h6>
                         </a>
@@ -442,11 +492,219 @@
     </div>
 </div>
 
+<!-- Gallery Lightbox Modal -->
+{% if lake.has_gallery %}
+<div class="modal fade" id="galleryModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="false">
+    <div class="modal-dialog modal-fullscreen p-0">
+        <div class="modal-content border-0" style="background: rgba(0, 0, 0, 0.9);">
+            <div class="modal-body p-0 position-relative gallery-modal-body">
+                <!-- Close Button -->
+                <button type="button" class="btn-close btn-close-white gallery-close" data-bs-dismiss="modal" aria-label="Close">✕</button>
+
+                <!-- Main Gallery Image -->
+                <div class="gallery-main-container" id="gallery-main-container">
+                    <img id="gallery-main-image"
+                         src=""
+                         alt="{{ lake.name }}"
+                         class="img-fluid gallery-image"
+                         style="object-fit: contain; max-height: 90vh; max-width: 90vw;">
+                </div>
+
+                <!-- Navigation Arrows -->
+                {% with gallery_photos=lake.get_gallery_photos %}
+                {% if gallery_photos|length > 1 %}
+                <button class="btn btn-dark gallery-nav gallery-prev" type="button">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="btn btn-dark gallery-nav gallery-next" type="button">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+                {% endif %}
+
+                <!-- Photo Counter -->
+                <div class="gallery-counter">
+                    <span id="gallery-current">1</span> / {{ gallery_photos|length }}
+                </div>
+                {% endwith %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
 {% block external_js %}{% endblock %}
 
 {% block extra_js %}
 
 <style>
+/* Gallery Styles */
+.lake-gallery {
+    position: relative;
+}
+
+.main-photo-container {
+    position: relative;
+    overflow: hidden;
+    border-radius: 0.375rem 0.375rem 0 0;
+}
+
+.main-photo {
+    transition: transform 0.3s ease;
+    width: 100%;
+    height: 400px;
+    object-fit: cover;
+}
+
+.main-photo:hover {
+    transform: scale(1.05);
+}
+
+.photo-counter {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.thumbnail-nav .thumbnail {
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+    opacity: 0.7;
+}
+
+.thumbnail-nav .thumbnail:hover,
+.thumbnail-nav .thumbnail.active {
+    border-color: #198754;
+    opacity: 1;
+    transform: scale(1.05);
+}
+
+/* Lightbox Modal Styles */
+.gallery-main-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    width: 100vw;
+    cursor: pointer;
+}
+
+.gallery-image {
+    cursor: default;
+}
+
+.gallery-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    z-index: 1070;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.7) !important;
+    border: none;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: white !important;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.gallery-close:hover {
+    background: rgba(0, 0, 0, 0.9) !important;
+    transform: scale(1.1);
+    color: white !important;
+}
+
+.gallery-close:focus {
+    box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.25);
+    color: white !important;
+}
+
+.gallery-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1060;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.7) !important;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.gallery-nav:hover {
+    background: rgba(0, 0, 0, 0.9) !important;
+    color: white;
+    transform: translateY(-50%) scale(1.1);
+}
+
+.gallery-prev {
+    left: 2rem;
+}
+
+.gallery-next {
+    right: 2rem;
+}
+
+.gallery-counter {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 25px;
+    font-size: 1rem;
+    font-weight: 500;
+    z-index: 1060;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .main-photo {
+        height: 250px;
+    }
+
+    .gallery-nav {
+        width: 50px;
+        height: 50px;
+        font-size: 1.2rem;
+    }
+
+    .gallery-prev {
+        left: 1rem;
+    }
+
+    .gallery-next {
+        right: 1rem;
+    }
+
+    .gallery-close {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+        top: 0.5rem;
+        right: 0.5rem;
+    }
+
+    .gallery-counter {
+        bottom: 1rem;
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
+}
 .facility-item {
     display: flex;
     align-items: center;
@@ -503,6 +761,169 @@
     background-color: #f8f9fa;
 }
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Gallery functionality
+    const galleryPhotos = [
+        {% if lake.has_gallery %}
+        {% for photo in lake.get_gallery_photos %}
+        {
+            url: "{{ photo.image.url }}",
+            alt: "{{ lake.name }} - Foto {{ forloop.counter }}"
+        }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+        {% endif %}
+    ];
+
+    let currentPhotoIndex = 0;
+
+    // Thumbnail click handlers
+    document.querySelectorAll('.thumbnail').forEach((thumbnail, index) => {
+        thumbnail.addEventListener('click', function() {
+            currentPhotoIndex = parseInt(this.dataset.photoIndex);
+            updateMainPhoto();
+            updateThumbnailActive();
+        });
+    });
+
+    // Main photo click handler
+    const mainPhoto = document.querySelector('.main-photo');
+    if (mainPhoto) {
+        mainPhoto.addEventListener('click', function() {
+            currentPhotoIndex = parseInt(this.dataset.photoIndex);
+            updateGalleryModal();
+        });
+    }
+
+    // Gallery modal navigation
+    const prevBtn = document.querySelector('.gallery-prev');
+    const nextBtn = document.querySelector('.gallery-next');
+
+    if (prevBtn) {
+        prevBtn.addEventListener('click', function() {
+            currentPhotoIndex = currentPhotoIndex > 0 ? currentPhotoIndex - 1 : galleryPhotos.length - 1;
+            updateGalleryModal();
+        });
+    }
+
+    if (nextBtn) {
+        nextBtn.addEventListener('click', function() {
+            currentPhotoIndex = currentPhotoIndex < galleryPhotos.length - 1 ? currentPhotoIndex + 1 : 0;
+            updateGalleryModal();
+        });
+    }
+
+    // Keyboard navigation
+    document.addEventListener('keydown', function(e) {
+        const modal = document.getElementById('galleryModal');
+        if (modal && modal.classList.contains('show')) {
+            if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                if (prevBtn) prevBtn.click();
+            } else if (e.key === 'ArrowRight') {
+                e.preventDefault();
+                if (nextBtn) nextBtn.click();
+            } else if (e.key === 'Escape') {
+                e.preventDefault();
+                bootstrap.Modal.getInstance(modal).hide();
+            }
+        }
+    });
+
+    // Click outside to close functionality
+    const galleryModalBody = document.querySelector('.gallery-modal-body');
+    if (galleryModalBody) {
+        galleryModalBody.addEventListener('click', function(e) {
+            // Check if click is on the background (not on image, arrows, counter, or close button)
+            if (e.target === galleryModalBody || e.target.id === 'gallery-main-container') {
+                const modal = bootstrap.Modal.getInstance(document.getElementById('galleryModal'));
+                if (modal) {
+                    modal.hide();
+                }
+            }
+        });
+    }
+
+    // Touch/swipe support for mobile
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    const galleryContainer = document.querySelector('.gallery-main-container');
+    if (galleryContainer) {
+        galleryContainer.addEventListener('touchstart', function(e) {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+
+        galleryContainer.addEventListener('touchend', function(e) {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+    }
+
+    function handleSwipe() {
+        const swipeThreshold = 50;
+        const diff = touchStartX - touchEndX;
+
+        if (Math.abs(diff) > swipeThreshold) {
+            if (diff > 0 && nextBtn) {
+                // Swipe left - next photo
+                nextBtn.click();
+            } else if (diff < 0 && prevBtn) {
+                // Swipe right - previous photo
+                prevBtn.click();
+            }
+        }
+    }
+
+    function updateMainPhoto() {
+        if (galleryPhotos.length > 0) {
+            const mainPhoto = document.querySelector('.main-photo');
+            if (mainPhoto) {
+                mainPhoto.src = galleryPhotos[currentPhotoIndex].url;
+                mainPhoto.alt = galleryPhotos[currentPhotoIndex].alt;
+                mainPhoto.dataset.photoIndex = currentPhotoIndex;
+            }
+
+            // Update counter
+            const currentPhotoSpan = document.getElementById('current-photo');
+            if (currentPhotoSpan) {
+                currentPhotoSpan.textContent = currentPhotoIndex + 1;
+            }
+        }
+    }
+
+    function updateThumbnailActive() {
+        document.querySelectorAll('.thumbnail').forEach((thumb, index) => {
+            thumb.classList.toggle('active', index === currentPhotoIndex);
+        });
+    }
+
+    function updateGalleryModal() {
+        if (galleryPhotos.length > 0) {
+            const modalImage = document.getElementById('gallery-main-image');
+            if (modalImage) {
+                modalImage.src = galleryPhotos[currentPhotoIndex].url;
+                modalImage.alt = galleryPhotos[currentPhotoIndex].alt;
+            }
+
+            // Update modal counter
+            const galleryCurrentSpan = document.getElementById('gallery-current');
+            if (galleryCurrentSpan) {
+                galleryCurrentSpan.textContent = currentPhotoIndex + 1;
+            }
+        }
+    }
+
+    // Initialize gallery modal when opened
+    const galleryModal = document.getElementById('galleryModal');
+    if (galleryModal) {
+        galleryModal.addEventListener('show.bs.modal', function() {
+            updateGalleryModal();
+        });
+    }
+});
+</script>
 {% endblock %}
 
 {% endblock %}
