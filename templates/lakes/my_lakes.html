@@ -1,0 +1,492 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Balțile mele - {{ block.super }}{% endblock %}
+
+{% block extra_css %}
+<style>
+.my-lakes-header {
+    background: linear-gradient(135deg, #198754, #20c997);
+    color: white;
+    padding: 3rem 0;
+    margin-bottom: 2rem;
+}
+
+.stats-card {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    border-left: 4px solid #198754;
+}
+
+.stats-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.stats-number {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #198754;
+    margin-bottom: 0.5rem;
+}
+
+.stats-label {
+    color: #6c757d;
+    font-weight: 500;
+}
+
+.lake-card {
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    margin-bottom: 2rem;
+}
+
+.lake-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.lake-image {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    position: relative;
+}
+
+.lake-status {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.status-active {
+    background: #198754;
+    color: white;
+}
+
+.status-inactive {
+    background: #dc3545;
+    color: white;
+}
+
+.lake-content {
+    padding: 1.5rem;
+}
+
+.lake-title {
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.lake-location {
+    color: #6c757d;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+}
+
+.lake-stats {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 10px;
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-value {
+    font-weight: bold;
+    color: #198754;
+    display: block;
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    color: #6c757d;
+}
+
+.lake-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.btn-action {
+    flex: 1;
+    min-width: 120px;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: #6c757d;
+}
+
+.empty-state i {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.empty-state h3 {
+    margin-bottom: 1rem;
+    color: #495057;
+}
+
+.btn-add-first {
+    background: linear-gradient(135deg, #198754, #20c997);
+    border: none;
+    padding: 1rem 2rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    border-radius: 25px;
+}
+
+.btn-add-first:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(25, 135, 84, 0.3);
+}
+
+.filter-section {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.filter-controls {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.search-box {
+    flex: 1;
+    min-width: 250px;
+}
+
+@media (max-width: 768px) {
+    .lake-stats {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .lake-actions {
+        flex-direction: column;
+    }
+    
+    .btn-action {
+        min-width: auto;
+    }
+    
+    .filter-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .search-box {
+        min-width: auto;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="my-lakes-header">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1><i class="fas fa-water me-2"></i>Balțile mele</h1>
+                <p class="mb-0">Gestionează și monitorizează balțile tale de pescuit</p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <a href="{% url 'main:creaza_balta' %}" class="btn btn-light btn-lg">
+                    <i class="fas fa-plus me-2"></i>Adaugă baltă nouă
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Statistics -->
+    <div class="row mb-4">
+        <div class="col-md-3 col-sm-6 mb-3">
+            <div class="stats-card">
+                <div class="stats-number">{{ total_lakes }}</div>
+                <div class="stats-label">Total balți</div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 mb-3">
+            <div class="stats-card">
+                <div class="stats-number">{{ active_lakes }}</div>
+                <div class="stats-label">Active</div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 mb-3">
+            <div class="stats-card">
+                <div class="stats-number">{{ total_photos }}</div>
+                <div class="stats-label">Fotografii</div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 mb-3">
+            <div class="stats-card">
+                <div class="stats-number">{{ total_reviews }}</div>
+                <div class="stats-label">Recenzii</div>
+            </div>
+        </div>
+    </div>
+
+    {% if lakes %}
+        <!-- Filters -->
+        <div class="filter-section">
+            <div class="filter-controls">
+                <div class="search-box">
+                    <input type="text" class="form-control" id="searchLakes" placeholder="Caută după nume sau locație...">
+                </div>
+                <select class="form-select" id="statusFilter" style="width: auto;">
+                    <option value="">Toate statusurile</option>
+                    <option value="active">Doar active</option>
+                    <option value="inactive">Doar inactive</option>
+                </select>
+                <select class="form-select" id="sortBy" style="width: auto;">
+                    <option value="name">Sortează după nume</option>
+                    <option value="created">Sortează după dată</option>
+                    <option value="reviews">Sortează după recenzii</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Lakes Grid -->
+        <div class="row" id="lakesGrid">
+            {% for lake in lakes %}
+                <div class="col-lg-6 mb-4 lake-item" 
+                     data-name="{{ lake.name|lower }}" 
+                     data-location="{{ lake.address|lower }}" 
+                     data-status="{% if lake.is_active %}active{% else %}inactive{% endif %}"
+                     data-created="{{ lake.created_at|date:'Y-m-d' }}"
+                     data-reviews="{{ lake.reviews.count }}">
+                    <div class="lake-card">
+                        <div class="position-relative">
+                            {% with display_image=lake.get_display_image %}
+                            {% if display_image %}
+                                <img src="{{ display_image.url }}" alt="{{ lake.name }}" class="lake-image">
+                            {% else %}
+                                <img src="{% static 'images/lake-placeholder.jpg' %}" alt="{{ lake.name }}" class="lake-image">
+                            {% endif %}
+                            {% endwith %}
+                            
+                            <div class="lake-status {% if lake.is_active %}status-active{% else %}status-inactive{% endif %}">
+                                {% if lake.is_active %}
+                                    <i class="fas fa-check-circle me-1"></i>Activă
+                                {% else %}
+                                    <i class="fas fa-pause-circle me-1"></i>Inactivă
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="lake-content">
+                            <h3 class="lake-title">{{ lake.name }}</h3>
+                            <div class="lake-location">
+                                <i class="fas fa-map-marker-alt me-2"></i>{{ lake.address }}
+                            </div>
+                            
+                            <div class="lake-stats">
+                                <div class="stat-item">
+                                    <span class="stat-value">{{ lake.photos.count }}</span>
+                                    <span class="stat-label">Fotografii</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-value">{{ lake.reviews.count }}</span>
+                                    <span class="stat-label">Recenzii</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-value">{{ lake.price_per_day }}</span>
+                                    <span class="stat-label">RON/zi</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-value">
+                                        {% if lake.average_rating %}
+                                            {{ lake.average_rating|floatformat:1 }}
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </span>
+                                    <span class="stat-label">Rating</span>
+                                </div>
+                            </div>
+                            
+                            <div class="lake-actions">
+                                <a href="{{ lake.get_absolute_url }}" class="btn btn-outline-success btn-action">
+                                    <i class="fas fa-eye me-1"></i>Vezi
+                                </a>
+                                <a href="{% url 'main:editeaza_balta' lake.slug %}" class="btn btn-outline-primary btn-action">
+                                    <i class="fas fa-edit me-1"></i>Editează
+                                </a>
+                                <a href="{% url 'main:manage_lake_photos' lake.slug %}" class="btn btn-outline-info btn-action">
+                                    <i class="fas fa-images me-1"></i>Fotografii
+                                </a>
+                                <a href="{% url 'main:sterge_balta' lake.slug %}" class="btn btn-outline-danger btn-action">
+                                    <i class="fas fa-trash me-1"></i>Șterge
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <!-- Empty State -->
+        <div class="empty-state">
+            <i class="fas fa-water"></i>
+            <h3>Nu aveți balți adăugate încă</h3>
+            <p>Începeți prin a adăuga prima dumneavoastră baltă de pescuit!</p>
+            <a href="{% url 'main:creaza_balta' %}" class="btn btn-success btn-add-first">
+                <i class="fas fa-plus me-2"></i>Adaugă prima baltă
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('searchLakes');
+    const statusFilter = document.getElementById('statusFilter');
+    const sortBy = document.getElementById('sortBy');
+    const lakesGrid = document.getElementById('lakesGrid');
+    const lakeItems = document.querySelectorAll('.lake-item');
+
+    // Search functionality
+    if (searchInput) {
+        searchInput.addEventListener('input', filterLakes);
+    }
+    
+    if (statusFilter) {
+        statusFilter.addEventListener('change', filterLakes);
+    }
+    
+    if (sortBy) {
+        sortBy.addEventListener('change', sortLakes);
+    }
+
+    function filterLakes() {
+        const searchTerm = searchInput ? searchInput.value.toLowerCase() : '';
+        const statusValue = statusFilter ? statusFilter.value : '';
+        
+        lakeItems.forEach(item => {
+            const name = item.dataset.name || '';
+            const location = item.dataset.location || '';
+            const status = item.dataset.status || '';
+            
+            const matchesSearch = name.includes(searchTerm) || location.includes(searchTerm);
+            const matchesStatus = !statusValue || status === statusValue;
+            
+            if (matchesSearch && matchesStatus) {
+                item.style.display = 'block';
+                item.style.animation = 'fadeIn 0.3s ease';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+        
+        updateEmptyState();
+    }
+
+    function sortLakes() {
+        if (!sortBy) return;
+        
+        const sortValue = sortBy.value;
+        const itemsArray = Array.from(lakeItems);
+        
+        itemsArray.sort((a, b) => {
+            switch (sortValue) {
+                case 'name':
+                    return a.dataset.name.localeCompare(b.dataset.name);
+                case 'created':
+                    return new Date(b.dataset.created) - new Date(a.dataset.created);
+                case 'reviews':
+                    return parseInt(b.dataset.reviews) - parseInt(a.dataset.reviews);
+                default:
+                    return 0;
+            }
+        });
+        
+        // Reorder DOM elements
+        itemsArray.forEach(item => {
+            lakesGrid.appendChild(item);
+        });
+    }
+
+    function updateEmptyState() {
+        const visibleItems = Array.from(lakeItems).filter(item => 
+            item.style.display !== 'none'
+        );
+        
+        let emptyMessage = document.getElementById('emptyFilterMessage');
+        
+        if (visibleItems.length === 0 && lakeItems.length > 0) {
+            if (!emptyMessage) {
+                emptyMessage = document.createElement('div');
+                emptyMessage.id = 'emptyFilterMessage';
+                emptyMessage.className = 'col-12 text-center py-5';
+                emptyMessage.innerHTML = `
+                    <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                    <h4 class="text-muted">Nu s-au găsit balți</h4>
+                    <p class="text-muted">Încercați să modificați criteriile de căutare.</p>
+                `;
+                lakesGrid.appendChild(emptyMessage);
+            }
+        } else if (emptyMessage) {
+            emptyMessage.remove();
+        }
+    }
+
+    // Add fade-in animation
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    `;
+    document.head.appendChild(style);
+});
+</script>
+{% endblock %}

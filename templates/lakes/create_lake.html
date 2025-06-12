@@ -1,0 +1,800 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Adaugă baltă nouă - {{ block.super }}{% endblock %}
+
+{% block extra_css %}
+<style>
+.create-lake-header {
+    background: linear-gradient(135deg, #198754, #20c997);
+    color: white;
+    padding: 2rem 0;
+    margin-bottom: 2rem;
+}
+
+.form-section {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.section-title {
+    color: #198754;
+    border-bottom: 2px solid #e9ecef;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.required-field {
+    color: #dc3545;
+}
+
+.form-floating label {
+    color: #6c757d;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #198754;
+    box-shadow: 0 0 0 0.2rem rgba(25, 135, 84, 0.25);
+}
+
+.checkbox-group {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid #dee2e6;
+    border-radius: 0.375rem;
+    padding: 1rem;
+    background: #f8f9fa;
+}
+
+.checkbox-item {
+    margin-bottom: 0.5rem;
+}
+
+.checkbox-item:last-child {
+    margin-bottom: 0;
+}
+
+.form-check-input:checked {
+    background-color: #198754;
+    border-color: #198754;
+}
+
+.btn-create {
+    background: linear-gradient(135deg, #198754, #20c997);
+    border: none;
+    padding: 0.75rem 2rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+}
+
+.btn-create:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(25, 135, 84, 0.3);
+}
+
+.help-text {
+    font-size: 0.875rem;
+    color: #6c757d;
+    margin-top: 0.25rem;
+}
+
+.coordinates-help {
+    background: #e7f3ff;
+    border-left: 4px solid #0066cc;
+    padding: 1rem;
+    margin: 1rem 0;
+    border-radius: 0 5px 5px 0;
+}
+
+.coordinates-help h6 {
+    color: #0066cc;
+    margin-bottom: 0.5rem;
+}
+
+.coordinates-help ol {
+    margin: 0;
+    padding-left: 1.2rem;
+}
+
+.coordinates-help li {
+    margin-bottom: 0.25rem;
+    font-size: 0.9rem;
+}
+
+/* Photo Upload Styles */
+.upload-info {
+    background: #e7f3ff;
+    border: 1px solid #b8daff;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.upload-info h6 {
+    color: #0056b3;
+    margin-bottom: 0.5rem;
+}
+
+.upload-info ul {
+    margin-bottom: 0;
+    padding-left: 1.5rem;
+}
+
+.upload-info li {
+    color: #495057;
+    margin-bottom: 0.25rem;
+}
+
+.photo-upload-container {
+    border: 2px dashed #dee2e6;
+    border-radius: 12px;
+    background: #f8f9fa;
+    transition: all 0.3s ease;
+}
+
+.photo-upload-container.dragover {
+    border-color: #198754;
+    background: #e8f5e8;
+}
+
+.upload-area {
+    padding: 2rem;
+    text-align: center;
+}
+
+.upload-placeholder {
+    color: #6c757d;
+}
+
+.upload-placeholder i {
+    color: #198754;
+    opacity: 0.7;
+}
+
+.upload-placeholder h5 {
+    margin-bottom: 0.5rem;
+    color: #495057;
+}
+
+.photo-preview-grid {
+    padding: 1rem;
+    background: white;
+    border-radius: 8px;
+    margin-top: 1rem;
+}
+
+.photo-preview-item {
+    position: relative;
+    margin-bottom: 1rem;
+}
+
+.photo-preview {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 2px solid #dee2e6;
+    transition: all 0.3s ease;
+}
+
+.photo-preview:hover {
+    border-color: #198754;
+    transform: scale(1.02);
+}
+
+.photo-remove {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.photo-remove:hover {
+    background: #c82333;
+    transform: scale(1.1);
+}
+
+.photo-main-badge {
+    position: absolute;
+    bottom: 5px;
+    left: 5px;
+    background: #198754;
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: bold;
+}
+
+.upload-progress {
+    padding: 1rem;
+    background: white;
+    border-radius: 8px;
+    margin-top: 1rem;
+}
+
+.photo-count {
+    text-align: center;
+    margin-top: 1rem;
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.photo-count.max-reached {
+    color: #dc3545;
+    font-weight: bold;
+}
+
+@media (max-width: 768px) {
+    .form-section {
+        padding: 1rem;
+    }
+
+    .checkbox-group {
+        max-height: 200px;
+    }
+
+    .upload-area {
+        padding: 1rem;
+    }
+
+    .photo-preview {
+        height: 120px;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="create-lake-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h1><i class="fas fa-plus-circle me-2"></i>Adaugă baltă nouă</h1>
+                <p class="mb-0">Completează informațiile despre balta ta de pescuit</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data" novalidate>
+        {% csrf_token %}
+        
+        <!-- Basic Information -->
+        <div class="form-section">
+            <h3 class="section-title">
+                <i class="fas fa-info-circle me-2"></i>Informații de bază
+                <span class="required-field">*</span>
+            </h3>
+            
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="form-floating mb-3">
+                        {{ form.name }}
+                        <label for="{{ form.name.id_for_label }}">{{ form.name.label }}</label>
+                        {% if form.name.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.name.errors %}{{ error }}{% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-floating mb-3">
+                        {{ form.lake_type }}
+                        <label for="{{ form.lake_type.id_for_label }}">{{ form.lake_type.label }}</label>
+                        {% if form.lake_type.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.lake_type.errors %}{{ error }}{% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="{{ form.description.id_for_label }}" class="form-label">{{ form.description.label }}</label>
+                {{ form.description }}
+                {% if form.description.errors %}
+                    <div class="invalid-feedback d-block">
+                        {% for error in form.description.errors %}{{ error }}{% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Location Information -->
+        <div class="form-section">
+            <h3 class="section-title">
+                <i class="fas fa-map-marker-alt me-2"></i>Locație
+                <span class="required-field">*</span>
+            </h3>
+            
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="form-floating mb-3">
+                        {{ form.address }}
+                        <label for="{{ form.address.id_for_label }}">{{ form.address.label }}</label>
+                        {% if form.address.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.address.errors %}{{ error }}{% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-floating mb-3">
+                        {{ form.county }}
+                        <label for="{{ form.county.id_for_label }}">{{ form.county.label }}</label>
+                        {% if form.county.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.county.errors %}{{ error }}{% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="coordinates-help">
+                <h6><i class="fas fa-info-circle me-2"></i>Cum să găsești coordonatele:</h6>
+                <ol>
+                    <li>Deschide <a href="https://maps.google.com" target="_blank">Google Maps</a></li>
+                    <li>Caută locația bălții tale</li>
+                    <li>Fă click dreapta pe locația exactă</li>
+                    <li>Copiază coordonatele din primul rând (ex: 45.39189813235069, 24.62707585690222)</li>
+                </ol>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-floating mb-3">
+                        {{ form.latitude }}
+                        <label for="{{ form.latitude.id_for_label }}">{{ form.latitude.label }}</label>
+                        {% if form.latitude.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.latitude.errors %}{{ error }}{% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-floating mb-3">
+                        {{ form.longitude }}
+                        <label for="{{ form.longitude.id_for_label }}">{{ form.longitude.label }}</label>
+                        {% if form.longitude.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.longitude.errors %}{{ error }}{% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="{{ form.google_maps_embed.id_for_label }}" class="form-label">{{ form.google_maps_embed.label }}</label>
+                {{ form.google_maps_embed }}
+                {% if form.google_maps_embed.errors %}
+                    <div class="invalid-feedback d-block">
+                        {% for error in form.google_maps_embed.errors %}{{ error }}{% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Fish Species & Facilities -->
+        <div class="form-section">
+            <h3 class="section-title">
+                <i class="fas fa-fish me-2"></i>Specii de pești și facilități
+                <span class="required-field">*</span>
+            </h3>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <label class="form-label">{{ form.fish_species.label }}</label>
+                    <div class="checkbox-group">
+                        {{ form.fish_species }}
+                    </div>
+                    {% if form.fish_species.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.fish_species.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">{{ form.facilities.label }}</label>
+                    <div class="checkbox-group">
+                        {{ form.facilities }}
+                    </div>
+                    {% if form.facilities.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.facilities.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Pricing & Rules -->
+        <div class="form-section">
+            <h3 class="section-title">
+                <i class="fas fa-euro-sign me-2"></i>Preț și regulament
+                <span class="required-field">*</span>
+            </h3>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-floating mb-3">
+                        {{ form.price_per_day }}
+                        <label for="{{ form.price_per_day.id_for_label }}">{{ form.price_per_day.label }}</label>
+                        {% if form.price_per_day.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.price_per_day.errors %}{{ error }}{% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="{{ form.rules.id_for_label }}" class="form-label">{{ form.rules.label }}</label>
+                {{ form.rules }}
+                {% if form.rules.errors %}
+                    <div class="invalid-feedback d-block">
+                        {% for error in form.rules.errors %}{{ error }}{% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Contact Information -->
+        <div class="form-section">
+            <h3 class="section-title">
+                <i class="fas fa-phone me-2"></i>Date de contact
+                <span class="required-field">*</span>
+            </h3>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-floating mb-3">
+                        {{ form.contact_phone }}
+                        <label for="{{ form.contact_phone.id_for_label }}">{{ form.contact_phone.label }}</label>
+                        {% if form.contact_phone.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.contact_phone.errors %}{{ error }}{% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-floating mb-3">
+                        {{ form.contact_email }}
+                        <label for="{{ form.contact_email.id_for_label }}">{{ form.contact_email.label }}</label>
+                        {% if form.contact_email.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.contact_email.errors %}{{ error }}{% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Photo Upload Section -->
+        <div class="form-section">
+            <h3 class="section-title">
+                <i class="fas fa-images me-2"></i>Fotografii baltă
+            </h3>
+
+            <div class="upload-info">
+                <h6><i class="fas fa-info-circle me-2"></i>Informații importante:</h6>
+                <ul>
+                    <li>Poți adăuga până la 10 fotografii</li>
+                    <li>Formate acceptate: JPEG, PNG</li>
+                    <li>Dimensiune maximă: 2MB per imagine</li>
+                    <li>Prima imagine va deveni imaginea principală</li>
+                    <li>Fotografiile ajută la promovarea bălții tale</li>
+                </ul>
+            </div>
+
+            <div class="photo-upload-container">
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-placeholder">
+                        <i class="fas fa-cloud-upload-alt fa-3x mb-3"></i>
+                        <h5>Glisează fotografiile aici</h5>
+                        <p>sau fă click pentru a selecta fișierele</p>
+                        <input type="file" id="photoFiles" name="photos" multiple accept="image/jpeg,image/png" class="d-none">
+                        <button type="button" class="btn btn-outline-primary" onclick="document.getElementById('photoFiles').click()">
+                            <i class="fas fa-plus me-2"></i>Selectează fotografii
+                        </button>
+                    </div>
+                </div>
+
+                <div class="photo-preview-grid" id="photoPreviewGrid" style="display: none;">
+                    <div class="row" id="previewContainer"></div>
+                </div>
+
+                <div class="upload-progress" id="uploadProgress" style="display: none;">
+                    <div class="progress mb-2">
+                        <div class="progress-bar" role="progressbar" style="width: 0%"></div>
+                    </div>
+                    <small class="text-muted">Se încarcă fotografiile...</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="text-center mb-4">
+            <button type="submit" class="btn btn-success btn-create btn-lg">
+                <i class="fas fa-plus me-2"></i>Creează balta
+            </button>
+            <a href="{% url 'main:utilizator_profil' %}" class="btn btn-outline-secondary btn-lg ms-3">
+                <i class="fas fa-times me-2"></i>Anulează
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add floating label animation
+    const inputs = document.querySelectorAll('.form-floating input, .form-floating select, .form-floating textarea');
+    inputs.forEach(input => {
+        if (input.value) {
+            input.classList.add('filled');
+        }
+        
+        input.addEventListener('blur', function() {
+            if (this.value) {
+                this.classList.add('filled');
+            } else {
+                this.classList.remove('filled');
+            }
+        });
+    });
+
+    // Form validation
+    const form = document.querySelector('form');
+    form.addEventListener('submit', function(e) {
+        let isValid = true;
+        
+        // Check required fields
+        const requiredFields = form.querySelectorAll('input[required], select[required], textarea[required]');
+        requiredFields.forEach(field => {
+            if (!field.value.trim()) {
+                field.classList.add('is-invalid');
+                isValid = false;
+            } else {
+                field.classList.remove('is-invalid');
+            }
+        });
+        
+        // Check fish species
+        const fishSpeciesChecked = form.querySelectorAll('input[name="fish_species"]:checked');
+        if (fishSpeciesChecked.length === 0) {
+            alert('Vă rugăm să selectați cel puțin o specie de pește.');
+            isValid = false;
+        }
+        
+        // Check facilities
+        const facilitiesChecked = form.querySelectorAll('input[name="facilities"]:checked');
+        if (facilitiesChecked.length === 0) {
+            alert('Vă rugăm să selectați cel puțin o facilitate.');
+            isValid = false;
+        }
+        
+        if (!isValid) {
+            e.preventDefault();
+            // Scroll to first error
+            const firstError = form.querySelector('.is-invalid');
+            if (firstError) {
+                firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+    });
+
+    // Auto-format coordinates
+    const latInput = document.getElementById('{{ form.latitude.id_for_label }}');
+    const lngInput = document.getElementById('{{ form.longitude.id_for_label }}');
+
+    [latInput, lngInput].forEach(input => {
+        if (input) {
+            input.addEventListener('blur', function() {
+                const value = this.value.trim();
+                if (value && !isNaN(value)) {
+                    // Format to high precision
+                    this.value = parseFloat(value).toFixed(15);
+                }
+            });
+        }
+    });
+
+    // Photo upload functionality
+    const uploadArea = document.getElementById('uploadArea');
+    const photoFiles = document.getElementById('photoFiles');
+    const previewGrid = document.getElementById('photoPreviewGrid');
+    const previewContainer = document.getElementById('previewContainer');
+    const uploadProgress = document.getElementById('uploadProgress');
+
+    let selectedFiles = [];
+    const maxFiles = 10;
+    const maxFileSize = 2 * 1024 * 1024; // 2MB
+    const allowedTypes = ['image/jpeg', 'image/png'];
+
+    // Drag and drop functionality
+    uploadArea.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        uploadArea.classList.add('dragover');
+    });
+
+    uploadArea.addEventListener('dragleave', function(e) {
+        e.preventDefault();
+        uploadArea.classList.remove('dragover');
+    });
+
+    uploadArea.addEventListener('drop', function(e) {
+        e.preventDefault();
+        uploadArea.classList.remove('dragover');
+        const files = Array.from(e.dataTransfer.files);
+        handleFiles(files);
+    });
+
+    // File input change
+    photoFiles.addEventListener('change', function(e) {
+        const files = Array.from(e.target.files);
+        handleFiles(files);
+    });
+
+    function handleFiles(files) {
+        const validFiles = files.filter(file => {
+            if (!allowedTypes.includes(file.type)) {
+                alert(`Fișierul ${file.name} nu este un format acceptat. Folosiți doar JPEG sau PNG.`);
+                return false;
+            }
+            if (file.size > maxFileSize) {
+                alert(`Fișierul ${file.name} este prea mare. Dimensiunea maximă este 2MB.`);
+                return false;
+            }
+            return true;
+        });
+
+        if (selectedFiles.length + validFiles.length > maxFiles) {
+            alert(`Puteți adăuga maximum ${maxFiles} fotografii. Aveți deja ${selectedFiles.length} fotografii selectate.`);
+            return;
+        }
+
+        validFiles.forEach(file => {
+            selectedFiles.push(file);
+            createPreview(file, selectedFiles.length - 1);
+        });
+
+        updateUI();
+    }
+
+    function createPreview(file, index) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const col = document.createElement('div');
+            col.className = 'col-md-3 col-sm-4 col-6';
+            col.innerHTML = `
+                <div class="photo-preview-item">
+                    <img src="${e.target.result}" alt="Preview" class="photo-preview">
+                    <button type="button" class="photo-remove" onclick="removePhoto(${index})">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    ${index === 0 ? '<div class="photo-main-badge">Principală</div>' : ''}
+                </div>
+            `;
+            previewContainer.appendChild(col);
+        };
+        reader.readAsDataURL(file);
+    }
+
+    window.removePhoto = function(index) {
+        selectedFiles.splice(index, 1);
+        updatePreviews();
+        updateUI();
+    };
+
+    function updatePreviews() {
+        previewContainer.innerHTML = '';
+        selectedFiles.forEach((file, index) => {
+            createPreview(file, index);
+        });
+    }
+
+    function updateUI() {
+        if (selectedFiles.length > 0) {
+            uploadArea.style.display = 'none';
+            previewGrid.style.display = 'block';
+
+            // Add photo count
+            let countElement = document.getElementById('photoCount');
+            if (!countElement) {
+                countElement = document.createElement('div');
+                countElement.id = 'photoCount';
+                countElement.className = 'photo-count';
+                previewGrid.appendChild(countElement);
+            }
+
+            countElement.innerHTML = `
+                <i class="fas fa-images me-2"></i>
+                ${selectedFiles.length} din ${maxFiles} fotografii selectate
+                ${selectedFiles.length === maxFiles ? '<br><span class="max-reached">Ați atins limita maximă</span>' : ''}
+            `;
+
+            // Add button to add more photos if not at limit
+            if (selectedFiles.length < maxFiles) {
+                let addMoreBtn = document.getElementById('addMoreBtn');
+                if (!addMoreBtn) {
+                    addMoreBtn = document.createElement('button');
+                    addMoreBtn.id = 'addMoreBtn';
+                    addMoreBtn.type = 'button';
+                    addMoreBtn.className = 'btn btn-outline-success mt-2';
+                    addMoreBtn.onclick = () => photoFiles.click();
+                    previewGrid.appendChild(addMoreBtn);
+                }
+                addMoreBtn.innerHTML = `<i class="fas fa-plus me-2"></i>Adaugă mai multe fotografii`;
+            } else {
+                const addMoreBtn = document.getElementById('addMoreBtn');
+                if (addMoreBtn) addMoreBtn.remove();
+            }
+        } else {
+            uploadArea.style.display = 'block';
+            previewGrid.style.display = 'none';
+        }
+    }
+
+    // Form submission - add files to FormData
+    form.addEventListener('submit', function(e) {
+        if (selectedFiles.length > 0) {
+            // Remove any existing photo inputs
+            const existingPhotoInputs = form.querySelectorAll('input[name^="photo_"]');
+            existingPhotoInputs.forEach(input => input.remove());
+
+            // Create hidden inputs for files
+            selectedFiles.forEach((file, index) => {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.name = `photo_${index}`;
+                input.style.display = 'none';
+
+                // Create a new FileList with just this file
+                const dt = new DataTransfer();
+                dt.items.add(file);
+                input.files = dt.files;
+
+                form.appendChild(input);
+            });
+        }
+    });
+});
+</script>
+{% endblock %}

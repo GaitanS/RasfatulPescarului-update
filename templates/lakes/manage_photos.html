@@ -1,0 +1,569 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Gestionează fotografii - {{ lake.name }} - {{ block.super }}{% endblock %}
+
+{% block extra_css %}
+<style>
+.photos-header {
+    background: linear-gradient(135deg, #6f42c1, #5a32a3);
+    color: white;
+    padding: 2rem 0;
+    margin-bottom: 2rem;
+}
+
+.upload-section {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    margin-bottom: 2rem;
+    border-left: 5px solid #6f42c1;
+}
+
+.photos-grid {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+}
+
+.photo-card {
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    margin-bottom: 1.5rem;
+    position: relative;
+}
+
+.photo-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.photo-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    cursor: pointer;
+}
+
+.photo-info {
+    padding: 1rem;
+}
+
+.photo-title {
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    color: #333;
+}
+
+.photo-description {
+    color: #6c757d;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+.photo-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.main-photo-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: #ffc107;
+    color: #000;
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    z-index: 2;
+}
+
+.photo-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.photo-card:hover .photo-overlay {
+    opacity: 1;
+}
+
+.overlay-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.overlay-btn {
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.overlay-btn:hover {
+    background: white;
+    transform: scale(1.1);
+}
+
+.upload-info {
+    background: #e7f3ff;
+    border-left: 4px solid #0066cc;
+    padding: 1rem;
+    margin: 1rem 0;
+    border-radius: 0 5px 5px 0;
+}
+
+.upload-info h6 {
+    color: #0066cc;
+    margin-bottom: 0.5rem;
+}
+
+.upload-info ul {
+    margin: 0;
+    padding-left: 1.2rem;
+}
+
+.upload-info li {
+    margin-bottom: 0.25rem;
+    font-size: 0.9rem;
+}
+
+.no-photos {
+    text-align: center;
+    padding: 3rem;
+    color: #6c757d;
+}
+
+.no-photos i {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.btn-upload {
+    background: linear-gradient(135deg, #6f42c1, #5a32a3);
+    border: none;
+    padding: 0.75rem 2rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+}
+
+.btn-upload:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(111, 66, 193, 0.3);
+}
+
+@media (max-width: 768px) {
+    .upload-section, .photos-grid {
+        padding: 1rem;
+    }
+    
+    .photo-actions {
+        justify-content: center;
+    }
+    
+    .overlay-actions {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="photos-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h1><i class="fas fa-images me-2"></i>Gestionează fotografii</h1>
+                <p class="mb-0">{{ lake.name }} - {{ photos.count }}/10 fotografii</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Upload Section -->
+    {% if can_add_more %}
+        <div class="upload-section">
+            <h3><i class="fas fa-cloud-upload-alt me-2"></i>Adaugă fotografie nouă</h3>
+            
+            <div class="upload-info">
+                <h6><i class="fas fa-info-circle me-2"></i>Informații importante:</h6>
+                <ul>
+                    <li>Poți adăuga maximum 10 fotografii per baltă</li>
+                    <li>Formate acceptate: JPEG, PNG</li>
+                    <li>Dimensiune maximă: 2MB per imagine</li>
+                    <li>Prima imagine adăugată devine automat imaginea principală</li>
+                    <li>Poți schimba imaginea principală oricând</li>
+                </ul>
+            </div>
+
+            <form method="post" enctype="multipart/form-data" novalidate>
+                {% csrf_token %}
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="{{ form.image.id_for_label }}" class="form-label">{{ form.image.label }}</label>
+                            {{ form.image }}
+                            {% if form.image.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.image.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.title.id_for_label }}" class="form-label">{{ form.title.label }}</label>
+                            {{ form.title }}
+                            {% if form.title.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.title.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="{{ form.description.id_for_label }}" class="form-label">{{ form.description.label }}</label>
+                            {{ form.description }}
+                            {% if form.description.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.description.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="form-check mb-3">
+                            {{ form.is_main }}
+                            <label class="form-check-label" for="{{ form.is_main.id_for_label }}">
+                                {{ form.is_main.label }}
+                            </label>
+                            {% if form.is_main.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.is_main.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary btn-upload">
+                        <i class="fas fa-upload me-2"></i>Încarcă fotografia
+                    </button>
+                </div>
+            </form>
+        </div>
+    {% else %}
+        <div class="alert alert-warning">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            Ai atins limita maximă de 10 fotografii. Șterge o fotografie existentă pentru a adăuga una nouă.
+        </div>
+    {% endif %}
+
+    <!-- Photos Grid -->
+    <div class="photos-grid">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h3><i class="fas fa-photo-video me-2"></i>Fotografiile tale ({{ photos.count }})</h3>
+            <a href="{{ lake.get_absolute_url }}" class="btn btn-outline-success">
+                <i class="fas fa-eye me-2"></i>Vezi balta
+            </a>
+        </div>
+
+        {% if photos %}
+            <div class="row">
+                {% for photo in photos %}
+                    <div class="col-lg-4 col-md-6">
+                        <div class="photo-card">
+                            {% if photo.is_main %}
+                                <div class="main-photo-badge">
+                                    <i class="fas fa-star me-1"></i>Principală
+                                </div>
+                            {% endif %}
+                            
+                            <div class="photo-overlay">
+                                <div class="overlay-actions">
+                                    <button class="overlay-btn" onclick="viewPhoto('{{ photo.image.url }}', '{{ photo.title|default:"" }}')" title="Vezi în mărime mare">
+                                        <i class="fas fa-search-plus"></i>
+                                    </button>
+                                    {% if not photo.is_main %}
+                                        <button class="overlay-btn" onclick="setMainPhoto({{ photo.id }})" title="Setează ca principală">
+                                            <i class="fas fa-star"></i>
+                                        </button>
+                                    {% endif %}
+                                    <button class="overlay-btn text-danger" onclick="deletePhoto({{ photo.id }})" title="Șterge fotografia">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <img src="{{ photo.image.url }}" alt="{{ photo.title|default:'Fotografie baltă' }}" class="photo-image" onclick="viewPhoto('{{ photo.image.url }}', '{{ photo.title|default:"" }}')">
+                            
+                            <div class="photo-info">
+                                {% if photo.title %}
+                                    <div class="photo-title">{{ photo.title }}</div>
+                                {% endif %}
+                                {% if photo.description %}
+                                    <div class="photo-description">{{ photo.description|truncatewords:15 }}</div>
+                                {% endif %}
+                                <div class="photo-actions">
+                                    {% if not photo.is_main %}
+                                        <button class="btn btn-outline-warning btn-sm" onclick="setMainPhoto({{ photo.id }})">
+                                            <i class="fas fa-star me-1"></i>Principală
+                                        </button>
+                                    {% endif %}
+                                    <button class="btn btn-outline-danger btn-sm" onclick="deletePhoto({{ photo.id }})">
+                                        <i class="fas fa-trash me-1"></i>Șterge
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="no-photos">
+                <i class="fas fa-images"></i>
+                <h4>Nu ai fotografii adăugate încă</h4>
+                <p>Adaugă prima fotografie pentru a face balta ta mai atractivă!</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Navigation -->
+    <div class="text-center mt-4">
+        <a href="{{ lake.get_absolute_url }}" class="btn btn-outline-success btn-lg me-2">
+            <i class="fas fa-eye me-2"></i>Vezi balta
+        </a>
+        <a href="{% url 'main:editeaza_balta' lake.slug %}" class="btn btn-outline-primary btn-lg">
+            <i class="fas fa-edit me-2"></i>Editează balta
+        </a>
+    </div>
+</div>
+
+<!-- Photo Viewer Modal -->
+<div class="modal fade" id="photoModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="photoModalTitle">Fotografie</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img id="photoModalImage" src="" alt="" class="img-fluid">
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// View photo in modal
+function viewPhoto(imageUrl, title) {
+    document.getElementById('photoModalImage').src = imageUrl;
+    document.getElementById('photoModalTitle').textContent = title || 'Fotografie';
+    const modal = new bootstrap.Modal(document.getElementById('photoModal'));
+    modal.show();
+}
+
+// Set main photo
+function setMainPhoto(photoId) {
+    if (confirm('Doriți să setați această fotografie ca imagine principală?')) {
+        fetch(`{% url 'main:set_main_photo' lake.slug 0 %}`.replace('0', photoId), {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showToast('success', data.message);
+                setTimeout(() => {
+                    location.reload();
+                }, 1000);
+            } else {
+                showToast('error', data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showToast('error', 'A apărut o eroare la setarea fotografiei principale.');
+        });
+    }
+}
+
+// Delete photo
+function deletePhoto(photoId) {
+    if (confirm('Sunteți sigur că doriți să ștergeți această fotografie? Această acțiune nu poate fi anulată.')) {
+        fetch(`{% url 'main:delete_lake_photo' lake.slug 0 %}`.replace('0', photoId), {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showToast('success', data.message);
+                setTimeout(() => {
+                    location.reload();
+                }, 1000);
+            } else {
+                showToast('error', data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showToast('error', 'A apărut o eroare la ștergerea fotografiei.');
+        });
+    }
+}
+
+// Show toast notification
+function showToast(type, message) {
+    const toast = document.createElement('div');
+    toast.className = `toast align-items-center text-white bg-${type === 'success' ? 'success' : 'danger'} border-0 position-fixed`;
+    toast.style.cssText = 'top: 20px; right: 20px; z-index: 9999;';
+    toast.setAttribute('role', 'alert');
+    toast.innerHTML = `
+        <div class="d-flex">
+            <div class="toast-body">
+                <i class="fas fa-${type === 'success' ? 'check' : 'exclamation-triangle'} me-2"></i>${message}
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+    `;
+
+    document.body.appendChild(toast);
+    const bsToast = new bootstrap.Toast(toast);
+    bsToast.show();
+
+    // Remove toast after it's hidden
+    toast.addEventListener('hidden.bs.toast', function() {
+        document.body.removeChild(toast);
+    });
+}
+
+// Image preview before upload
+document.addEventListener('DOMContentLoaded', function() {
+    const imageInput = document.getElementById('{{ form.image.id_for_label }}');
+    if (imageInput) {
+        imageInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                // Check file size
+                if (file.size > 2 * 1024 * 1024) {
+                    alert('Fișierul este prea mare. Dimensiunea maximă este 2MB.');
+                    this.value = '';
+                    return;
+                }
+
+                // Check file type
+                if (!file.type.match('image/jpeg') && !file.type.match('image/png')) {
+                    alert('Doar fișierele JPEG și PNG sunt permise.');
+                    this.value = '';
+                    return;
+                }
+
+                // Show preview
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    let preview = document.getElementById('image-preview');
+                    if (!preview) {
+                        preview = document.createElement('img');
+                        preview.id = 'image-preview';
+                        preview.className = 'img-thumbnail mt-2';
+                        preview.style.maxWidth = '200px';
+                        preview.style.maxHeight = '200px';
+                        imageInput.parentNode.appendChild(preview);
+                    }
+                    preview.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+
+    // Form validation
+    const form = document.querySelector('form[enctype="multipart/form-data"]');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            const imageInput = document.getElementById('{{ form.image.id_for_label }}');
+            if (imageInput && !imageInput.files[0]) {
+                e.preventDefault();
+                alert('Vă rugăm să selectați o imagine pentru încărcare.');
+                imageInput.focus();
+            }
+        });
+    }
+
+    // Keyboard navigation for photos
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            const modal = bootstrap.Modal.getInstance(document.getElementById('photoModal'));
+            if (modal) {
+                modal.hide();
+            }
+        }
+    });
+
+    // Lazy loading for images
+    const images = document.querySelectorAll('.photo-image');
+    const imageObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const img = entry.target;
+                img.style.opacity = '0';
+                img.style.transition = 'opacity 0.3s ease';
+                img.onload = function() {
+                    this.style.opacity = '1';
+                };
+                observer.unobserve(img);
+            }
+        });
+    });
+
+    images.forEach(img => {
+        imageObserver.observe(img);
+    });
+});
+</script>
+{% endblock %}

@@ -4,7 +4,7 @@ from django import forms
 from django.db import models
 from .models import (
     SiteSettings, County, Lake, Video, HeroSection, FooterSettings,
-    FishSpecies, Facility, OperatingHours, LakeReview, LakePhoto
+    FishSpecies, Facility, OperatingHours, LakeReview, LakePhoto, UserProfile
 )
 
 class OperatingHoursForm(forms.ModelForm):
@@ -184,6 +184,33 @@ class FacilityAdmin(admin.ModelAdmin):
         }),
     )
 
+@admin.register(UserProfile)
+class UserProfileAdmin(admin.ModelAdmin):
+    list_display = ['user', 'get_full_name', 'phone', 'city', 'county', 'created_at']
+    list_filter = ['county', 'created_at']
+    search_fields = ['user__username', 'user__first_name', 'user__last_name', 'user__email', 'phone', 'city']
+    readonly_fields = ['created_at', 'updated_at']
+
+    def get_full_name(self, obj):
+        return obj.get_full_name()
+    get_full_name.short_description = 'Nume complet'
+
+    fieldsets = (
+        ('Utilizator', {
+            'fields': ('user',)
+        }),
+        ('Informații personale', {
+            'fields': ('phone', 'city', 'county', 'bio')
+        }),
+        ('Avatar', {
+            'fields': ('avatar',)
+        }),
+        ('Informații sistem', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
+
 class OperatingHoursInline(admin.StackedInline):
     model = OperatingHours
     form = OperatingHoursForm
@@ -243,9 +270,9 @@ class LakePhotoInline(admin.TabularInline):
 @admin.register(Lake)
 class LakeAdmin(admin.ModelAdmin):
     form = CustomFacilityForm
-    list_display = ['name', 'county', 'lake_type', 'price_per_day', 'is_active', 'created_at']
-    list_filter = ['county', 'lake_type', 'is_active', 'created_at']
-    search_fields = ['name', 'description', 'address', 'rules']
+    list_display = ['name', 'owner', 'county', 'lake_type', 'price_per_day', 'is_active', 'created_at']
+    list_filter = ['county', 'lake_type', 'is_active', 'created_at', 'owner']
+    search_fields = ['name', 'description', 'address', 'rules', 'owner__username', 'owner__first_name', 'owner__last_name']
     readonly_fields = ['created_at', 'updated_at']
     list_editable = ['is_active']
     list_per_page = 20
@@ -253,6 +280,9 @@ class LakeAdmin(admin.ModelAdmin):
     inlines = [OperatingHoursInline, LakePhotoInline]
 
     fieldsets = (
+        ('Proprietar', {
+            'fields': ('owner',)
+        }),
         ('Informații de bază', {
             'fields': ('name', 'slug', 'county', 'address', 'description')
         }),
@@ -262,6 +292,18 @@ class LakeAdmin(admin.ModelAdmin):
         }),
         ('Detalii pescuit', {
             'fields': ('lake_type', 'fish_species', 'facilities', 'price_per_day', 'rules')
+        }),
+        ('Date de contact', {
+            'fields': ('contact_phone', 'contact_email')
+        }),
+        ('Informații suplimentare', {
+            'fields': ('number_of_stands', 'surface_area', 'depth_min', 'depth_max', 'depth_average',
+                      'length_min', 'length_max', 'width_min', 'width_max'),
+            'classes': ('collapse',)
+        }),
+        ('Rețele sociale și web', {
+            'fields': ('website', 'facebook_url', 'instagram_url'),
+            'classes': ('collapse',)
         }),
         ('Media și vizibilitate', {
             'fields': ('image', 'is_active'),

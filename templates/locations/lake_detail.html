@@ -89,7 +89,28 @@
                     {% endif %}
                 {% endif %}
                 <div class="card-body">
-                    <h1 class="card-title h2 mb-3">{{ lake.name }}</h1>
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <h1 class="card-title h2 mb-0">{{ lake.name }}</h1>
+                        {% if can_edit_lake %}
+                            <div class="dropdown">
+                                <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                    <i class="fas fa-cog"></i>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="{% url 'main:editeaza_balta' lake.slug %}">
+                                        <i class="fas fa-edit me-2"></i>Editează
+                                    </a></li>
+                                    <li><a class="dropdown-item" href="{% url 'main:manage_lake_photos' lake.slug %}">
+                                        <i class="fas fa-images me-2"></i>Gestionează fotografii
+                                    </a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item text-danger" href="{% url 'main:sterge_balta' lake.slug %}">
+                                        <i class="fas fa-trash me-2"></i>Șterge
+                                    </a></li>
+                                </ul>
+                            </div>
+                        {% endif %}
+                    </div>
                     <p class="text-muted mb-3">
                         <i class="fas fa-map-marker-alt me-2"></i>{{ lake.address }}
                     </p>
@@ -431,6 +452,61 @@
             </div>
         </div>
     </div>
+
+    <!-- Social Sharing & Last Updated -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <h6 class="mb-3"><i class="fas fa-share-alt me-2"></i>Partajează această baltă</h6>
+                            <div class="social-sharing d-flex gap-2 flex-wrap">
+                                <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}"
+                                   target="_blank"
+                                   class="btn btn-outline-primary btn-sm social-btn">
+                                    <i class="fab fa-facebook-f me-1"></i>Facebook
+                                </a>
+                                <a href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri }}&text=Descoperă%20{{ lake.name|urlencode }}%20-%20o%20baltă%20de%20pescuit%20în%20{{ lake.address|urlencode }}"
+                                   target="_blank"
+                                   class="btn btn-outline-info btn-sm social-btn">
+                                    <i class="fab fa-twitter me-1"></i>Twitter
+                                </a>
+                                <a href="https://wa.me/?text=Descoperă%20{{ lake.name|urlencode }}%20-%20o%20baltă%20de%20pescuit%20în%20{{ lake.address|urlencode }}%20{{ request.build_absolute_uri }}"
+                                   target="_blank"
+                                   class="btn btn-outline-success btn-sm social-btn">
+                                    <i class="fab fa-whatsapp me-1"></i>WhatsApp
+                                </a>
+                                <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ request.build_absolute_uri }}"
+                                   target="_blank"
+                                   class="btn btn-outline-primary btn-sm social-btn">
+                                    <i class="fab fa-linkedin-in me-1"></i>LinkedIn
+                                </a>
+                                <button class="btn btn-outline-secondary btn-sm social-btn" onclick="copyToClipboard('{{ request.build_absolute_uri }}')">
+                                    <i class="fas fa-copy me-1"></i>Copiază link
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-6 text-md-end">
+                            <div class="last-updated">
+                                <small class="text-muted">
+                                    <i class="fas fa-clock me-1"></i>
+                                    Ultima actualizare: {{ lake.get_last_updated_display }}
+                                </small>
+                                {% if lake.owner %}
+                                    <br>
+                                    <small class="text-muted">
+                                        <i class="fas fa-user me-1"></i>
+                                        Adăugat de: {{ lake.owner.get_full_name|default:lake.owner.username }}
+                                    </small>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- Review Modal -->
@@ -760,6 +836,40 @@
 .operating-hours-content table tr:nth-child(even) {
     background-color: #f8f9fa;
 }
+
+/* Social Sharing Styles */
+.social-sharing {
+    margin-bottom: 1rem;
+}
+
+.social-btn {
+    transition: all 0.3s ease;
+    border-radius: 20px;
+    font-weight: 500;
+}
+
+.social-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.last-updated {
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #198754;
+}
+
+@media (max-width: 768px) {
+    .social-sharing {
+        justify-content: center;
+    }
+
+    .last-updated {
+        text-align: center !important;
+        margin-top: 1rem;
+    }
+}
 </style>
 
 <script>
@@ -922,6 +1032,107 @@ document.addEventListener('DOMContentLoaded', function() {
             updateGalleryModal();
         });
     }
+});
+
+// Social sharing functionality
+function copyToClipboard(text) {
+    if (navigator.clipboard && window.isSecureContext) {
+        // Use modern clipboard API
+        navigator.clipboard.writeText(text).then(function() {
+            showCopySuccess();
+        }).catch(function(err) {
+            fallbackCopyTextToClipboard(text);
+        });
+    } else {
+        // Fallback for older browsers
+        fallbackCopyTextToClipboard(text);
+    }
+}
+
+function fallbackCopyTextToClipboard(text) {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    textArea.style.top = "0";
+    textArea.style.left = "0";
+    textArea.style.position = "fixed";
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+
+    try {
+        const successful = document.execCommand('copy');
+        if (successful) {
+            showCopySuccess();
+        } else {
+            showCopyError();
+        }
+    } catch (err) {
+        showCopyError();
+    }
+
+    document.body.removeChild(textArea);
+}
+
+function showCopySuccess() {
+    // Create and show success toast
+    const toast = document.createElement('div');
+    toast.className = 'toast align-items-center text-white bg-success border-0 position-fixed';
+    toast.style.cssText = 'top: 20px; right: 20px; z-index: 9999;';
+    toast.setAttribute('role', 'alert');
+    toast.innerHTML = `
+        <div class="d-flex">
+            <div class="toast-body">
+                <i class="fas fa-check me-2"></i>Link copiat în clipboard!
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+    `;
+
+    document.body.appendChild(toast);
+    const bsToast = new bootstrap.Toast(toast);
+    bsToast.show();
+
+    // Remove toast after it's hidden
+    toast.addEventListener('hidden.bs.toast', function() {
+        document.body.removeChild(toast);
+    });
+}
+
+function showCopyError() {
+    // Create and show error toast
+    const toast = document.createElement('div');
+    toast.className = 'toast align-items-center text-white bg-danger border-0 position-fixed';
+    toast.style.cssText = 'top: 20px; right: 20px; z-index: 9999;';
+    toast.setAttribute('role', 'alert');
+    toast.innerHTML = `
+        <div class="d-flex">
+            <div class="toast-body">
+                <i class="fas fa-exclamation-triangle me-2"></i>Nu s-a putut copia link-ul
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+    `;
+
+    document.body.appendChild(toast);
+    const bsToast = new bootstrap.Toast(toast);
+    bsToast.show();
+
+    // Remove toast after it's hidden
+    toast.addEventListener('hidden.bs.toast', function() {
+        document.body.removeChild(toast);
+    });
+}
+
+// Track social sharing clicks for analytics (optional)
+document.addEventListener('DOMContentLoaded', function() {
+    const socialButtons = document.querySelectorAll('.social-btn');
+    socialButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            const platform = this.textContent.trim();
+            console.log(`Social share clicked: ${platform}`);
+            // Here you could add analytics tracking
+        });
+    });
 });
 </script>
 {% endblock %}

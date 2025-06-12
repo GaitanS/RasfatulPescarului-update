@@ -1,10 +1,68 @@
 from django.db import models
+from django.contrib.auth.models import User
 from django.utils.text import slugify
 from django.utils.safestring import mark_safe
 from django.core.validators import MinLengthValidator, MaxValueValidator, MinValueValidator
 from django.core.exceptions import ValidationError
 from django.db.models import Avg, Count
 import re
+
+class UserProfile(models.Model):
+    """Extended user profile for additional information"""
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        related_name='profile',
+        verbose_name="Utilizator"
+    )
+    phone = models.CharField(
+        max_length=20,
+        blank=True,
+        verbose_name="Număr de telefon",
+        help_text="Numărul dvs. de telefon pentru contact"
+    )
+    city = models.CharField(
+        max_length=100,
+        blank=True,
+        verbose_name="Orașul",
+        help_text="Orașul în care locuiți"
+    )
+    county = models.ForeignKey(
+        'County',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name="Județul",
+        help_text="Județul în care locuiți"
+    )
+    bio = models.TextField(
+        blank=True,
+        max_length=500,
+        verbose_name="Despre mine",
+        help_text="Scurtă descriere despre dvs. și experiența la pescuit"
+    )
+    avatar = models.ImageField(
+        upload_to='profiles/avatars/',
+        null=True,
+        blank=True,
+        verbose_name="Fotografie de profil",
+        help_text="Fotografia dvs. de profil (opțional)"
+    )
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Data înregistrării")
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="Data actualizării")
+
+    class Meta:
+        verbose_name = "Profil utilizator"
+        verbose_name_plural = "Profile utilizatori"
+
+    def __str__(self):
+        return f"Profil {self.user.username}"
+
+    def get_full_name(self):
+        """Get user's full name or username if not available"""
+        if self.user.first_name and self.user.last_name:
+            return f"{self.user.first_name} {self.user.last_name}"
+        return self.user.username
 
 class FishSpecies(models.Model):
     CATEGORY_CHOICES = [
@@ -253,9 +311,18 @@ class Lake(models.Model):
         ('natural', 'Baltă naturală'),
     ]
 
+    # Owner relationship
+    owner = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='owned_lakes',
+        verbose_name="Proprietar",
+        help_text="Utilizatorul care a creat și gestionează această baltă"
+    )
+
     name = models.CharField(
         max_length=200,
-        verbose_name="Numele lacului",
+        verbose_name="Numele bălții*",
         help_text="Numele complet al lacului sau bălții de pescuit"
     )
     slug = models.SlugField(
@@ -271,14 +338,14 @@ class Lake(models.Model):
     )
     address = models.CharField(
         max_length=255,
-        verbose_name="Adresa",
+        verbose_name="Localitate, județ*",
         help_text="Adresa completă a lacului (ex: Comuna X, Județul Y)"
     )
     county = models.ForeignKey(
         County,
         on_delete=models.CASCADE,
         related_name='lakes',
-        verbose_name="Județul",
+        verbose_name="Județul*",
         help_text="Județul în care se află lacul"
     )
     latitude = models.DecimalField(
@@ -308,25 +375,22 @@ class Lake(models.Model):
     )
     fish_species = models.ManyToManyField(
         FishSpecies,
-        blank=True,
-        verbose_name="Specii de pești",
+        verbose_name="Specii de pești*",
         help_text="Selectează speciile de pești disponibile în acest lac"
     )
     facilities = models.ManyToManyField(
         Facility,
-        blank=True,
-        verbose_name="Facilități",
+        verbose_name="Facilități*",
         help_text="Selectează facilitățile disponibile la acest lac"
     )
     price_per_day = models.DecimalField(
         max_digits=10,
         decimal_places=2,
-        verbose_name="Preț pe zi (RON)",
+        verbose_name="Prețuri/taxe de pescuit*",
         help_text="Prețul pentru o zi de pescuit în lei românești (ex: 50.00)"
     )
     rules = models.TextField(
-        blank=True,
-        verbose_name="Reguli de pescuit",
+        verbose_name="Regulament*",
         help_text="Regulile și restricțiile pentru pescuitul pe acest lac (ex: Permis obligatoriu, Se permite pescuitul din barcă, Program: 06:00-22:00)"
     )
     image = models.ImageField(
@@ -336,6 +400,105 @@ class Lake(models.Model):
         verbose_name="Imagine",
         help_text="Imaginea principală a lacului (format recomandat: JPG, PNG, max 2MB)"
     )
+
+    # Contact information (required fields)
+    contact_phone = models.CharField(
+        max_length=20,
+        verbose_name="Telefon*",
+        help_text="Numărul de telefon pentru contact (ex: 0700 123 456)"
+    )
+    contact_email = models.EmailField(
+        verbose_name="Email*",
+        help_text="Adresa de email pentru contact"
+    )
+
+    # Optional fields
+    number_of_stands = models.PositiveIntegerField(
+        null=True,
+        blank=True,
+        verbose_name="Număr de standuri",
+        help_text="Numărul total de standuri de pescuit disponibile"
+    )
+    surface_area = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        verbose_name="Suprafață (ha)",
+        help_text="Suprafața lacului în hectare (ex: 2.5)"
+    )
+    depth_min = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        verbose_name="Adâncime minimă (m)",
+        help_text="Adâncimea minimă a lacului în metri"
+    )
+    depth_max = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        verbose_name="Adâncime maximă (m)",
+        help_text="Adâncimea maximă a lacului în metri"
+    )
+    depth_average = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        verbose_name="Adâncime medie (m)",
+        help_text="Adâncimea medie a lacului în metri"
+    )
+    length_min = models.DecimalField(
+        max_digits=8,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        verbose_name="Lungime minimă (m)",
+        help_text="Lungimea minimă a lacului în metri"
+    )
+    length_max = models.DecimalField(
+        max_digits=8,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        verbose_name="Lungime maximă (m)",
+        help_text="Lungimea maximă a lacului în metri"
+    )
+    width_min = models.DecimalField(
+        max_digits=8,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        verbose_name="Lățime minimă (m)",
+        help_text="Lățimea minimă a lacului în metri"
+    )
+    width_max = models.DecimalField(
+        max_digits=8,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        verbose_name="Lățime maximă (m)",
+        help_text="Lățimea maximă a lacului în metri"
+    )
+    website = models.URLField(
+        blank=True,
+        verbose_name="Site web",
+        help_text="Site-ul web oficial al bălții (opțional)"
+    )
+    facebook_url = models.URLField(
+        blank=True,
+        verbose_name="Facebook",
+        help_text="Pagina de Facebook a bălții (opțional)"
+    )
+    instagram_url = models.URLField(
+        blank=True,
+        verbose_name="Instagram",
+        help_text="Pagina de Instagram a bălții (opțional)"
+    )
+
     is_active = models.BooleanField(
         default=True,
         verbose_name="Activ",
@@ -366,7 +529,20 @@ class Lake(models.Model):
 
     def get_absolute_url(self):
         from django.urls import reverse
-        return reverse('main:lake_detail', kwargs={'slug': self.slug})
+        return reverse('main:balta_detail', kwargs={'slug': self.slug})
+
+    def get_last_updated_display(self):
+        """Get formatted last update date in Romanian"""
+        months = {
+            1: 'Ianuarie', 2: 'Februarie', 3: 'Martie', 4: 'Aprilie',
+            5: 'Mai', 6: 'Iunie', 7: 'Iulie', 8: 'August',
+            9: 'Septembrie', 10: 'Octombrie', 11: 'Noiembrie', 12: 'Decembrie'
+        }
+        return f"{self.updated_at.day} {months[self.updated_at.month]} {self.updated_at.year}"
+
+    def can_edit(self, user):
+        """Check if user can edit this lake"""
+        return user.is_authenticated and (user == self.owner or user.is_staff)
 
     def get_safe_google_maps_embed(self):
         """Return sanitized Google Maps embed code or None if invalid"""

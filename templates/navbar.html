@@ -43,6 +43,55 @@
                     </a>
                 </li>
             </ul>
+
+            <!-- Right side menu - Authentication -->
+            <ul class="navbar-nav">
+                {% if user.is_authenticated %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-user-circle me-1"></i>
+                            {% if user.get_full_name %}
+                                {{ user.get_full_name }}
+                            {% else %}
+                                {{ user.username }}
+                            {% endif %}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="{% url 'main:utilizator_profil' %}">
+                                <i class="fas fa-user me-2"></i>Profilul meu
+                            </a></li>
+                            <li><a class="dropdown-item" href="{% url 'main:baltile_mele' %}">
+                                <i class="fas fa-water me-2"></i>Balțile mele
+                            </a></li>
+                            <li><a class="dropdown-item" href="{% url 'main:creaza_balta' %}">
+                                <i class="fas fa-plus me-2"></i>Adaugă baltă
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'main:editare_profil' %}">
+                                <i class="fas fa-edit me-2"></i>Editează profilul
+                            </a></li>
+                            <li><a class="dropdown-item" href="{% url 'main:schimbare_parola' %}">
+                                <i class="fas fa-key me-2"></i>Schimbă parola
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'main:deconectare' %}">
+                                <i class="fas fa-sign-out-alt me-2"></i>Deconectare
+                            </a></li>
+                        </ul>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'main:autentificare' %}">
+                            <i class="fas fa-sign-in-alt me-1"></i>Autentificare
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link btn btn-outline-success ms-2" href="{% url 'main:inregistrare' %}">
+                            <i class="fas fa-user-plus me-1"></i>Înregistrare
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
         </div>
     </div>
 </nav>

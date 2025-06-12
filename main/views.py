@@ -294,7 +294,8 @@ def lake_detail(request, slug):
 
     context = {
         'lake': lake,
-        'nearby_lakes': nearby_lakes
+        'nearby_lakes': nearby_lakes,
+        'can_edit_lake': lake.can_edit(request.user) if request.user.is_authenticated else False
     }
     return render(request, 'locations/lake_detail.html', context)
 

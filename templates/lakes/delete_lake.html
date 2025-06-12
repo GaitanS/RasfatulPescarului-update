@@ -1,0 +1,273 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Șterge {{ lake.name }} - {{ block.super }}{% endblock %}
+
+{% block extra_css %}
+<style>
+.delete-header {
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    color: white;
+    padding: 2rem 0;
+    margin-bottom: 2rem;
+}
+
+.delete-card {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    margin-bottom: 2rem;
+    border-left: 5px solid #dc3545;
+}
+
+.warning-icon {
+    font-size: 4rem;
+    color: #dc3545;
+    margin-bottom: 1rem;
+}
+
+.lake-info {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+}
+
+.lake-info h6 {
+    color: #198754;
+    margin-bottom: 1rem;
+}
+
+.info-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.info-item:last-child {
+    border-bottom: none;
+}
+
+.info-label {
+    font-weight: 500;
+    color: #6c757d;
+}
+
+.info-value {
+    color: #333;
+}
+
+.btn-delete {
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    border: none;
+    padding: 0.75rem 2rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+}
+
+.btn-delete:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(220, 53, 69, 0.3);
+}
+
+.consequences {
+    background: #fff3cd;
+    border-left: 4px solid #ffc107;
+    padding: 1rem;
+    margin: 1rem 0;
+    border-radius: 0 5px 5px 0;
+}
+
+.consequences h6 {
+    color: #856404;
+    margin-bottom: 0.5rem;
+}
+
+.consequences ul {
+    margin: 0;
+    padding-left: 1.2rem;
+}
+
+.consequences li {
+    color: #856404;
+    margin-bottom: 0.25rem;
+}
+
+@media (max-width: 768px) {
+    .delete-card {
+        padding: 1rem;
+    }
+    
+    .info-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .info-value {
+        margin-top: 0.25rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="delete-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h1><i class="fas fa-exclamation-triangle me-2"></i>Șterge balta</h1>
+                <p class="mb-0">Această acțiune nu poate fi anulată</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="delete-card text-center">
+                <div class="warning-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                
+                <h3 class="mb-3">Confirmare ștergere</h3>
+                <p class="lead mb-4">
+                    Sunteți sigur că doriți să ștergeți definitiv balta 
+                    <strong>"{{ lake.name }}"</strong>?
+                </p>
+
+                <div class="lake-info text-start">
+                    <h6><i class="fas fa-info-circle me-2"></i>Informații baltă</h6>
+                    
+                    <div class="info-item">
+                        <span class="info-label">Nume:</span>
+                        <span class="info-value">{{ lake.name }}</span>
+                    </div>
+                    
+                    <div class="info-item">
+                        <span class="info-label">Locație:</span>
+                        <span class="info-value">{{ lake.address }}</span>
+                    </div>
+                    
+                    <div class="info-item">
+                        <span class="info-label">Județ:</span>
+                        <span class="info-value">{{ lake.county.name }}</span>
+                    </div>
+                    
+                    <div class="info-item">
+                        <span class="info-label">Preț:</span>
+                        <span class="info-value">{{ lake.price_per_day }} RON/zi</span>
+                    </div>
+                    
+                    <div class="info-item">
+                        <span class="info-label">Data creării:</span>
+                        <span class="info-value">{{ lake.created_at|date:"d.m.Y H:i" }}</span>
+                    </div>
+                    
+                    {% if lake.photos.count > 0 %}
+                        <div class="info-item">
+                            <span class="info-label">Fotografii:</span>
+                            <span class="info-value">{{ lake.photos.count }} imagine{{ lake.photos.count|pluralize:",i" }}</span>
+                        </div>
+                    {% endif %}
+                    
+                    {% if lake.reviews.count > 0 %}
+                        <div class="info-item">
+                            <span class="info-label">Recenzii:</span>
+                            <span class="info-value">{{ lake.reviews.count }} recenzi{{ lake.reviews.count|pluralize:"e,i" }}</span>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="consequences text-start">
+                    <h6><i class="fas fa-exclamation-triangle me-2"></i>Consecințe ștergere:</h6>
+                    <ul>
+                        <li>Balta va fi ștearsă definitiv din baza de date</li>
+                        <li>Toate fotografiile asociate vor fi șterse</li>
+                        {% if lake.reviews.count > 0 %}
+                            <li>Toate recenziile ({{ lake.reviews.count }}) vor fi șterse</li>
+                        {% endif %}
+                        <li>Programul de funcționare va fi șters</li>
+                        <li>Link-urile către această baltă nu vor mai funcționa</li>
+                        <li>Această acțiune NU poate fi anulată</li>
+                    </ul>
+                </div>
+
+                <form method="post" class="mt-4">
+                    {% csrf_token %}
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-danger btn-delete btn-lg" onclick="return confirmDelete()">
+                            <i class="fas fa-trash me-2"></i>Da, șterge definitiv
+                        </button>
+                        <a href="{{ lake.get_absolute_url }}" class="btn btn-outline-secondary btn-lg">
+                            <i class="fas fa-times me-2"></i>Nu, anulează
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function confirmDelete() {
+    return confirm(
+        'ATENȚIE!\n\n' +
+        'Această acțiune va șterge definitiv balta "{{ lake.name }}" și toate datele asociate.\n\n' +
+        'Sunteți absolut sigur că doriți să continuați?\n\n' +
+        'Această acțiune NU poate fi anulată!'
+    );
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Add countdown timer for delete button (optional security measure)
+    const deleteBtn = document.querySelector('.btn-delete');
+    let countdown = 5;
+    
+    if (deleteBtn) {
+        deleteBtn.disabled = true;
+        deleteBtn.innerHTML = `<i class="fas fa-clock me-2"></i>Așteptați ${countdown} secunde...`;
+        
+        const timer = setInterval(function() {
+            countdown--;
+            if (countdown > 0) {
+                deleteBtn.innerHTML = `<i class="fas fa-clock me-2"></i>Așteptați ${countdown} secunde...`;
+            } else {
+                clearInterval(timer);
+                deleteBtn.disabled = false;
+                deleteBtn.innerHTML = '<i class="fas fa-trash me-2"></i>Da, șterge definitiv';
+                deleteBtn.classList.add('pulse');
+            }
+        }, 1000);
+    }
+    
+    // Add pulse animation
+    const style = document.createElement('style');
+    style.textContent = `
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+    `;
+    document.head.appendChild(style);
+    
+    // Track delete attempts for analytics (optional)
+    deleteBtn?.addEventListener('click', function(e) {
+        console.log('Delete attempt for lake:', '{{ lake.name }}');
+        // Here you could add analytics tracking
+    });
+});
+</script>
+{% endblock %}
