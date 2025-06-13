@@ -916,3 +916,76 @@ body {
         padding: 1rem;
     }
 }
+
+/* Leaflet Map Styles */
+.leaflet-container a {
+    color: white !important;
+}
+
+/* Remove focus outline and selection rectangles from Leaflet map */
+.leaflet-container:focus {
+    outline: none !important;
+}
+
+.leaflet-container {
+    outline: none !important;
+}
+
+/* Remove any selection boxes or focus rectangles */
+.leaflet-control-container *:focus {
+    outline: none !important;
+}
+
+.leaflet-clickable:focus {
+    outline: none !important;
+}
+
+/* Remove any white/black border rectangles that appear on click */
+.leaflet-zoom-box {
+    display: none !important;
+}
+
+.leaflet-control-zoom a:focus {
+    outline: none !important;
+}
+
+.leaflet-bar a:focus {
+    outline: none !important;
+}
+
+/* Remove any selection or highlight boxes */
+.leaflet-overlay-pane svg {
+    pointer-events: none;
+}
+
+.leaflet-overlay-pane svg * {
+    pointer-events: none;
+}
+
+/* Disable text selection on map */
+.leaflet-container {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/* Remove any border or outline that might appear */
+.leaflet-container *,
+.leaflet-container *:before,
+.leaflet-container *:after {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    outline: none !important;
+    border: none !important;
+}
+
+/* Specifically target any white/black rectangle elements */
+.leaflet-container .leaflet-control-container .leaflet-control {
+    outline: none !important;
+}
+
+.leaflet-container .leaflet-control-container .leaflet-control * {
+    outline: none !important;
+}
