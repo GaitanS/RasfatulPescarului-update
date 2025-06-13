@@ -192,6 +192,19 @@ DB_PORT=5432
    - Verifică log-urile pentru erori 404 pe fișiere JS
    - Regenerează cache-ul compressor
 
+6. **Eroare NoReverseMatch pentru județe (ex: 'Satu Mare')**
+   ```bash
+   # Problema: județele cu spații în nume nu au slug-uri corecte
+   # Soluția: Actualizează slug-urile
+   python fix_county_slugs.py
+
+   # Sau recreează județele cu slug-uri corecte
+   python add_counties_fixed.py
+
+   # Verifică în Django shell:
+   # python manage.py shell -c "from main.models import County; print([(c.name, c.slug) for c in County.objects.filter(name__contains=' ')])"
+   ```
+
 ## ✅ Status Deployment
 
 - ✅ Requirements.txt actualizat

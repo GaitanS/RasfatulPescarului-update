@@ -39,6 +39,9 @@ ssh root@145.223.117.86 << 'EOF'
     # Creează imagini placeholder dacă lipsesc
     python create_placeholder_image.py
 
+    # Corectează slug-urile județelor dacă e necesar
+    python fix_county_slugs.py 2>/dev/null || echo "⚠️  Fix county slugs skipped (model might not have slug field)"
+
     # Restartează serviciul
     systemctl restart rasfatul-pescarului
     
