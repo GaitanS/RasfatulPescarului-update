@@ -516,11 +516,14 @@
         position: relative;
         z-index: 1;
         top: 0;
+        overflow: visible !important;
     }
 
     .filter-group {
         width: 100%;
         min-width: auto;
+        position: relative;
+        overflow: visible !important;
     }
 
     .filter-select {
@@ -529,6 +532,17 @@
         font-size: 16px; /* Prevents zoom on iOS */
         position: relative;
         z-index: 1;
+        /* Improve mobile dropdown appearance */
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+        background-position: right 0.75rem center;
+        background-repeat: no-repeat;
+        background-size: 1.5em 1.5em;
+        padding-right: 2.5rem;
+        text-align: center;
+        text-align-last: center;
     }
 
     /* Ensure solunar calendar doesn't overlap navbar */
@@ -554,7 +568,25 @@
 
     /* Prevent any dropdown issues on mobile */
     .filter-select {
-        position: static !important;
-        z-index: auto !important;
+        position: relative !important;
+        z-index: 1 !important;
+    }
+
+    /* Ensure dropdown options are visible and properly styled */
+    .filter-select option {
+        background: white !important;
+        color: #333 !important;
+        padding: 0.75rem !important;
+        text-align: center !important;
+    }
+
+    /* Center the form elements */
+    .filter-form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        width: 100%;
+        overflow: visible !important;
     }
 }

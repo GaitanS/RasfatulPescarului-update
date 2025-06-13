@@ -47,8 +47,9 @@
             <!-- Right side menu - Authentication -->
             <ul class="navbar-nav">
                 {% if user.is_authenticated %}
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <!-- User profile link -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'main:utilizator_profil' %}">
                             <i class="fas fa-user-circle me-1"></i>
                             {% if user.get_full_name %}
                                 {{ user.get_full_name }}
@@ -56,10 +57,21 @@
                                 {{ user.username }}
                             {% endif %}
                         </a>
+                    </li>
+
+                    <!-- Logout button -->
+                    <li class="nav-item">
+                        <a class="nav-link text-danger" href="{% url 'main:deconectare' %}" title="Deconectare">
+                            <i class="fas fa-sign-out-alt"></i>
+                        </a>
+                    </li>
+
+                    <!-- Dropdown for other user actions -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" title="Setări">
+                            <i class="fas fa-cog"></i>
+                        </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="{% url 'main:utilizator_profil' %}">
-                                <i class="fas fa-user me-2"></i>Profilul meu
-                            </a></li>
                             <li><a class="dropdown-item" href="{% url 'main:baltile_mele' %}">
                                 <i class="fas fa-water me-2"></i>Balțile mele
                             </a></li>
@@ -72,10 +84,6 @@
                             </a></li>
                             <li><a class="dropdown-item" href="{% url 'main:schimbare_parola' %}">
                                 <i class="fas fa-key me-2"></i>Schimbă parola
-                            </a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="{% url 'main:deconectare' %}">
-                                <i class="fas fa-sign-out-alt me-2"></i>Deconectare
                             </a></li>
                         </ul>
                     </li>

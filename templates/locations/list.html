@@ -218,7 +218,7 @@
 .search-card {
     overflow: visible !important;
     position: relative !important;
-    z-index: 9999 !important;
+    z-index: 1020 !important;
 }
 
 .search-card .row {
@@ -228,11 +228,38 @@
 .search-card .col-md-3, .search-card .col-md-4 {
     overflow: visible !important;
     position: relative !important;
+    z-index: 1020 !important;
 }
 
 .form-floating {
     overflow: visible !important;
     position: relative !important;
+    z-index: 1020 !important;
+}
+
+/* Ensure search and filter section stays below navbar */
+.search-filter-section {
+    position: relative !important;
+    z-index: 1020 !important;
+}
+
+/* Mobile specific fixes for navbar overlap */
+@media (max-width: 768px) {
+    .search-filter-section {
+        margin-top: 1rem !important;
+        z-index: 1020 !important;
+    }
+
+    .search-card {
+        z-index: 1020 !important;
+        position: relative !important;
+    }
+
+    /* Ensure dropdowns don't overlap navbar */
+    .form-select {
+        z-index: 1020 !important;
+        position: relative !important;
+    }
 }
 
 .form-select {
@@ -244,6 +271,57 @@
     background: white !important;
     color: #333 !important;
     padding: 0.5rem !important;
+}
+
+/* Search and filter section styling */
+.search-filter-section {
+    background: white;
+    border-radius: 15px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+}
+
+.search-filter-section .search-card {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+}
+
+/* Hero Map Button - High Visibility */
+.btn-map-hero {
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%) !important;
+    color: #198754 !important;
+    border: 3px solid #198754 !important;
+    font-weight: 700 !important;
+    font-size: 1.25rem !important;
+    padding: 1rem 2.5rem !important;
+    border-radius: 50px !important;
+    box-shadow: 0 8px 25px rgba(25, 135, 84, 0.3) !important;
+    transition: all 0.3s ease !important;
+    text-decoration: none !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-width: 200px !important;
+}
+
+.btn-map-hero:hover {
+    background: linear-gradient(135deg, #198754 0%, #157347 100%) !important;
+    color: white !important;
+    border-color: #157347 !important;
+    transform: translateY(-3px) !important;
+    box-shadow: 0 12px 35px rgba(25, 135, 84, 0.4) !important;
+}
+
+.btn-map-hero:active {
+    transform: translateY(-1px) !important;
+    box-shadow: 0 6px 20px rgba(25, 135, 84, 0.3) !important;
+}
+
+.btn-map-hero i {
+    font-size: 1.1em !important;
 }
 </style>
 {% endblock %}
@@ -257,49 +335,11 @@
                 <h1 class="display-4 fw-bold mb-3">Descoperă Locurile de Pescuit</h1>
                 <p class="lead mb-4">Găsește cele mai bune bălți și lacuri de pescuit din România</p>
 
-                <!-- Search Card -->
-                <div class="search-card">
-                    <div class="row g-3">
-                        <div class="col-md-4">
-                            <div class="form-floating">
-                                <input type="text" class="form-control" id="searchLocation" placeholder="Caută locație...">
-                                <label for="searchLocation">
-                                    <i class="fas fa-search me-2"></i>Caută locație...
-                                </label>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-floating">
-                                <select class="form-select" id="filterCounty">
-                                    <option value="">Toate județele</option>
-                                    {% for county in counties %}
-                                    <option value="{{ county.slug }}">{{ county.name }}</option>
-                                    {% endfor %}
-                                </select>
-                                <label for="filterCounty">
-                                    <i class="fas fa-map-marker-alt me-2"></i>Județ
-                                </label>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-floating">
-                                <select class="form-select" id="sortBy">
-                                    <option value="name">Nume A-Z</option>
-                                    <option value="price_asc">Preț crescător</option>
-                                    <option value="price_desc">Preț descrescător</option>
-                                    <option value="rating">Rating</option>
-                                </select>
-                                <label for="sortBy">
-                                    <i class="fas fa-sort me-2"></i>Sortează
-                                </label>
-                            </div>
-                        </div>
-                        <div class="col-md-2">
-                            <a href="{% url 'main:locations_map' %}" class="btn btn-map w-100 h-100 d-flex align-items-center justify-content-center">
-                                <i class="fas fa-map me-2"></i>Hartă
-                            </a>
-                        </div>
-                    </div>
+                <!-- Map Button Only -->
+                <div class="text-center">
+                    <a href="{% url 'main:locations_map' %}" class="btn btn-map-hero btn-lg">
+                        <i class="fas fa-map me-2"></i>Vezi pe Hartă
+                    </a>
                 </div>
             </div>
         </div>
@@ -335,6 +375,53 @@
 <!-- Results Section -->
 <section class="py-5 bg-light">
     <div class="container">
+        <!-- Search and Filter Controls -->
+        <div class="search-filter-section mb-4">
+            <div class="search-card">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <div class="form-floating">
+                            <input type="text" class="form-control" id="searchLocation" placeholder="Caută locație...">
+                            <label for="searchLocation">
+                                <i class="fas fa-search me-2"></i>Caută locație...
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-floating">
+                            <select class="form-select" id="filterCounty">
+                                <option value="">Toate județele</option>
+                                {% for county in counties %}
+                                <option value="{{ county.slug }}">{{ county.name }}</option>
+                                {% endfor %}
+                            </select>
+                            <label for="filterCounty">
+                                <i class="fas fa-map-marker-alt me-2"></i>Județ
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-floating">
+                            <select class="form-select" id="sortBy">
+                                <option value="name">Nume A-Z</option>
+                                <option value="price_asc">Preț crescător</option>
+                                <option value="price_desc">Preț descrescător</option>
+                                <option value="rating">Rating</option>
+                            </select>
+                            <label for="sortBy">
+                                <i class="fas fa-sort me-2"></i>Sortează
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="button" class="btn btn-outline-success w-100 h-100 d-flex align-items-center justify-content-center" id="clearFilters">
+                            <i class="fas fa-times me-2"></i>Resetează
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Results Header -->
         <div class="results-header">
             <div class="row align-items-center">
@@ -466,6 +553,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const resultsCount = document.getElementById('resultsCount');
     const gridViewBtn = document.getElementById('gridView');
     const listViewBtn = document.getElementById('listView');
+    const clearFiltersBtn = document.getElementById('clearFilters');
 
     // Search and filter functionality
     function filterLakes() {
@@ -537,10 +625,19 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // Clear filters functionality
+    function clearAllFilters() {
+        searchInput.value = '';
+        countyFilter.value = '';
+        sortSelect.value = 'name';
+        filterLakes();
+    }
+
     // Event listeners
     searchInput.addEventListener('input', filterLakes);
     countyFilter.addEventListener('change', filterLakes);
     sortSelect.addEventListener('change', filterLakes);
+    clearFiltersBtn.addEventListener('click', clearAllFilters);
 
     gridViewBtn.addEventListener('click', () => toggleView('grid'));
     listViewBtn.addEventListener('click', () => toggleView('list'));

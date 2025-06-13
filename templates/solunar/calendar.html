@@ -119,12 +119,31 @@
     .filter-group {
         width: 100%;
         min-width: auto;
+        position: relative;
     }
 
     .filter-select {
         min-width: auto;
         width: 100%;
         font-size: 16px;
+        position: relative;
+        z-index: 1;
+        /* Fix dropdown positioning on mobile */
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+        background-position: right 0.75rem center;
+        background-repeat: no-repeat;
+        background-size: 1.5em 1.5em;
+        padding-right: 2.5rem;
+    }
+
+    /* Ensure dropdown options are properly positioned */
+    .filter-select option {
+        background: white !important;
+        color: #333 !important;
+        padding: 0.5rem !important;
     }
 
     /* Mobile navbar overlap prevention */
@@ -151,6 +170,20 @@
     .solunar-calendar {
         z-index: 1 !important;
         position: relative !important;
+    }
+
+    /* Prevent horizontal overflow */
+    .filter-form {
+        overflow-x: hidden;
+        width: 100%;
+    }
+
+    /* Center dropdown content */
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
     }
 }
 

@@ -60,46 +60,25 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
 
-        // Toggle menu when button is clicked
-        navbarToggler.addEventListener('click', function() {
+        // Toggle menu when button is clicked - with improved event handling
+        navbarToggler.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
             bsCollapse.toggle();
         });
 
         // Handle mobile dropdown clicks (only navbar dropdowns)
-        if (window.innerWidth <= 768) {
-            document.querySelectorAll('.navbar .dropdown-toggle').forEach(function(element) {
-                element.addEventListener('click', function(e) {
-                    if (window.innerWidth <= 768) {
-                        // If we're on mobile, follow the link directly
-                        window.location.href = this.getAttribute('href');
-                        return;
-                    }
-                    // On desktop, keep default dropdown behavior
-                    e.preventDefault();
-                    e.stopPropagation();
-                    const dropdownMenu = this.nextElementSibling;
-                    if (dropdownMenu) {
-                        // Close other dropdowns
-                        document.querySelectorAll('.navbar .dropdown-menu.show').forEach(menu => {
-                            if (menu !== dropdownMenu) {
-                                menu.classList.remove('show');
-                            }
-                        });
-                        dropdownMenu.classList.toggle('show');
-                    }
-                });
-            });
+        // Let Bootstrap handle the dropdown functionality, just ensure proper styling
 
-            // Close dropdown when clicking its items (only Bootstrap dropdowns, not custom ones)
-            document.querySelectorAll('.navbar .dropdown-item').forEach(item => {
-                item.addEventListener('click', () => {
-                    bsCollapse.hide();
-                    document.querySelectorAll('.navbar .dropdown-menu.show').forEach(menu => {
-                        menu.classList.remove('show');
-                    });
+        // Close dropdown when clicking its items (only Bootstrap dropdowns, not custom ones)
+        document.querySelectorAll('.navbar .dropdown-item').forEach(item => {
+            item.addEventListener('click', () => {
+                bsCollapse.hide();
+                document.querySelectorAll('.navbar .dropdown-menu.show').forEach(menu => {
+                    menu.classList.remove('show');
                 });
             });
-        }
+        });
 
         // Close menu when clicking a regular link
         document.querySelectorAll('.navbar-nav .nav-link:not(.dropdown-toggle)').forEach(link => {

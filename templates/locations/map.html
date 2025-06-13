@@ -225,6 +225,11 @@
         z-index: 1050;
     }
 
+    /* Hide filters when modal is open */
+    body.modal-open .filters-card {
+        z-index: 1040 !important;
+    }
+
     .filters-body {
         position: static !important;
         overflow: visible !important;
@@ -241,11 +246,21 @@
         z-index: 9999 !important;
     }
 
+    /* Hide form elements when modal is open */
+    body.modal-open .form-select {
+        z-index: 1040 !important;
+    }
+
     /* Container fixes */
     .col-lg-3 {
         position: static !important;
         overflow: visible !important;
         z-index: 9999 !important;
+    }
+
+    /* Hide container when modal is open */
+    body.modal-open .col-lg-3 {
+        z-index: 1040 !important;
     }
 
     .container {
@@ -311,6 +326,11 @@
         z-index: 9999;
         display: none;
         margin-top: 2px;
+    }
+
+    /* Hide custom dropdown when modal is open */
+    body.modal-open .custom-dropdown-menu {
+        z-index: 1040 !important;
     }
 
     .custom-dropdown-menu.show {
@@ -388,6 +408,11 @@
             z-index: 1020 !important;
         }
 
+        /* Hide mobile filters when modal is open */
+        body.modal-open .filters-card {
+            z-index: 1040 !important;
+        }
+
         /* Custom dropdown mobile optimization */
         .custom-dropdown-menu {
             max-height: 50vh !important;
@@ -400,6 +425,11 @@
             border-radius: 0.75rem !important;
             box-shadow: 0 15px 40px rgba(0,0,0,0.3) !important;
             border: 2px solid #198754 !important;
+        }
+
+        /* Hide mobile dropdown when modal is open */
+        body.modal-open .custom-dropdown-menu {
+            z-index: 1040 !important;
         }
 
         /* Mobile dropdown items styling */
@@ -552,6 +582,14 @@
     }
 
     /* Location permission modal */
+    .location-modal {
+        z-index: 1055 !important;
+    }
+
+    .location-modal .modal-backdrop {
+        z-index: 1054 !important;
+    }
+
     .location-modal .modal-content {
         border-radius: 1rem;
     }
@@ -938,6 +976,40 @@
 {% block extra_js %}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Fix mobile menu close button for map page
+        const navbarToggler = document.querySelector('.navbar-toggler');
+        const navbarCollapse = document.querySelector('.navbar-collapse');
+
+        if (navbarToggler && navbarCollapse) {
+            // Ensure Bootstrap collapse is properly initialized
+            const bsCollapse = new bootstrap.Collapse(navbarCollapse, {
+                toggle: false
+            });
+
+            // Add specific event listener for map page
+            navbarToggler.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                bsCollapse.toggle();
+            });
+
+            // Close menu when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!navbarCollapse.contains(e.target) &&
+                    !navbarToggler.contains(e.target) &&
+                    navbarCollapse.classList.contains('show')) {
+                    bsCollapse.hide();
+                }
+            });
+
+            // Close menu when clicking nav links
+            document.querySelectorAll('.navbar-nav .nav-link').forEach(link => {
+                link.addEventListener('click', () => {
+                    bsCollapse.hide();
+                });
+            });
+        }
+
         // Initialize map and variables
         var activePopup = null;  // Track currently open popup
         var romaniaCenter = [45.9432, 24.9668];

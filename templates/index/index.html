@@ -93,8 +93,8 @@
                         <p class="card-text">{{ lake.description|truncatechars:100 }}</p>
 
                         <!-- Rating Display -->
-                        {% if lake.total_reviews > 0 %}
-                        <div class="mb-2">
+                        <div class="rating-section">
+                            {% if lake.total_reviews > 0 %}
                             <div class="d-flex align-items-center gap-2">
                                 <div class="rating-stars">
                                     {% for i in "12345" %}
@@ -108,12 +108,12 @@
                                 <span class="fw-bold" style="color: #ffc107;">{{ lake.average_rating }}</span>
                                 <small class="text-muted">({{ lake.total_reviews }})</small>
                             </div>
+                            {% endif %}
                         </div>
-                        {% endif %}
 
                         <!-- Fish Species Badges -->
-                        {% if lake.fish_species.all %}
-                        <div class="mb-3">
+                        <div class="fish-species-section">
+                            {% if lake.fish_species.all %}
                             <div class="d-flex flex-wrap gap-1">
                                 {% for fish in lake.fish_species.all %}
                                 <span class="badge" style="background-color: #198754 !important; font-size: 0.75rem;">
@@ -121,17 +121,24 @@
                                 </span>
                                 {% endfor %}
                             </div>
+                            {% endif %}
                         </div>
-                        {% endif %}
 
-                        <ul class="list-unstyled">
-                            <li><i class="fas fa-coins me-2"></i>{{ lake.price_per_day }} Lei/zi</li>
-                            <li><i class="fas fa-map-marker-alt me-2"></i>{{ lake.address }}</li>
-                        </ul>
-                        <div class="d-grid">
-                            <a href="{% url 'main:lake_detail' lake.slug %}" class="btn btn-success">
-                                Vezi detalii
-                            </a>
+                        <!-- Lake Information -->
+                        <div class="lake-info">
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-coins me-2"></i>{{ lake.price_per_day }} Lei/zi</li>
+                                <li><i class="fas fa-map-marker-alt me-2"></i>{{ lake.address }}</li>
+                            </ul>
+                        </div>
+
+                        <!-- Button Section -->
+                        <div class="card-footer-btn">
+                            <div class="d-grid">
+                                <a href="{% url 'main:lake_detail' lake.slug %}" class="btn btn-success">
+                                    Vezi detalii
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
