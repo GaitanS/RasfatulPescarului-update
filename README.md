@@ -65,10 +65,33 @@ REDIS_URL=your_redis_url
 python manage.py migrate
 ```
 
-6. Start the development server:
+6. Generate static files cache (for JavaScript/CSS compression):
+```bash
+# Windows
+regenerate_cache.bat
+
+# Linux/Mac
+python regenerate_cache.py
+```
+
+7. Start the development server:
 ```bash
 python manage.py runserver
 ```
+
+## Important Notes
+
+### Django Compressor
+This project uses django-compressor for JavaScript and CSS optimization. If you encounter issues with missing JS/CSS files:
+
+1. **Regenerate cache**: Run `python regenerate_cache.py` or `regenerate_cache.bat`
+2. **Manual cleanup**: Delete `staticfiles/CACHE/` and run `python manage.py compress --force`
+3. **Check settings**: Ensure `COMPRESS_OFFLINE = False` in development
+
+### Production Deployment
+- See `DEPLOYMENT_GUIDE.md` for detailed deployment instructions
+- Live website: https://rasfatul-pescarului.ro
+- Admin panel: https://rasfatul-pescarului.ro/admin
 
 ## Contributing
 

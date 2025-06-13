@@ -72,14 +72,16 @@
             try {
                 // Initialize AdSense
                 if (typeof adsbygoogle !== 'undefined') {
-                    // Push all ad units
-                    const adUnits = document.querySelectorAll('.adsbygoogle');
+                    // Push all ad units that haven't been initialized
+                    const adUnits = document.querySelectorAll('.adsbygoogle:not([data-adsbygoogle-status])');
                     adUnits.forEach(ad => {
-                        if (!ad.dataset.adsbygoogleStatus) {
+                        try {
                             (adsbygoogle = window.adsbygoogle || []).push({});
+                        } catch (e) {
+                            console.warn('AdSense push failed for ad unit:', e);
                         }
                     });
-                    
+
                     this.adsLoaded = true;
                     this.retryCount = 0;
                     
@@ -127,15 +129,17 @@
             }
 
             try {
-                const adUnits = document.querySelectorAll('.adsbygoogle');
+                const adUnits = document.querySelectorAll('.adsbygoogle[data-adsbygoogle-status="done"]');
                 adUnits.forEach(ad => {
-                    if (ad.dataset.adsbygoogleStatus === 'done') {
+                    try {
                         // Clear the ad
                         ad.innerHTML = '';
                         ad.removeAttribute('data-adsbygoogle-status');
-                        
+
                         // Reload the ad
                         (adsbygoogle = window.adsbygoogle || []).push({});
+                    } catch (e) {
+                        console.warn('Failed to refresh individual ad:', e);
                     }
                 });
             } catch (error) {
