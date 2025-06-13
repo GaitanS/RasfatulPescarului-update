@@ -5,8 +5,15 @@ from django.contrib import messages
 from django.core.paginator import Paginator
 from django.http import JsonResponse, Http404
 from django.views.decorators.http import require_http_methods
-from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth.forms import PasswordChangeForm, PasswordResetForm, SetPasswordForm
 from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.tokens import default_token_generator
+from django.contrib.auth.models import User
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.conf import settings
 from .forms import CustomUserCreationForm, CustomAuthenticationForm, UserProfileForm, LakeForm, LakePhotoForm
 from .models import Lake, UserProfile, LakePhoto
 import json
@@ -322,6 +329,62 @@ def api_user_profile(request):
     }
     
     return JsonResponse(data)
+
+
+# Password Reset Views
+def password_reset_view(request):
+    """Password reset request view"""
+    if request.user.is_authenticated:
+        return redirect('main:utilizator_profil')
+
+    if request.method == 'POST':
+        form = PasswordResetForm(request.POST)
+        if form.is_valid():
+            form.save(
+                request=request,
+                use_https=request.is_secure(),
+                email_template_name='auth/password_reset_email.html',
+                subject_template_name='auth/password_reset_subject.txt',
+                from_email=settings.DEFAULT_FROM_EMAIL,
+            )
+            return redirect('main:password_reset_done')
+    else:
+        form = PasswordResetForm()
+
+    return render(request, 'auth/password_reset.html', {'form': form})
+
+
+def password_reset_done_view(request):
+    """Password reset done view"""
+    return render(request, 'auth/password_reset_done.html')
+
+
+def password_reset_confirm_view(request, uidb64, token):
+    """Password reset confirm view"""
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+
+    if user is not None and default_token_generator.check_token(user, token):
+        if request.method == 'POST':
+            form = SetPasswordForm(user, request.POST)
+            if form.is_valid():
+                form.save()
+                messages.success(request, 'Parola dvs. a fost resetată cu succes!')
+                return redirect('main:password_reset_complete')
+        else:
+            form = SetPasswordForm(user)
+        return render(request, 'auth/password_reset_confirm.html', {'form': form})
+    else:
+        messages.error(request, 'Link-ul de resetare a parolei este invalid sau a expirat.')
+        return redirect('main:recuperare_parola')
+
+
+def password_reset_complete_view(request):
+    """Password reset complete view"""
+    return render(request, 'auth/password_reset_complete.html')
 
 
 @login_required

@@ -117,8 +117,13 @@ def filter_lakes(request):
 
     # Apply county filter
     county_id = request.GET.get('county')
+    selected_county = None
     if county_id:
         lakes = lakes.filter(county_id=county_id)
+        try:
+            selected_county = County.objects.get(id=county_id)
+        except County.DoesNotExist:
+            pass
 
     # Apply fish types filter
     fish_types = request.GET.getlist('fish_types[]')
@@ -150,23 +155,35 @@ def filter_lakes(request):
             pass  # Invalid rating value, ignore filter
 
     # Format lake data for response
-    lakes_data = [{
-        'id': lake.id,
-        'slug': lake.slug,
-        'name': lake.name,
-        'address': lake.address,
-        'county': lake.county.name,
-        'latitude': float(lake.latitude),
-        'longitude': float(lake.longitude),
-        'fish_species': [{'name': fish.name} for fish in lake.fish_species.all()],
-        'facilities': [{'name': facility.name, 'icon_class': facility.icon_class} for facility in lake.facilities.all()],
-        'price_per_day': float(lake.price_per_day),
-        'image_url': lake.get_display_image().url if lake.get_display_image() else None,
-        'average_rating': lake.average_rating,
-        'total_reviews': lake.total_reviews
-    } for lake in lakes]
+    lakes_data = []
+    counties_in_results = set()
 
-    return JsonResponse({'lakes': lakes_data})
+    for lake in lakes:
+        counties_in_results.add(lake.county.name)
+        lakes_data.append({
+            'id': lake.id,
+            'slug': lake.slug,
+            'name': lake.name,
+            'address': lake.address,
+            'county': lake.county.name,
+            'latitude': float(lake.latitude),
+            'longitude': float(lake.longitude),
+            'fish_species': [{'name': fish.name} for fish in lake.fish_species.all()],
+            'facilities': [{'name': facility.name, 'icon_class': facility.icon_class} for facility in lake.facilities.all()],
+            'price_per_day': float(lake.price_per_day),
+            'image_url': lake.get_display_image().url if lake.get_display_image() else None,
+            'average_rating': lake.average_rating,
+            'total_reviews': lake.total_reviews
+        })
+
+    # Prepare response data
+    response_data = {
+        'lakes': lakes_data,
+        'selected_county': selected_county.name if selected_county else None,
+        'counties_in_results': list(counties_in_results)
+    }
+
+    return JsonResponse(response_data)
 
 @require_http_methods(['GET'])
 def debug_lakes(request):

@@ -75,3 +75,10 @@ def length_is(value, arg):
         return len(value) == int(arg)
     except (ValueError, TypeError):
         return False
+
+@register.filter
+def add_class(field, css_class):
+    """Add CSS class to form field"""
+    if hasattr(field, 'as_widget'):
+        return field.as_widget(attrs={'class': css_class})
+    return field

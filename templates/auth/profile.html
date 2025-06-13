@@ -4,234 +4,504 @@
 {% block title %}Profilul meu - {{ block.super }}{% endblock %}
 
 {% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/modern-auth-theme.css' %}">
 <style>
-.profile-header {
-    background: linear-gradient(135deg, #198754, #20c997);
+/* Modern Profile Styles */
+.profile-hero {
+    background: linear-gradient(135deg, #198754 0%, #20c997 100%);
     color: white;
-    padding: 2rem 0;
-    margin-bottom: 2rem;
-}
-
-.profile-avatar {
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    border: 4px solid white;
-    object-fit: cover;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-}
-
-.profile-info h2 {
-    margin-bottom: 0.5rem;
-}
-
-.profile-info p {
-    opacity: 0.9;
-    margin-bottom: 0.25rem;
-}
-
-.profile-stats {
-    background: white;
-    border-radius: 10px;
-    padding: 1.5rem;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    margin-top: -1rem;
+    padding: 4rem 0 6rem;
     position: relative;
-    z-index: 2;
-}
-
-.stat-item {
-    text-align: center;
-    padding: 1rem;
-}
-
-.stat-number {
-    font-size: 2rem;
-    font-weight: bold;
-    color: #198754;
-    display: block;
-}
-
-.stat-label {
-    color: #6c757d;
-    font-size: 0.9rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.profile-actions {
-    margin: 2rem 0;
-}
-
-.btn-profile {
-    margin: 0.25rem;
-    padding: 0.75rem 1.5rem;
-    border-radius: 25px;
-    font-weight: 500;
-    text-decoration: none;
-    transition: all 0.3s ease;
-}
-
-.btn-profile:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-}
-
-.lakes-section {
-    margin-top: 3rem;
-}
-
-.section-title {
-    display: flex;
-    align-items: center;
-    justify-content: between;
-    margin-bottom: 2rem;
-    padding-bottom: 1rem;
-    border-bottom: 2px solid #e9ecef;
-}
-
-.section-title h3 {
-    margin: 0;
-    color: #198754;
-}
-
-.lake-card {
-    background: white;
-    border-radius: 15px;
     overflow: hidden;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
-    margin-bottom: 2rem;
 }
 
-.lake-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-}
-
-.lake-image {
-    height: 200px;
-    background-size: cover;
-    background-position: center;
-    position: relative;
-}
-
-.lake-image::after {
+.profile-hero::before {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.3));
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="pattern" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="2" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23pattern)"/></svg>') repeat;
 }
 
-.lake-badge {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    background: #198754;
-    color: white;
-    padding: 0.25rem 0.75rem;
-    border-radius: 15px;
-    font-size: 0.8rem;
-    font-weight: 500;
+.profile-content {
+    position: relative;
     z-index: 2;
 }
 
-.lake-content {
+.profile-avatar-container {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.profile-avatar {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    border: 6px solid rgba(255, 255, 255, 0.3);
+    object-fit: cover;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease;
+}
+
+.profile-avatar:hover {
+    transform: scale(1.05);
+}
+
+.profile-avatar-placeholder {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    border: 6px solid rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    backdrop-filter: blur(10px);
+}
+
+.profile-info {
+    text-align: center;
+}
+
+.profile-name {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
+
+.profile-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: center;
+    opacity: 0.9;
+}
+
+.profile-detail-item {
+    display: flex;
+    align-items: center;
+    font-size: 1.1rem;
+}
+
+.profile-detail-item i {
+    margin-right: 0.75rem;
+    width: 20px;
+    text-align: center;
+}
+
+.profile-stats-container {
+    margin-top: -4rem;
+    position: relative;
+    z-index: 3;
+    margin-bottom: 3rem;
+}
+
+.profile-stats {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    padding: 2.5rem;
+    backdrop-filter: blur(20px);
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+}
+
+.stat-item {
+    text-align: center;
     padding: 1.5rem;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    transition: transform 0.3s ease;
 }
 
-.lake-title {
-    font-size: 1.25rem;
-    font-weight: bold;
-    color: #333;
+.stat-item:hover {
+    transform: translateY(-5px);
+}
+
+.stat-number {
+    display: block;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #198754;
     margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, #198754, #20c997);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
-.lake-location {
+.stat-label {
+    color: #6c757d;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.profile-actions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    margin-bottom: 3rem;
+}
+
+.btn-profile {
+    padding: 1rem 2rem;
+    font-weight: 600;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid;
+}
+
+.btn-profile:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    text-decoration: none;
+}
+
+.btn-profile.btn-primary {
+    background: linear-gradient(135deg, #198754, #20c997);
+    border-color: #198754;
+    color: white;
+}
+
+.btn-profile.btn-outline {
+    background: white;
+    border-color: #198754;
+    color: #198754;
+}
+
+.btn-profile.btn-outline:hover {
+    background: #198754;
+    color: white;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 3px solid #198754;
+}
+
+.section-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #198754;
+    margin: 0;
+    display: flex;
+    align-items: center;
+}
+
+.section-title i {
+    margin-right: 1rem;
+}
+
+.bio-section {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    margin-bottom: 3rem;
+    border-left: 4px solid #198754;
+}
+
+.bio-title {
+    color: #198754;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+}
+
+.bio-title i {
+    margin-right: 0.75rem;
+}
+
+.lakes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+}
+
+.lake-card-modern {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: all 0.3s ease;
+    border: 1px solid #f1f5f9;
+}
+
+.lake-card-modern:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+.lake-image-modern {
+    height: 220px;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.lake-badge-modern {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: linear-gradient(135deg, #198754, #20c997);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 25px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 12px rgba(25, 135, 84, 0.3);
+}
+
+.lake-content-modern {
+    padding: 2rem;
+}
+
+.lake-title-modern {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #2d3748;
+    margin-bottom: 1rem;
+    line-height: 1.3;
+}
+
+.lake-location-modern {
     color: #6c757d;
     margin-bottom: 1rem;
     display: flex;
     align-items: center;
 }
 
-.lake-location i {
-    margin-right: 0.5rem;
+.lake-location-modern i {
+    color: #198754;
+    margin-right: 0.75rem;
+    width: 16px;
 }
 
-.lake-price {
-    font-size: 1.1rem;
-    font-weight: bold;
+.lake-price-modern {
+    font-size: 1.2rem;
+    font-weight: 700;
     color: #198754;
     margin-bottom: 1rem;
 }
 
-.lake-actions {
+.lake-meta {
+    font-size: 0.9rem;
+    color: #6c757d;
+    margin-bottom: 1.5rem;
     display: flex;
-    gap: 0.5rem;
+    align-items: center;
+}
+
+.lake-meta i {
+    margin-right: 0.5rem;
+    color: #198754;
+}
+
+.lake-actions-modern {
+    display: flex;
+    gap: 0.75rem;
     flex-wrap: wrap;
 }
 
-.btn-lake-action {
-    padding: 0.5rem 1rem;
-    border-radius: 20px;
+.btn-lake-modern {
+    padding: 0.6rem 1.2rem;
     font-size: 0.9rem;
-    text-decoration: none;
+    font-weight: 600;
+    border-radius: 8px;
     transition: all 0.3s ease;
-}
-
-.no-lakes {
+    text-decoration: none;
+    border: 2px solid;
+    flex: 1;
     text-align: center;
-    padding: 3rem;
-    color: #6c757d;
+    min-width: 100px;
 }
 
-.no-lakes i {
-    font-size: 4rem;
-    margin-bottom: 1rem;
-    opacity: 0.5;
+.btn-lake-modern:hover {
+    transform: translateY(-2px);
+    text-decoration: none;
 }
 
-.pagination-wrapper {
+.btn-lake-view {
+    background: #198754;
+    border-color: #198754;
+    color: white;
+}
+
+.btn-lake-view:hover {
+    background: #146c43;
+    border-color: #146c43;
+    color: white;
+}
+
+.btn-lake-edit {
+    background: white;
+    border-color: #0dcaf0;
+    color: #0dcaf0;
+}
+
+.btn-lake-edit:hover {
+    background: #0dcaf0;
+    color: white;
+}
+
+.btn-lake-photos {
+    background: white;
+    border-color: #ffc107;
+    color: #ffc107;
+}
+
+.btn-lake-photos:hover {
+    background: #ffc107;
+    color: #000;
+}
+
+.no-lakes-modern {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.no-lakes-icon {
+    width: 100px;
+    height: 100px;
+    background: linear-gradient(135deg, #198754, #20c997);
+    border-radius: 50%;
     display: flex;
+    align-items: center;
     justify-content: center;
-    margin-top: 2rem;
+    margin: 0 auto 2rem;
 }
 
-.last-updated {
-    font-size: 0.85rem;
+.no-lakes-icon i {
+    font-size: 3rem;
+    color: white;
+}
+
+.no-lakes-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #2d3748;
+    margin-bottom: 1rem;
+}
+
+.no-lakes-text {
     color: #6c757d;
-    margin-top: 0.5rem;
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+}
+
+@media (max-width: 768px) {
+    .profile-hero {
+        padding: 3rem 0 4rem;
+    }
+
+    .profile-name {
+        font-size: 2rem;
+    }
+
+    .profile-details {
+        align-items: flex-start;
+    }
+
+    .profile-stats-container {
+        margin-top: -2rem;
+    }
+
+    .profile-stats {
+        padding: 1.5rem;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .profile-actions {
+        grid-template-columns: 1fr;
+    }
+
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .lakes-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .lake-actions-modern {
+        flex-direction: column;
+    }
 }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="profile-header">
+<div class="profile-hero">
     <div class="container">
-        <div class="row align-items-center">
-            <div class="col-md-3 text-center">
-                {% if profile.avatar %}
-                    <img src="{{ profile.avatar.url }}" alt="Avatar" class="profile-avatar">
-                {% else %}
-                    <div class="profile-avatar d-flex align-items-center justify-content-center" style="background: rgba(255,255,255,0.2);">
-                        <i class="fas fa-user fa-3x"></i>
+        <div class="profile-content">
+            <div class="row align-items-center">
+                <div class="col-lg-4">
+                    <div class="profile-avatar-container">
+                        {% if profile.avatar %}
+                            <img src="{{ profile.avatar.url }}" alt="Avatar" class="profile-avatar">
+                        {% else %}
+                            <div class="profile-avatar-placeholder">
+                                <i class="fas fa-user fa-4x"></i>
+                            </div>
+                        {% endif %}
                     </div>
-                {% endif %}
-            </div>
-            <div class="col-md-9">
-                <div class="profile-info">
-                    <h2>{{ profile.get_full_name }}</h2>
-                    <p><i class="fas fa-envelope me-2"></i>{{ user.email }}</p>
-                    {% if profile.phone %}
-                        <p><i class="fas fa-phone me-2"></i>{{ profile.phone }}</p>
-                    {% endif %}
-                    {% if profile.city %}
-                        <p><i class="fas fa-map-marker-alt me-2"></i>{{ profile.city }}{% if profile.county %}, {{ profile.county.name }}{% endif %}</p>
-                    {% endif %}
-                    <p><i class="fas fa-calendar me-2"></i>Membru din {{ profile.created_at|date:"F Y" }}</p>
+                </div>
+                <div class="col-lg-8">
+                    <div class="profile-info">
+                        <h1 class="profile-name">{{ profile.get_full_name }}</h1>
+                        <div class="profile-details">
+                            <div class="profile-detail-item">
+                                <i class="fas fa-envelope"></i>
+                                <span>{{ user.email }}</span>
+                            </div>
+                            {% if profile.phone %}
+                                <div class="profile-detail-item">
+                                    <i class="fas fa-phone"></i>
+                                    <span>{{ profile.phone }}</span>
+                                </div>
+                            {% endif %}
+                            {% if profile.city %}
+                                <div class="profile-detail-item">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span>{{ profile.city }}{% if profile.county %}, {{ profile.county.name }}{% endif %}</span>
+                                </div>
+                            {% endif %}
+                            <div class="profile-detail-item">
+                                <i class="fas fa-calendar-alt"></i>
+                                <span>Membru din {{ profile.created_at|date:"F Y" }}</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -239,21 +509,17 @@
 </div>
 
 <div class="container">
-    <div class="profile-stats">
-        <div class="row">
-            <div class="col-md-4">
+    <div class="profile-stats-container">
+        <div class="profile-stats">
+            <div class="stats-grid">
                 <div class="stat-item">
                     <span class="stat-number">{{ total_lakes }}</span>
                     <span class="stat-label">Balți adăugate</span>
                 </div>
-            </div>
-            <div class="col-md-4">
                 <div class="stat-item">
                     <span class="stat-number">{{ user.date_joined|timesince|truncatewords:1 }}</span>
                     <span class="stat-label">Vechime</span>
                 </div>
-            </div>
-            <div class="col-md-4">
                 <div class="stat-item">
                     <span class="stat-number">{{ profile.updated_at|date:"d.m.Y" }}</span>
                     <span class="stat-label">Ultima actualizare</span>
@@ -262,75 +528,71 @@
         </div>
     </div>
 
-    <div class="profile-actions text-center">
-        <a href="{% url 'main:editare_profil' %}" class="btn btn-outline-success btn-profile">
+    <div class="profile-actions">
+        <a href="{% url 'main:editare_profil' %}" class="btn-profile btn-outline">
             <i class="fas fa-edit me-2"></i>Editează profilul
         </a>
-        <a href="{% url 'main:schimbare_parola' %}" class="btn btn-outline-secondary btn-profile">
+        <a href="{% url 'main:schimbare_parola' %}" class="btn-profile btn-outline">
             <i class="fas fa-key me-2"></i>Schimbă parola
         </a>
-        <a href="{% url 'main:creaza_balta' %}" class="btn btn-success btn-profile">
+        <a href="{% url 'main:creaza_balta' %}" class="btn-profile btn-primary">
             <i class="fas fa-plus me-2"></i>Adaugă baltă nouă
         </a>
-        <a href="{% url 'main:baltile_mele' %}" class="btn btn-outline-primary btn-profile">
+        <a href="{% url 'main:baltile_mele' %}" class="btn-profile btn-outline">
             <i class="fas fa-list me-2"></i>Toate balțile mele
         </a>
     </div>
 
     {% if profile.bio %}
-        <div class="row">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title"><i class="fas fa-user-circle me-2"></i>Despre mine</h5>
-                        <p class="card-text">{{ profile.bio|linebreaks }}</p>
-                    </div>
-                </div>
-            </div>
+        <div class="bio-section">
+            <h5 class="bio-title">
+                <i class="fas fa-user-circle"></i>Despre mine
+            </h5>
+            <p>{{ profile.bio|linebreaks }}</p>
         </div>
     {% endif %}
 
     <div class="lakes-section">
-        <div class="section-title">
-            <h3><i class="fas fa-water me-2"></i>Balțile mele recente</h3>
+        <div class="section-header">
+            <h3 class="section-title">
+                <i class="fas fa-water"></i>Balțile mele recente
+            </h3>
             {% if total_lakes > 6 %}
-                <a href="{% url 'main:baltile_mele' %}" class="btn btn-outline-success btn-sm">
+                <a href="{% url 'main:baltile_mele' %}" class="btn-modern">
                     Vezi toate ({{ total_lakes }})
                 </a>
             {% endif %}
         </div>
 
         {% if lakes_page.object_list %}
-            <div class="row">
+            <div class="lakes-grid">
                 {% for lake in lakes_page.object_list %}
-                    <div class="col-lg-4 col-md-6">
-                        <div class="lake-card">
-                            <div class="lake-image" 
-                                 style="background-image: url('{% if lake.get_main_photo %}{{ lake.get_main_photo.url }}{% else %}{% static 'images/lake-placeholder.jpg' %}{% endif %}');">
-                                <div class="lake-badge">{{ lake.get_lake_type_display }}</div>
+                    <div class="lake-card-modern">
+                        <div class="lake-image-modern"
+                             style="background-image: url('{% if lake.get_main_photo %}{{ lake.get_main_photo.url }}{% else %}{% static 'images/lake-placeholder.jpg' %}{% endif %}');">
+                            <div class="lake-badge-modern">{{ lake.get_lake_type_display }}</div>
+                        </div>
+                        <div class="lake-content-modern">
+                            <h5 class="lake-title-modern">{{ lake.name }}</h5>
+                            <div class="lake-location-modern">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>{{ lake.address }}</span>
                             </div>
-                            <div class="lake-content">
-                                <h5 class="lake-title">{{ lake.name }}</h5>
-                                <div class="lake-location">
-                                    <i class="fas fa-map-marker-alt"></i>
-                                    {{ lake.address }}
-                                </div>
-                                <div class="lake-price">{{ lake.price_per_day }} RON/zi</div>
-                                <div class="last-updated">
-                                    <i class="fas fa-clock me-1"></i>
-                                    Ultima actualizare: {{ lake.get_last_updated_display }}
-                                </div>
-                                <div class="lake-actions mt-3">
-                                    <a href="{{ lake.get_absolute_url }}" class="btn btn-outline-success btn-lake-action">
-                                        <i class="fas fa-eye me-1"></i>Vezi
-                                    </a>
-                                    <a href="{% url 'main:editeaza_balta' lake.slug %}" class="btn btn-outline-primary btn-lake-action">
-                                        <i class="fas fa-edit me-1"></i>Editează
-                                    </a>
-                                    <a href="{% url 'main:manage_lake_photos' lake.slug %}" class="btn btn-outline-info btn-lake-action">
-                                        <i class="fas fa-images me-1"></i>Fotografii
-                                    </a>
-                                </div>
+                            <div class="lake-price-modern">{{ lake.price_per_day }} RON/zi</div>
+                            <div class="lake-meta">
+                                <i class="fas fa-clock"></i>
+                                <span>Actualizat {{ lake.get_last_updated_display }}</span>
+                            </div>
+                            <div class="lake-actions-modern">
+                                <a href="{{ lake.get_absolute_url }}" class="btn-lake-modern btn-lake-view">
+                                    <i class="fas fa-eye me-1"></i>Vezi
+                                </a>
+                                <a href="{% url 'main:editeaza_balta' lake.slug %}" class="btn-lake-modern btn-lake-edit">
+                                    <i class="fas fa-edit me-1"></i>Editează
+                                </a>
+                                <a href="{% url 'main:manage_lake_photos' lake.slug %}" class="btn-lake-modern btn-lake-photos">
+                                    <i class="fas fa-images me-1"></i>Fotografii
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -369,11 +631,13 @@
                 </div>
             {% endif %}
         {% else %}
-            <div class="no-lakes">
-                <i class="fas fa-water"></i>
-                <h4>Nu aveți balți adăugate încă</h4>
-                <p>Începeți prin a adăuga prima dvs. baltă de pescuit!</p>
-                <a href="{% url 'main:creaza_balta' %}" class="btn btn-success btn-lg">
+            <div class="no-lakes-modern">
+                <div class="no-lakes-icon">
+                    <i class="fas fa-water"></i>
+                </div>
+                <h4 class="no-lakes-title">Nu aveți balți adăugate încă</h4>
+                <p class="no-lakes-text">Începeți prin a adăuga prima dvs. baltă de pescuit și să o partajați cu comunitatea!</p>
+                <a href="{% url 'main:creaza_balta' %}" class="btn-modern">
                     <i class="fas fa-plus me-2"></i>Adaugă prima baltă
                 </a>
             </div>

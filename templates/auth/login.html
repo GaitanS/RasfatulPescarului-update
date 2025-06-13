@@ -108,7 +108,7 @@
                                 <input type="checkbox" id="remember-me" name="remember_me" class="form-check-input">
                                 <label for="remember-me" class="form-check-label">Ține-mă minte</label>
                             </div>
-                            <a href="#" class="forgot-password-link">Ai uitat parola?</a>
+                            <a href="{% url 'main:recuperare_parola' %}" class="forgot-password-link">Ai uitat parola?</a>
                         </div>
 
                         <button type="submit" class="btn btn-login w-100">
@@ -145,11 +145,11 @@
 <style>
 .modern-login-page {
     min-height: 100vh;
-    background: linear-gradient(135deg, #198754 0%, #198754 100%);
+    background: linear-gradient(135deg, #198754 0%, #20c997 100%);
 }
 
 .login-left {
-    background: linear-gradient(135deg, #198754, #198754 100%),
+    background: linear-gradient(135deg, rgba(25, 135, 84, 0.9), rgba(32, 201, 151, 0.9)),
                 url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="fish" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="2" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23fish)"/></svg>');
     display: flex;
     align-items: center;
@@ -218,13 +218,13 @@
 .login-icon {
     width: 70px;
     height: 70px;
-    background: linear-gradient(135deg, #198754 100%, #198754 100%);
+    background: linear-gradient(135deg, #198754, #20c997);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     margin: 0 auto 1.5rem;
-    box-shadow: 0 10px 30px #198754 100%;
+    box-shadow: 0 10px 30px rgba(25, 135, 84, 0.3);
 }
 
 .login-icon i {
@@ -250,7 +250,7 @@
 
 .form-label {
     font-weight: 600;
-    color: #198754 100%;
+    color: #4a5568;
     margin-bottom: 0.5rem;
     display: block;
 }
@@ -265,8 +265,8 @@
 }
 
 .modern-input:focus {
-    border-color: #198754 100%;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    border-color: #198754;
+    box-shadow: 0 0 0 3px rgba(25, 135, 84, 0.1);
     background: white;
     outline: none;
 }
@@ -282,7 +282,7 @@
     transform: translateY(-50%);
     background: none;
     border: none;
-    color: #198754 100%;
+    color: #a0aec0;
     cursor: pointer;
     padding: 0.5rem;
     border-radius: 6px;
@@ -290,7 +290,7 @@
 }
 
 .password-toggle-btn:hover {
-    color:#198754 100%;
+    color: #198754;
 }
 
 .form-options {
@@ -307,10 +307,11 @@
 
 .remember-me input {
     margin-right: 0.5rem;
+    accent-color: #198754;
 }
 
 .forgot-password-link {
-    color:#198754 100%;
+    color: #198754;
     text-decoration: none;
     font-size: 0.9rem;
     font-weight: 500;
@@ -321,7 +322,7 @@
 }
 
 .btn-login {
-    background: linear-gradient(135deg,#198754 100%,#198754 100%);
+    background: linear-gradient(135deg, #198754, #20c997);
     border: none;
     border-radius: 12px;
     padding: 1rem 2rem;
@@ -334,7 +335,7 @@
 
 .btn-login:hover {
     transform: translateY(-2px);
-    box-shadow: 0 10px 25px #198754 100%;
+    box-shadow: 0 10px 25px rgba(25, 135, 84, 0.4);
     color: white;
 }
 
@@ -367,7 +368,7 @@
 }
 
 .register-btn {
-    color: #198754 100%;
+    color: #198754;
     text-decoration: none;
     font-weight: 600;
 }
@@ -380,7 +381,7 @@
     background: #f7fafc;
     border-radius: 12px;
     padding: 1.5rem;
-    border-left: 4px solid #198754 100%;
+    border-left: 4px solid #198754;
 }
 
 .benefits-preview h6 {
@@ -404,7 +405,7 @@
 }
 
 .benefits-preview li i {
-    color: #198754 100%;
+    color: #198754;
     margin-right: 0.75rem;
     width: 16px;
 }

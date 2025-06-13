@@ -11,6 +11,10 @@ urlpatterns = [
     path('înregistrare/', auth_views.register_view, name='inregistrare'),
     path('autentificare/', auth_views.login_view, name='autentificare'),
     path('deconectare/', auth_views.logout_view, name='deconectare'),
+    path('recuperare-parola/', auth_views.password_reset_view, name='recuperare_parola'),
+    path('recuperare-parola/trimis/', auth_views.password_reset_done_view, name='password_reset_done'),
+    path('resetare-parola/<uidb64>/<token>/', auth_views.password_reset_confirm_view, name='password_reset_confirm'),
+    path('resetare-parola/complet/', auth_views.password_reset_complete_view, name='password_reset_complete'),
 
     # User profile URLs (Romanian)
     path('utilizator/profil/', auth_views.profile_view, name='utilizator_profil'),

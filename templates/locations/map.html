@@ -210,6 +210,38 @@
     .user-location-pin svg {
         cursor: pointer;
     }
+
+    /* User location tooltip */
+    .user-location-tooltip {
+        background-color: #198754 !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 4px !important;
+        font-weight: bold !important;
+        font-size: 12px !important;
+        padding: 4px 8px !important;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.3) !important;
+    }
+
+    .user-location-tooltip::before {
+        border-top-color: #198754 !important;
+    }
+
+    /* County tooltip */
+    .county-tooltip {
+        background-color: #00ff88 !important;
+        color: #000 !important;
+        border: none !important;
+        border-radius: 4px !important;
+        font-weight: bold !important;
+        font-size: 14px !important;
+        padding: 6px 10px !important;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.3) !important;
+    }
+
+    .county-tooltip::before {
+        border-top-color: #00ff88 !important;
+    }
 </style>
 {% endblock %}
 
@@ -244,19 +276,19 @@
                         <div class="mb-3">
                             <label class="form-label">Specii de pești</label>
                             <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="crap" id="crapCheck">
+                                <input class="form-check-input" type="checkbox" value="Crap" id="crapCheck">
                                 <label class="form-check-label" for="crapCheck">Crap</label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="caras" id="carasCheck">
+                                <input class="form-check-input" type="checkbox" value="Caras" id="carasCheck">
                                 <label class="form-check-label" for="carasCheck">Caras</label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="stiuca" id="stiucaCheck">
+                                <input class="form-check-input" type="checkbox" value="Știucă" id="stiucaCheck">
                                 <label class="form-check-label" for="stiucaCheck">Știucă</label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="salau" id="salauCheck">
+                                <input class="form-check-input" type="checkbox" value="Șalău" id="salauCheck">
                                 <label class="form-check-label" for="salauCheck">Șalău</label>
                             </div>
                         </div>
@@ -284,19 +316,19 @@
                         <div class="mb-3">
                             <label class="form-label">Facilități</label>
                             <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="parcare" id="parkingCheck">
+                                <input class="form-check-input" type="checkbox" value="Parcare" id="parkingCheck">
                                 <label class="form-check-label" for="parkingCheck">Parcare</label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="cazare" id="accommodationCheck">
+                                <input class="form-check-input" type="checkbox" value="Cazare" id="accommodationCheck">
                                 <label class="form-check-label" for="accommodationCheck">Cazare</label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="restaurant" id="restaurantCheck">
+                                <input class="form-check-input" type="checkbox" value="Restaurant" id="restaurantCheck">
                                 <label class="form-check-label" for="restaurantCheck">Restaurant</label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="toalete" id="toiletsCheck">
+                                <input class="form-check-input" type="checkbox" value="Toalete" id="toiletsCheck">
                                 <label class="form-check-label" for="toiletsCheck">Toalete</label>
                             </div>
                         </div>
@@ -434,18 +466,17 @@
 
                 console.log('Counties data loaded successfully:', countiesData.features.length, 'counties');
 
-                // Add county boundaries with thin white lines on top
-                L.geoJSON(countiesData, {
-                    style: {
-                        color: 'white',
-                        weight: 1,
-                        fillColor: 'transparent',
-                        fillOpacity: 0,
-                        opacity: 0.7,
-                        lineCap: 'round',
-                        lineJoin: 'round'
+                // Store counties data for auto-fit functionality
+                countiesGeoJSON = countiesData;
+
+                // Add interactive county boundaries
+                countiesLayer = L.geoJSON(countiesData, {
+                    style: function(feature) {
+                        return getCountyStyle(feature);
                     },
-                    interactive: false
+                    onEachFeature: function(feature, layer) {
+                        setupCountyInteraction(feature, layer);
+                    }
                 }).addTo(map);
             })
             .catch(error => {
@@ -462,6 +493,9 @@
         // Store all markers in an array
         var markers = [];
         var userLocationMarker = null;
+        var countiesGeoJSON = null; // Store counties data for auto-fit functionality
+        var countiesLayer = null; // Store counties layer for interaction
+        var selectedCountyName = null; // Store currently selected county name
 
         // Function to show full Romania view
         function showFullRomaniaView() {
@@ -511,7 +545,12 @@
                     });
 
                     userLocationMarker = L.marker([userLat, userLng], { icon: userLocationIcon })
-                        .bindPopup('<div style="text-align: center; font-weight: bold; color: #198754;"><strong>Locația mea</strong></div>')
+                        .bindTooltip('Locația mea', {
+                            permanent: true,
+                            direction: 'top',
+                            offset: [0, -45],
+                            className: 'user-location-tooltip'
+                        })
                         .addTo(map);
 
                     // Center map on user location with optimal zoom level
@@ -567,11 +606,7 @@
                                                 </a>
                                                 <a href="https://www.google.com/maps/dir/?api=1&destination=${lake.latitude},${lake.longitude}"
                                                    class="btn btn-outline-success" target="_blank">
-                                                    <i class="fab fa-google"></i>
-                                                </a>
-                                                <a href="https://waze.com/ul?ll=${lake.latitude},${lake.longitude}&navigate=yes"
-                                                   class="btn btn-outline-success" target="_blank">
-                                                    <i class="fab fa-waze"></i>
+                                                    <i class="fab fa-google"></i> Navigare
                                                 </a>
                                             </div>
                                         </div>
@@ -688,7 +723,228 @@
         } catch (error) {
             console.error('Error parsing lakes data:', error);
         }
-        
+
+        // Function to normalize county names for GeoJSON matching
+        function normalizeCountyName(countyName) {
+            const countyMapping = {
+                'Alba': 'ALBA',
+                'Arad': 'ARAD',
+                'Argeș': 'ARGES',
+                'Bacău': 'BACAU',
+                'Bihor': 'BIHOR',
+                'Bistrița-Năsăud': 'BISTRITA-NASAUD',
+                'Botoșani': 'BOTOSANI',
+                'Brașov': 'BRASOV',
+                'București': 'BUCURESTI',
+                'Buzău': 'BUZAU',
+                'Caraș-Severin': 'CARAS-SEVERIN',
+                'Călărași': 'CALARASI',
+                'Cluj': 'CLUJ',
+                'Constanța': 'CONSTANTA',
+                'Covasna': 'COVASNA',
+                'Dâmbovița': 'DAMBOVITA',
+                'Dolj': 'DOLJ',
+                'Galați': 'GALATI',
+                'Giurgiu': 'GIURGIU',
+                'Gorj': 'GORJ',
+                'Harghita': 'HARGHITA',
+                'Hunedoara': 'HUNEDOARA',
+                'Ialomița': 'IALOMITA',
+                'Iași': 'IASI',
+                'Ilfov': 'ILFOV',
+                'Maramureș': 'MARAMURES',
+                'Mehedinți': 'MEHEDINTI',
+                'Mureș': 'MURES',
+                'Neamț': 'NEAMT',
+                'Olt': 'OLT',
+                'Prahova': 'PRAHOVA',
+                'Sălaj': 'SALAJ',
+                'Satu Mare': 'SATU MARE',
+                'Sibiu': 'SIBIU',
+                'Suceava': 'SUCEAVA',
+                'Teleorman': 'TELEORMAN',
+                'Timiș': 'TIMIS',
+                'Tulcea': 'TULCEA',
+                'Vaslui': 'VASLUI',
+                'Vâlcea': 'VALCEA',
+                'Vrancea': 'VRANCEA'
+            };
+
+            return countyMapping[countyName] || countyName.toUpperCase();
+        }
+
+        // Function to fit map to a specific county
+        function fitMapToCounty(countyName) {
+            if (!countiesGeoJSON) {
+                console.log('Counties GeoJSON data not available for auto-fit');
+                return;
+            }
+
+            // Normalize county name for GeoJSON matching
+            const normalizedCountyName = normalizeCountyName(countyName);
+
+            // Find the county in the GeoJSON data
+            const countyFeature = countiesGeoJSON.features.find(feature =>
+                feature.properties.shapeName &&
+                feature.properties.shapeName === normalizedCountyName
+            );
+
+            if (countyFeature) {
+                // Create a temporary layer to get bounds
+                const tempLayer = L.geoJSON(countyFeature);
+                const bounds = tempLayer.getBounds();
+
+                // Fit map to county bounds with some padding
+                map.fitBounds(bounds, {
+                    padding: [20, 20],
+                    animate: true,
+                    duration: 1.0
+                });
+
+                console.log(`Map fitted to county: ${countyName} (${normalizedCountyName})`);
+            } else {
+                console.log(`County not found in GeoJSON data: ${countyName} (${normalizedCountyName})`);
+            }
+        }
+
+        // Function to fit map to entire Romania
+        function fitMapToRomania() {
+            if (!countiesGeoJSON) {
+                console.log('Counties GeoJSON data not available for Romania fit');
+                return;
+            }
+
+            // Create a temporary layer with all counties to get Romania bounds
+            const tempLayer = L.geoJSON(countiesGeoJSON);
+            const bounds = tempLayer.getBounds();
+
+            // Fit map to Romania bounds with some padding
+            map.fitBounds(bounds, {
+                padding: [30, 30],
+                animate: true,
+                duration: 1.5
+            });
+
+            console.log('Map fitted to entire Romania');
+        }
+
+        // Function to get county style based on state
+        function getCountyStyle(feature) {
+            const countyName = feature.properties.shapeName;
+            const isSelected = selectedCountyName && normalizeCountyName(selectedCountyName) === countyName;
+
+            return {
+                color: 'white',
+                weight: 1,
+                fillColor: isSelected ? '#00ff88' : 'transparent',
+                fillOpacity: isSelected ? 0.3 : 0,
+                opacity: 0.7,
+                lineCap: 'round',
+                lineJoin: 'round'
+            };
+        }
+
+        // Function to setup county interaction (hover, click)
+        function setupCountyInteraction(feature, layer) {
+            const countyName = feature.properties.shapeName;
+
+            // Create tooltip for county name
+            layer.bindTooltip(getCountyDisplayName(countyName), {
+                permanent: false,
+                direction: 'center',
+                className: 'county-tooltip'
+            });
+
+            // Hover events
+            layer.on({
+                mouseover: function(e) {
+                    const layer = e.target;
+                    const isSelected = selectedCountyName && normalizeCountyName(selectedCountyName) === countyName;
+
+                    layer.setStyle({
+                        fillColor: '#00ff88',
+                        fillOpacity: 0.3,
+                        weight: 2
+                    });
+
+                    layer.openTooltip();
+                },
+                mouseout: function(e) {
+                    const layer = e.target;
+                    const isSelected = selectedCountyName && normalizeCountyName(selectedCountyName) === countyName;
+
+                    layer.setStyle({
+                        fillColor: isSelected ? '#00ff88' : 'transparent',
+                        fillOpacity: isSelected ? 0.3 : 0,
+                        weight: 1
+                    });
+
+                    layer.closeTooltip();
+                }
+            });
+        }
+
+        // Function to get display name for county (convert from GeoJSON format to readable format)
+        function getCountyDisplayName(geoJsonName) {
+            const displayMapping = {
+                'ALBA': 'Alba',
+                'ARAD': 'Arad',
+                'ARGES': 'Argeș',
+                'BACAU': 'Bacău',
+                'BIHOR': 'Bihor',
+                'BISTRITA-NASAUD': 'Bistrița-Năsăud',
+                'BOTOSANI': 'Botoșani',
+                'BRAILA': 'Brăila',
+                'BRASOV': 'Brașov',
+                'BUCURESTI': 'București',
+                'BUZAU': 'Buzău',
+                'CARAS-SEVERIN': 'Caraș-Severin',
+                'CALARASI': 'Călărași',
+                'CLUJ': 'Cluj',
+                'CONSTANTA': 'Constanța',
+                'COVASNA': 'Covasna',
+                'DAMBOVITA': 'Dâmbovița',
+                'DOLJ': 'Dolj',
+                'GALATI': 'Galați',
+                'GIURGIU': 'Giurgiu',
+                'GORJ': 'Gorj',
+                'HARGHITA': 'Harghita',
+                'HUNEDOARA': 'Hunedoara',
+                'IALOMITA': 'Ialomița',
+                'IASI': 'Iași',
+                'ILFOV': 'Ilfov',
+                'MARAMURES': 'Maramureș',
+                'MEHEDINTI': 'Mehedinți',
+                'MURES': 'Mureș',
+                'NEAMT': 'Neamț',
+                'OLT': 'Olt',
+                'PRAHOVA': 'Prahova',
+                'SALAJ': 'Sălaj',
+                'SATU MARE': 'Satu Mare',
+                'SIBIU': 'Sibiu',
+                'SUCEAVA': 'Suceava',
+                'TELEORMAN': 'Teleorman',
+                'TIMIS': 'Timiș',
+                'TULCEA': 'Tulcea',
+                'VASLUI': 'Vaslui',
+                'VALCEA': 'Vâlcea',
+                'VRANCEA': 'Vrancea'
+            };
+
+            return displayMapping[geoJsonName] || geoJsonName;
+        }
+
+        // Function to update county highlighting
+        function updateCountyHighlight(countyName) {
+            selectedCountyName = countyName;
+
+            if (countiesLayer) {
+                countiesLayer.eachLayer(function(layer) {
+                    layer.setStyle(getCountyStyle(layer.feature));
+                });
+            }
+        }
+
         // Filter form submission
         document.getElementById('filterForm').addEventListener('submit', function(e) {
             e.preventDefault();
@@ -696,11 +952,11 @@
             // Get form values
             const county = document.getElementById('county').value;
             const fishTypes = Array.from(document.querySelectorAll('input[type="checkbox"]:checked'))
-                .filter(cb => ['crap', 'caras', 'stiuca', 'salau'].includes(cb.value))
+                .filter(cb => ['Crap', 'Caras', 'Știucă', 'Șalău'].includes(cb.value))
                 .map(cb => cb.value);
             const maxPrice = document.getElementById('priceRange').value;
             const facilities = Array.from(document.querySelectorAll('input[type="checkbox"]:checked'))
-                .filter(cb => ['parcare', 'cazare', 'restaurant', 'toalete'].includes(cb.value))
+                .filter(cb => ['Parcare', 'Cazare', 'Restaurant', 'Toalete'].includes(cb.value))
                 .map(cb => cb.value);
             const minRating = document.getElementById('ratingFilter').value;
 
@@ -718,6 +974,28 @@
                 .then(data => {
                     if (data.lakes && Array.isArray(data.lakes)) {
                         addMarkers(data.lakes);
+
+                        // Check if "Toate Județele" is selected (county field is empty)
+                        const selectedCountyId = document.getElementById('county').value;
+
+                        if (selectedCountyId === '' || selectedCountyId === '0') {
+                            // "Toate Județele" is selected - fit to entire Romania and clear county highlight
+                            updateCountyHighlight(null);
+                            fitMapToRomania();
+                        } else if (data.selected_county) {
+                            // Specific county is selected - fit to that county and highlight it
+                            updateCountyHighlight(data.selected_county);
+                            fitMapToCounty(data.selected_county);
+                        } else if (data.counties_in_results && data.counties_in_results.length > 0) {
+                            // If multiple counties in results, fit to all results and clear highlight
+                            updateCountyHighlight(null);
+                            if (data.lakes.length > 0) {
+                                const group = new L.featureGroup(markers);
+                                if (group.getBounds().isValid()) {
+                                    map.fitBounds(group.getBounds().pad(0.1));
+                                }
+                            }
+                        }
                     } else {
                         console.error('Invalid response format');
                     }

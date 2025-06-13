@@ -21,13 +21,16 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
     
     {% block external_css %}{% endblock %}
-    
+
+    <!-- Extra CSS -->
+    {% block extra_css %}{% endblock %}
+
     <!-- Compressed CSS -->
     {% compress css %}
     <link href="{% static 'css/style.css' %}" rel="stylesheet">
     {% block compressed_css %}{% endblock %}
     {% endcompress %}
-    
+
     {% block styles %}{% endblock %}
     <!-- Cookie Consent -->
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.css">
