@@ -4,7 +4,7 @@ from django import forms
 from django.db import models
 from .models import (
     SiteSettings, County, Lake, Video, HeroSection, FooterSettings,
-    FishSpecies, Facility, OperatingHours, LakeReview, LakePhoto, UserProfile
+    FishSpecies, Facility, OperatingHours, LakeReview, LakePhoto, UserProfile, ContactMessage, ContactSettings
 )
 
 class OperatingHoursForm(forms.ModelForm):
@@ -402,3 +402,89 @@ class LakeReviewAdmin(admin.ModelAdmin):
         updated = queryset.update(is_spam=False)
         self.message_user(request, f'{updated} recenzii au fost demarcate ca spam.')
     mark_as_not_spam.short_description = 'Demarchează ca spam'
+
+
+@admin.register(ContactMessage)
+class ContactMessageAdmin(admin.ModelAdmin):
+    list_display = ['name', 'email', 'subject', 'get_short_message', 'created_at', 'is_read', 'is_replied']
+    list_filter = ['is_read', 'is_replied', 'created_at']
+    search_fields = ['name', 'email', 'subject', 'message']
+    readonly_fields = ['name', 'email', 'subject', 'message', 'ip_address', 'created_at']
+    list_per_page = 25
+    date_hierarchy = 'created_at'
+
+    fieldsets = (
+        ('Informații mesaj', {
+            'fields': ('name', 'email', 'subject', 'message', 'ip_address', 'created_at')
+        }),
+        ('Status', {
+            'fields': ('is_read', 'is_replied')
+        }),
+        ('Note administrative', {
+            'fields': ('admin_notes',),
+            'classes': ('collapse',)
+        }),
+    )
+
+    actions = ['mark_as_read', 'mark_as_replied', 'mark_as_unread']
+
+    def mark_as_read(self, request, queryset):
+        updated = queryset.update(is_read=True)
+        self.message_user(request, f'{updated} mesaje au fost marcate ca citite.')
+    mark_as_read.short_description = 'Marchează ca citite'
+
+    def mark_as_replied(self, request, queryset):
+        updated = queryset.update(is_replied=True, is_read=True)
+        self.message_user(request, f'{updated} mesaje au fost marcate ca având răspuns.')
+    mark_as_replied.short_description = 'Marchează ca având răspuns'
+
+    def mark_as_unread(self, request, queryset):
+        updated = queryset.update(is_read=False)
+        self.message_user(request, f'{updated} mesaje au fost marcate ca necitite.')
+    mark_as_unread.short_description = 'Marchează ca necitite'
+
+    def get_short_message(self, obj):
+        return obj.get_short_message()
+    get_short_message.short_description = 'Mesaj'
+
+    def has_add_permission(self, request):
+        # Prevent manual addition of contact messages
+        return False
+
+
+@admin.register(ContactSettings)
+class ContactSettingsAdmin(admin.ModelAdmin):
+    fieldsets = (
+        ('Informații companie', {
+            'fields': ('company_name', 'address', 'phone', 'email', 'description')
+        }),
+        ('Program de lucru', {
+            'fields': ('monday_friday_hours', 'saturday_hours', 'sunday_hours'),
+            'description': 'Configurați programul de lucru pentru fiecare zi a săptămânii'
+        }),
+        ('Rețele sociale', {
+            'fields': ('facebook_url', 'instagram_url', 'youtube_url'),
+            'classes': ('collapse',)
+        }),
+        ('Hartă', {
+            'fields': ('map_embed_code',),
+            'classes': ('collapse',),
+            'description': 'Codul iframe pentru harta Google Maps (opțional)'
+        }),
+        ('Informații sistem', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
+
+    readonly_fields = ['created_at', 'updated_at']
+
+    def has_add_permission(self, request):
+        # Only allow one instance of ContactSettings
+        if self.model.objects.exists():
+            return False
+        return super().has_add_permission(request)
+
+    def has_delete_permission(self, request, obj=None):
+        # Prevent deletion of the only instance
+        return False

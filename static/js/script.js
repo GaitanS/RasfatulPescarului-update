@@ -50,8 +50,8 @@ document.addEventListener('DOMContentLoaded', function() {
             toggle: false
         });
 
-        // Initialize all dropdowns
-        const dropdowns = document.querySelectorAll('.dropdown-toggle');
+        // Initialize Bootstrap dropdowns (only in navbar, not custom ones)
+        const dropdowns = document.querySelectorAll('.navbar .dropdown-toggle');
         dropdowns.forEach(dropdown => {
             new bootstrap.Dropdown(dropdown, {
                 popperConfig: function (defaultBsPopperConfig) {
@@ -65,9 +65,9 @@ document.addEventListener('DOMContentLoaded', function() {
             bsCollapse.toggle();
         });
 
-        // Handle mobile dropdown clicks
+        // Handle mobile dropdown clicks (only navbar dropdowns)
         if (window.innerWidth <= 768) {
-            document.querySelectorAll('.dropdown-toggle').forEach(function(element) {
+            document.querySelectorAll('.navbar .dropdown-toggle').forEach(function(element) {
                 element.addEventListener('click', function(e) {
                     if (window.innerWidth <= 768) {
                         // If we're on mobile, follow the link directly
@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     const dropdownMenu = this.nextElementSibling;
                     if (dropdownMenu) {
                         // Close other dropdowns
-                        document.querySelectorAll('.dropdown-menu.show').forEach(menu => {
+                        document.querySelectorAll('.navbar .dropdown-menu.show').forEach(menu => {
                             if (menu !== dropdownMenu) {
                                 menu.classList.remove('show');
                             }
@@ -90,11 +90,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             });
 
-            // Close dropdown when clicking its items
-            document.querySelectorAll('.dropdown-item').forEach(item => {
+            // Close dropdown when clicking its items (only Bootstrap dropdowns, not custom ones)
+            document.querySelectorAll('.navbar .dropdown-item').forEach(item => {
                 item.addEventListener('click', () => {
                     bsCollapse.hide();
-                    document.querySelectorAll('.dropdown-menu.show').forEach(menu => {
+                    document.querySelectorAll('.navbar .dropdown-menu.show').forEach(menu => {
                         menu.classList.remove('show');
                     });
                 });
@@ -110,12 +110,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Close menu when clicking outside
         document.addEventListener('click', function(e) {
-            if (!navbarCollapse.contains(e.target) && 
-                !navbarToggler.contains(e.target) && 
+            if (!navbarCollapse.contains(e.target) &&
+                !navbarToggler.contains(e.target) &&
                 navbarCollapse.classList.contains('show')) {
                 bsCollapse.hide();
-                // Also close any open dropdowns
-                document.querySelectorAll('.dropdown-menu.show').forEach(menu => {
+                // Also close any open Bootstrap dropdowns (only in navbar)
+                document.querySelectorAll('.navbar .dropdown-menu.show').forEach(menu => {
                     menu.classList.remove('show');
                 });
             }

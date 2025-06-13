@@ -3,133 +3,214 @@
 
 {% block title %}Despre Noi - Răsfățul Pescarului{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/about.css' %}">
+{% endblock %}
+
 {% block content %}
-<div class="container py-5 mt-5">
-    <!-- Hero Section -->
-    <div class="text-center mb-5">
-        <h1 class="display-4 mb-4">Despre Răsfățul Pescarului</h1>
-        <p class="lead text-muted">Pasiunea pentru pescuit transformată în experiențe memorabile</p>
-    </div>
-
-    <!-- Mission Section -->
-    <div class="row align-items-center mb-5">
-        <div class="col-lg-6" data-aos="fade-right">
-            <div class="position-relative">
-                <img src="{% static 'images/hero.png' %}" alt="Misiunea noastră" class="img-fluid rounded shadow-lg">
-                <div class="position-absolute top-0 start-0 w-100 h-100 bg-success opacity-10 rounded"></div>
+<!-- Hero Section -->
+<section class="about-hero">
+    <div class="container">
+        <div class="row justify-content-center text-center">
+            <div class="col-lg-8">
+                <h1>Despre Răsfățul Pescarului</h1>
+                <p class="lead">Pasiunea pentru pescuit transformată în experiențe memorabile și locații de vis</p>
             </div>
         </div>
-        <div class="col-lg-6" data-aos="fade-left">
-            <h2 class="mb-4">Misiunea Noastră</h2>
-            <p class="lead text-success mb-4">Să oferim pescarilor din România acces la cele mai bune echipamente și locații de pescuit.</p>
-            <p>La Răsfățul Pescarului, ne-am propus să creăm o comunitate vibrantă de pescari pasionați, oferind:</p>
-            <ul class="list-unstyled">
-                <li class="mb-3">
-                    <i class="fas fa-check-circle text-success me-2"></i>
-                    Echipamente de pescuit de înaltă calitate
-                </li>
-                <li class="mb-3">
-                    <i class="fas fa-check-circle text-success me-2"></i>
-                    Informații actualizate despre cele mai bune locuri de pescuit
-                </li>
-                <li class="mb-3">
-                    <i class="fas fa-check-circle text-success me-2"></i>
-                    Tutoriale și sfaturi de la pescari experimentați
-                </li>
-                <li>
-                    <i class="fas fa-check-circle text-success me-2"></i>
-                    Suport și consiliere pentru începători
-                </li>
-            </ul>
-        </div>
     </div>
+</section>
 
-    <!-- Values Section -->
-    <div class="row mb-5">
-        <div class="col-12 text-center mb-4">
-            <h2>Valorile Noastre</h2>
-            <p class="text-muted">Principiile care ne ghidează în tot ceea ce facem</p>
-        </div>
-        <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="100">
-            <div class="card h-100 border-0 shadow-sm">
-                <div class="card-body text-center">
-                    <div class="display-4 text-success mb-3">
-                        <i class="fas fa-heart"></i>
+<!-- About Content -->
+<section class="about-content">
+    <div class="container">
+        <!-- Mission Section -->
+        <div class="section-card">
+            <div class="mission-section">
+                <div class="row align-items-center">
+                    <div class="col-lg-6 mb-4 mb-lg-0">
+                        <div class="mission-image">
+                            <img src="{% static 'images/hero.png' %}" alt="Misiunea noastră">
+                            <div class="mission-overlay">
+                                <div class="mission-overlay-text">
+                                    <i class="fas fa-fish fa-3x mb-3"></i><br>
+                                    Pasiunea noastră pentru pescuit
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <h4 class="card-title">Pasiune</h4>
-                    <p class="card-text">Suntem pasionați de pescuit și ne dedicăm să împărtășim această pasiune cu întreaga comunitate.</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="200">
-            <div class="card h-100 border-0 shadow-sm">
-                <div class="card-body text-center">
-                    <div class="display-4 text-success mb-3">
-                        <i class="fas fa-handshake"></i>
-                    </div>
-                    <h4 class="card-title">Integritate</h4>
-                    <p class="card-text">Oferim doar produse și informații de calitate, în care credem cu adevărat.</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="300">
-            <div class="card h-100 border-0 shadow-sm">
-                <div class="card-body text-center">
-                    <div class="display-4 text-success mb-3">
-                        <i class="fas fa-users"></i>
-                    </div>
-                    <h4 class="card-title">Comunitate</h4>
-                    <p class="card-text">Construim și susținem o comunitate unită de pescari pasionați din toată România.</p>
-                </div>
-            </div>
-        </div>
-    </div>
+                    <div class="col-lg-6">
+                        <div class="mission-content">
+                            <h2>Misiunea Noastră</h2>
+                            <p class="lead">Să oferim pescarilor din România acces la cele mai bune locații de pescuit și să creăm o comunitate unită de pasionați.</p>
+                            <p class="mb-4">La Răsfățul Pescarului, ne-am propus să transformăm fiecare ieșire la pescuit într-o experiență memorabilă, oferind:</p>
 
-    <!-- Team Section -->
-    <div class="row mb-5">
-        <div class="col-12 text-center mb-4">
-            <h2>Echipa Noastră</h2>
-            <p class="text-muted">Oamenii pasionați din spatele Răsfățului Pescarului</p>
-        </div>
-        <div class="col-md-4 mb-4" data-aos="fade-up">
-            <div class="card border-0 shadow-sm">
-                <img src="{% static 'images/user-placeholder.png' %}" class="card-img-top" alt="Membru echipă">
-                <div class="card-body text-center">
-                    <h5 class="card-title">Ioan Popescu</h5>
-                    <p class="text-muted">Fondator & Director General</p>
-                    <p class="card-text">Pescar pasionat cu peste 20 de ani de experiență.</p>
+                            <ul class="feature-list">
+                                <li class="feature-item">
+                                    <div class="feature-icon">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                    </div>
+                                    <p class="feature-text">Cele mai bune locații de pescuit din România</p>
+                                </li>
+                                <li class="feature-item">
+                                    <div class="feature-icon">
+                                        <i class="fas fa-info-circle"></i>
+                                    </div>
+                                    <p class="feature-text">Informații actualizate și detaliate despre fiecare lac</p>
+                                </li>
+                                <li class="feature-item">
+                                    <div class="feature-icon">
+                                        <i class="fas fa-users"></i>
+                                    </div>
+                                    <p class="feature-text">O comunitate vibrantă de pescari pasionați</p>
+                                </li>
+                                <li class="feature-item">
+                                    <div class="feature-icon">
+                                        <i class="fas fa-graduation-cap"></i>
+                                    </div>
+                                    <p class="feature-text">Sfaturi și tutoriale pentru pescari de toate nivelurile</p>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="100">
-            <div class="card border-0 shadow-sm">
-                <img src="{% static 'images/user-placeholder.png' %}" class="card-img-top" alt="Membru echipă">
-                <div class="card-body text-center">
-                    <h5 class="card-title">Maria Ionescu</h5>
-                    <p class="text-muted">Manager Magazin</p>
-                    <p class="card-text">Expert în echipamente de pescuit și servicii clienți.</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="200">
-            <div class="card border-0 shadow-sm">
-                <img src="{% static 'images/user-placeholder.png' %}" class="card-img-top" alt="Membru echipă">
-                <div class="card-body text-center">
-                    <h5 class="card-title">Andrei Popa</h5>
-                    <p class="text-muted">Expert Tehnic</p>
-                    <p class="card-text">Specialist în tehnici moderne de pescuit și tutoriale.</p>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <!-- Contact CTA -->
-    <div class="text-center py-5 bg-light rounded" data-aos="fade-up">
-        <h2 class="mb-4">Hai să stăm de vorbă!</h2>
-        <p class="lead mb-4">Suntem aici pentru a răspunde la toate întrebările tale despre pescuit.</p>
-        <a href="{% url 'main:contact' %}" class="btn btn-success btn-lg">
-            <i class="fas fa-envelope me-2"></i>Contactează-ne
-        </a>
+        <!-- Values Section -->
+        <div class="values-section">
+            <div class="values-header">
+                <h2>Valorile Noastre</h2>
+                <p>Principiile care ne ghidează în tot ceea ce facem pentru comunitatea de pescari</p>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <div class="value-card">
+                        <div class="value-icon">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <h4>Pasiune</h4>
+                        <p>Suntem pasionați de pescuit și ne dedicăm să împărtășim această pasiune cu întreaga comunitate de pescari din România.</p>
+                    </div>
+                </div>
+                <div class="col-lg-4 mb-4">
+                    <div class="value-card">
+                        <div class="value-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <h4>Încredere</h4>
+                        <p>Oferim doar informații verificate și locații testate, pentru ca fiecare ieșire la pescuit să fie o experiență de succes.</p>
+                    </div>
+                </div>
+                <div class="col-lg-4 mb-4">
+                    <div class="value-card">
+                        <div class="value-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h4>Comunitate</h4>
+                        <p>Construim și susținem o comunitate unită de pescari pasionați, unde fiecare poate învăța și împărtăși experiențe.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- What We Offer Section -->
+        <div class="section-card">
+            <div class="mission-section">
+                <div class="values-header">
+                    <h2>Ce Oferim</h2>
+                    <p>Servicii complete pentru o experiență perfectă de pescuit</p>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-6 mb-4">
+                        <ul class="feature-list">
+                            <li class="feature-item">
+                                <div class="feature-icon">
+                                    <i class="fas fa-search"></i>
+                                </div>
+                                <p class="feature-text">Căutare avansată după tip de pește, facilități și locație</p>
+                            </li>
+                            <li class="feature-item">
+                                <div class="feature-icon">
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <p class="feature-text">Sistem de recenzii și evaluări de la pescari reali</p>
+                            </li>
+                            <li class="feature-item">
+                                <div class="feature-icon">
+                                    <i class="fas fa-mobile-alt"></i>
+                                </div>
+                                <p class="feature-text">Platformă optimizată pentru dispozitive mobile</p>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-6 mb-4">
+                        <ul class="feature-list">
+                            <li class="feature-item">
+                                <div class="feature-icon">
+                                    <i class="fas fa-calendar-alt"></i>
+                                </div>
+                                <p class="feature-text">Calendar solunar pentru cele mai bune momente de pescuit</p>
+                            </li>
+                            <li class="feature-item">
+                                <div class="feature-icon">
+                                    <i class="fas fa-play-circle"></i>
+                                </div>
+                                <p class="feature-text">Tutoriale video și ghiduri pentru pescari</p>
+                            </li>
+                            <li class="feature-item">
+                                <div class="feature-icon">
+                                    <i class="fas fa-shield-alt"></i>
+                                </div>
+                                <p class="feature-text">Informații verificate și actualizate constant</p>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Section -->
+        <div class="stats-section">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-3 col-md-6">
+                        <div class="stat-item">
+                            <div class="stat-number">500+</div>
+                            <div class="stat-label">Locații de pescuit</div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="stat-item">
+                            <div class="stat-number">42</div>
+                            <div class="stat-label">Județe acoperite</div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="stat-item">
+                            <div class="stat-number">10K+</div>
+                            <div class="stat-label">Pescari în comunitate</div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="stat-item">
+                            <div class="stat-number">5</div>
+                            <div class="stat-label">Ani de experiență</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Call to Action -->
+        <div class="cta-section">
+            <h2>Alătură-te comunității noastre!</h2>
+            <p class="lead">Descoperă cele mai bune locații de pescuit din România și conectează-te cu pescari pasionați din întreaga țară.</p>
+            <a href="{% url 'main:contact' %}" class="btn btn-cta">
+                <i class="fas fa-envelope me-2"></i>Contactează-ne
+            </a>
+        </div>
     </div>
-</div>
+</section>
 {% endblock %}

@@ -147,11 +147,36 @@
     border-radius: 10px;
     font-weight: 500;
     transition: all 0.3s ease;
+    position: relative !important;
+    z-index: 9999 !important;
 }
 
 .filter-controls select:hover {
     background: white;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Solunar specific dropdown fixes */
+.filter-controls {
+    overflow: visible !important;
+    position: relative !important;
+    z-index: 9999 !important;
+}
+
+.filter-controls .row {
+    overflow: visible !important;
+}
+
+.filter-controls .col-md-6 {
+    overflow: visible !important;
+    position: relative !important;
+}
+
+/* Ensure dropdown options are visible */
+.filter-controls select option {
+    background: white !important;
+    color: #333 !important;
+    padding: 0.5rem !important;
 }
 
 .card.solunar-card {
@@ -380,11 +405,156 @@
 .solunar-card:nth-child(3) {
     animation-delay: 0.2s;
 }
-/* Solunar Page Background */
-html, body {
-    background-color: #2d5a3f !important;
-    margin: 0;
-    padding: 0;
-    min-height: 100vh;
+/* Clean Filter Controls for Solunar Page */
+.filter-controls {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(15px);
+    border-radius: 20px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.filter-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    align-items: center;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 200px;
+}
+
+.filter-label {
+    color: white;
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.filter-select {
+    background: white;
+    border: 2px solid rgba(25, 135, 84, 0.3);
+    border-radius: 12px;
+    padding: 0.875rem 1.25rem;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #333;
     width: 100%;
-    overflow
+    min-width: 180px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 0.75rem center;
+    background-repeat: no-repeat;
+    background-size: 1.5em 1.5em;
+    padding-right: 3rem;
+}
+
+.filter-select:hover {
+    border-color: #198754;
+    box-shadow: 0 0 0 3px rgba(25, 135, 84, 0.1);
+    transform: translateY(-1px);
+}
+
+.filter-select:focus {
+    outline: none;
+    border-color: #198754;
+    box-shadow: 0 0 0 4px rgba(25, 135, 84, 0.2);
+}
+
+.filter-select option {
+    background: white;
+    color: #333;
+    padding: 0.5rem;
+}
+
+.filter-info {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.9rem;
+    margin-top: 1rem;
+}
+
+.filter-hint {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 0.75rem 1.5rem;
+    margin-bottom: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+
+
+/* Responsive Design */
+@media (min-width: 768px) {
+    .filter-form {
+        flex-direction: row;
+        justify-content: center;
+        gap: 3rem;
+    }
+
+    .filter-group {
+        min-width: 220px;
+    }
+}
+
+@media (max-width: 767px) {
+    .filter-controls {
+        padding: 1.5rem 1rem;
+        margin: 0 0.5rem 2rem 0.5rem;
+        position: relative;
+        z-index: 1;
+        top: 0;
+    }
+
+    .filter-group {
+        width: 100%;
+        min-width: auto;
+    }
+
+    .filter-select {
+        min-width: auto;
+        width: 100%;
+        font-size: 16px; /* Prevents zoom on iOS */
+        position: relative;
+        z-index: 1;
+    }
+
+    /* Ensure solunar calendar doesn't overlap navbar */
+    .solunar-calendar {
+        padding-top: 1rem;
+        margin-top: 0;
+    }
+
+    /* Fix for mobile navbar overlap */
+    body.solunar-page {
+        padding-top: 0;
+    }
+
+    .solunar-calendar .container {
+        padding-top: 1rem;
+    }
+
+    /* Ensure filter controls don't interfere with navbar */
+    .filter-controls {
+        position: static !important;
+        z-index: 1 !important;
+    }
+
+    /* Prevent any dropdown issues on mobile */
+    .filter-select {
+        position: static !important;
+        z-index: auto !important;
+    }
+}

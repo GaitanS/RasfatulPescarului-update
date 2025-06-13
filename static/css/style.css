@@ -9,6 +9,68 @@
     border-color: #157347 !important;
 }
 
+/* Global dropdown fixes - prevent overflow issues */
+body, html {
+    overflow-x: visible !important;
+}
+
+.container, .container-fluid {
+    overflow: visible !important;
+}
+
+.row {
+    overflow: visible !important;
+}
+
+.col, .col-1, .col-2, .col-3, .col-4, .col-5, .col-6,
+.col-7, .col-8, .col-9, .col-10, .col-11, .col-12,
+.col-sm, .col-sm-1, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6,
+.col-sm-7, .col-sm-8, .col-sm-9, .col-sm-10, .col-sm-11, .col-sm-12,
+.col-md, .col-md-1, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6,
+.col-md-7, .col-md-8, .col-md-9, .col-md-10, .col-md-11, .col-md-12,
+.col-lg, .col-lg-1, .col-lg-2, .col-lg-3, .col-lg-4, .col-lg-5, .col-lg-6,
+.col-lg-7, .col-lg-8, .col-lg-9, .col-lg-10, .col-lg-11, .col-lg-12,
+.col-xl, .col-xl-1, .col-xl-2, .col-xl-3, .col-xl-4, .col-xl-5, .col-xl-6,
+.col-xl-7, .col-xl-8, .col-xl-9, .col-xl-10, .col-xl-11, .col-xl-12 {
+    overflow: visible !important;
+}
+
+/* Fix for all select dropdowns */
+select, .form-select {
+    position: relative !important;
+    z-index: 9999 !important;
+}
+
+/* Contact form controls should not be affected by global z-index */
+.contact-form-body .form-control {
+    position: relative !important;
+    z-index: 1 !important;
+}
+
+/* Fix for Bootstrap dropdowns */
+.dropdown-menu {
+    position: absolute !important;
+    z-index: 9999 !important;
+    max-height: 300px !important;
+    overflow-y: auto !important;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15) !important;
+}
+
+/* Ensure dropdown containers don't clip */
+.dropdown, .btn-group {
+    position: static !important;
+}
+
+/* Card and panel fixes */
+.card, .panel, .card-body, .panel-body {
+    overflow: visible !important;
+}
+
+/* Form group fixes */
+.form-group, .mb-3, .mb-2, .mb-1 {
+    overflow: visible !important;
+}
+
 :root {
     --primary-color: #198653;
     --secondary-color: #188552;
@@ -906,14 +968,58 @@ body {
     .county-selection-section h2 {
         font-size: 2rem;
     }
-    
+
     .county-selection-section p {
         font-size: 1.1rem;
         padding: 0 1rem;
     }
-    
+
     .map-container {
         padding: 1rem;
+    }
+
+    /* Global mobile navbar fixes */
+    .navbar {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        z-index: 1030 !important;
+        width: 100% !important;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1) !important;
+    }
+
+    .navbar .container {
+        padding-left: 15px !important;
+        padding-right: 15px !important;
+        position: relative !important;
+    }
+
+    .navbar-brand {
+        position: absolute !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        margin: 0 !important;
+    }
+
+    .navbar-toggler {
+        position: relative !important;
+        z-index: 1031 !important;
+        margin-left: auto !important;
+    }
+
+    /* Add top padding to body to account for fixed navbar */
+    body {
+        padding-top: 76px !important;
+    }
+
+    /* Ensure navbar content doesn't overflow */
+    .navbar-nav {
+        max-width: 100% !important;
+    }
+
+    .navbar-collapse {
+        margin-top: 0.5rem !important;
     }
 }
 

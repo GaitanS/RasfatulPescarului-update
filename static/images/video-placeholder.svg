@@ -1,0 +1,13 @@
+<svg width="320" height="180" viewBox="0 0 320 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="320" height="180" fill="#198754"/>
+  <rect width="320" height="180" fill="url(#gradient)" opacity="0.8"/>
+  <circle cx="160" cy="90" r="30" fill="rgba(255,255,255,0.9)"/>
+  <polygon points="150,75 150,105 175,90" fill="#198754"/>
+  <text x="160" y="130" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="14" font-weight="600">Tutorial Video</text>
+  <defs>
+    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#198754;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#20c997;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+</svg>

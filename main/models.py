@@ -742,11 +742,11 @@ class Video(models.Model):
             match = re.search(r'[?&]v=([^&]+)', self.url)
             if match:
                 video_id = match.group(1)
-                return f'https://www.youtube.com/embed/{video_id}'
+                return f'https://www.youtube.com/embed/{video_id}?rel=0&modestbranding=1'
         elif 'youtu.be/' in self.url:
             # Handle short YouTube URLs like https://youtu.be/VIDEO_ID
             video_id = self.url.split('youtu.be/')[-1].split('?')[0]
-            return f'https://www.youtube.com/embed/{video_id}'
+            return f'https://www.youtube.com/embed/{video_id}?rel=0&modestbranding=1'
         elif 'vimeo.com/' in self.url:
             # Handle Vimeo URLs
             video_id = self.url.split('vimeo.com/')[-1].split('?')[0]
@@ -754,6 +754,37 @@ class Video(models.Model):
 
         # Return original URL if no conversion needed
         return self.url
+
+    def get_youtube_video_id(self):
+        """Extract YouTube video ID from URL"""
+        if not self.url:
+            return None
+
+        import re
+        # Handle YouTube URLs
+        if 'youtube.com/watch' in self.url:
+            match = re.search(r'[?&]v=([^&]+)', self.url)
+            if match:
+                return match.group(1)
+        elif 'youtu.be/' in self.url:
+            return self.url.split('youtu.be/')[-1].split('?')[0]
+
+        return None
+
+    @property
+    def youtube_thumbnail_url(self):
+        """Get YouTube thumbnail URL"""
+        video_id = self.get_youtube_video_id()
+        if video_id:
+            # Use maxresdefault for best quality, fallback to hqdefault if not available
+            return f'https://img.youtube.com/vi/{video_id}/maxresdefault.jpg'
+        return None
+
+    def get_thumbnail_url(self):
+        """Get thumbnail URL - either uploaded thumbnail or YouTube auto-generated"""
+        if self.thumbnail:
+            return self.thumbnail.url
+        return self.youtube_thumbnail_url
 
 class HeroSection(models.Model):
     main_button_text = models.CharField(
@@ -936,3 +967,160 @@ class LakeReview(models.Model):
 
     def __str__(self):
         return f"{self.reviewer_name} - {self.lake.name} ({self.rating} stele)"
+
+
+class ContactMessage(models.Model):
+    """Model pentru stocarea mesajelor de contact"""
+    name = models.CharField(
+        max_length=100,
+        verbose_name="Nume complet",
+        help_text="Numele complet al persoanei care trimite mesajul"
+    )
+    email = models.EmailField(
+        verbose_name="Email",
+        help_text="Adresa de email pentru răspuns"
+    )
+    subject = models.CharField(
+        max_length=200,
+        verbose_name="Subiect",
+        help_text="Subiectul mesajului"
+    )
+    message = models.TextField(
+        verbose_name="Mesaj",
+        help_text="Conținutul mesajului"
+    )
+    ip_address = models.GenericIPAddressField(
+        null=True,
+        blank=True,
+        verbose_name="Adresa IP",
+        help_text="Adresa IP de la care a fost trimis mesajul"
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name="Data trimiterii"
+    )
+    is_read = models.BooleanField(
+        default=False,
+        verbose_name="Citit",
+        help_text="Marchează dacă mesajul a fost citit"
+    )
+    is_replied = models.BooleanField(
+        default=False,
+        verbose_name="Răspuns trimis",
+        help_text="Marchează dacă s-a trimis un răspuns"
+    )
+    admin_notes = models.TextField(
+        blank=True,
+        verbose_name="Note administrative",
+        help_text="Note interne pentru administratori"
+    )
+
+    class Meta:
+        verbose_name = "Mesaj de contact"
+        verbose_name_plural = "Mesaje de contact"
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.name} - {self.subject} ({self.created_at.strftime('%d.%m.%Y %H:%M')})"
+
+    def get_short_message(self):
+        """Returnează o versiune scurtă a mesajului pentru afișare în admin"""
+        if len(self.message) > 100:
+            return self.message[:100] + "..."
+        return self.message
+    get_short_message.short_description = "Mesaj (scurt)"
+
+
+class ContactSettings(models.Model):
+    """Model pentru gestionarea setărilor de contact și programului de lucru"""
+
+    # Contact Information
+    company_name = models.CharField(
+        max_length=100,
+        default='Răsfățul Pescarului',
+        verbose_name="Numele companiei",
+        help_text="Numele companiei care apare pe pagina de contact"
+    )
+    address = models.TextField(
+        default='Strada Exemplu, Nr. 123, București, România',
+        verbose_name="Adresa completă",
+        help_text="Adresa fizică completă a companiei"
+    )
+    phone = models.CharField(
+        max_length=20,
+        default='+40 700 000 000',
+        verbose_name="Număr de telefon",
+        help_text="Numărul principal de telefon pentru contact"
+    )
+    email = models.EmailField(
+        default='contact@rasfatulpescarului.ro',
+        verbose_name="Email de contact",
+        help_text="Adresa principală de email pentru contact"
+    )
+
+    # Working Hours
+    monday_friday_hours = models.CharField(
+        max_length=50,
+        default='09:00 – 18:00',
+        verbose_name="Program Luni - Vineri",
+        help_text="Programul de lucru pentru zilele de luni până vineri (ex: 09:00 – 18:00)"
+    )
+    saturday_hours = models.CharField(
+        max_length=50,
+        default='10:00 – 14:00',
+        verbose_name="Program Sâmbătă",
+        help_text="Programul de lucru pentru sâmbătă (ex: 10:00 – 14:00)"
+    )
+    sunday_hours = models.CharField(
+        max_length=50,
+        default='Închis',
+        verbose_name="Program Duminică",
+        help_text="Programul de lucru pentru duminică (ex: Închis sau 10:00 – 16:00)"
+    )
+
+    # Additional Information
+    description = models.TextField(
+        blank=True,
+        verbose_name="Descriere",
+        help_text="Descriere suplimentară care apare pe pagina de contact"
+    )
+    map_embed_code = models.TextField(
+        blank=True,
+        verbose_name="Cod embed hartă",
+        help_text="Codul iframe pentru harta Google Maps (opțional)"
+    )
+
+    # Social Media
+    facebook_url = models.URLField(
+        blank=True,
+        verbose_name="Link Facebook",
+        help_text="URL-ul către pagina de Facebook"
+    )
+    instagram_url = models.URLField(
+        blank=True,
+        verbose_name="Link Instagram",
+        help_text="URL-ul către pagina de Instagram"
+    )
+    youtube_url = models.URLField(
+        blank=True,
+        verbose_name="Link YouTube",
+        help_text="URL-ul către canalul de YouTube"
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Data creării")
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="Data actualizării")
+
+    class Meta:
+        verbose_name = "Setări Contact"
+        verbose_name_plural = "Setări Contact"
+
+    def __str__(self):
+        return f"Setări Contact - {self.company_name}"
+
+    @classmethod
+    def get_settings(cls):
+        """Returnează prima instanță de setări contact sau o creează dacă nu există"""
+        settings = cls.objects.first()
+        if not settings:
+            settings = cls.objects.create()
+        return settings

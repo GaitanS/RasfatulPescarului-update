@@ -266,3 +266,34 @@
         padding: 1rem;
     }
 }
+
+/* Dropdown fixes for my-lakes page */
+.filter-section, .filter-controls {
+    overflow: visible !important;
+    position: relative !important;
+    z-index: 9999 !important;
+}
+
+.filter-controls select, .form-select {
+    position: relative !important;
+    z-index: 9999 !important;
+}
+
+.filter-controls .form-select option {
+    background: white !important;
+    color: #333 !important;
+    padding: 0.5rem !important;
+}
+
+.search-filters {
+    overflow: visible !important;
+}
+
+.search-filters .row {
+    overflow: visible !important;
+}
+
+.search-filters .col-md-6, .search-filters .col-md-4 {
+    overflow: visible !important;
+    position: relative !important;
+}

@@ -194,6 +194,8 @@ JAZZMIN_SETTINGS = {
         "main.sitesettings": "fas fa-cogs",
         "main.herosection": "fas fa-home",
         "main.footersettings": "fas fa-shoe-prints",
+        "main.contactmessage": "fas fa-envelope",
+        "main.contactsettings": "fas fa-address-book",
     },
     # Icons that are used when one is not manually specified
     "default_icon_parents": "fas fa-chevron-circle-right",
@@ -242,3 +244,27 @@ SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = 'Lax'
 SESSION_SAVE_EVERY_REQUEST = True
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+
+# Email settings
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # For development
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'  # For production
+
+# SMTP settings (uncomment for production)
+# EMAIL_HOST = 'smtp.gmail.com'
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+# EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+# EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+
+DEFAULT_FROM_EMAIL = 'contact@rasfatulpescarului.ro'
+ADMIN_EMAIL = 'admin@rasfatulpescarului.ro'
+
+# Site settings for templates
+SITE_URL = 'http://127.0.0.1:8000'
+CURRENT_YEAR = 2025
+COMPANY_PHONE = '0700 000 000'
+COMPANY_EMAIL = 'contact@rasfatulpescarului.ro'
+COMPANY_ADDRESS = 'România'
+
+# X-Frame-Options settings to allow YouTube embeds
+X_FRAME_OPTIONS = 'SAMEORIGIN'

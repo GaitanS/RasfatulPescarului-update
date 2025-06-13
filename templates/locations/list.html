@@ -1,71 +1,391 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block extra_css %}
+<style>
+.locations-hero {
+    background: linear-gradient(135deg, #198754 0%, #20c997 100%);
+    color: white;
+    padding: 4rem 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.locations-hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('{% static "images/hero.png" %}') center/cover;
+    opacity: 0.1;
+    z-index: 1;
+}
+
+.locations-hero .container {
+    position: relative;
+    z-index: 2;
+}
+
+.search-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 1rem;
+    padding: 2rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    margin-top: 2rem;
+}
+
+.county-card {
+    background: white;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.county-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(25, 135, 84, 0.1), transparent);
+    transition: left 0.5s ease;
+}
+
+.county-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(25, 135, 84, 0.15);
+    border-color: #198754;
+    text-decoration: none;
+    color: inherit;
+}
+
+.county-card:hover::before {
+    left: 100%;
+}
+
+.county-icon {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #198754, #20c997);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+    color: white;
+    font-size: 1.5rem;
+}
+
+.lake-card {
+    background: white;
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.lake-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(25, 135, 84, 0.15);
+}
+
+.lake-image {
+    height: 220px;
+    object-fit: cover;
+    width: 100%;
+}
+
+.lake-type-badge {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    background: rgba(25, 135, 84, 0.9);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.fish-species-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    margin-bottom: 1rem;
+}
+
+.fish-badge {
+    background: #198754;
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.5rem;
+    font-size: 0.7rem;
+    font-weight: 500;
+}
+
+.stats-container {
+    background: #f8f9fa;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.stat-item:last-child {
+    margin-bottom: 0;
+}
+
+.stat-icon {
+    width: 20px;
+    color: #198754;
+    margin-right: 0.5rem;
+}
+
+.filter-section {
+    background: white;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    margin-bottom: 2rem;
+}
+
+.section-title {
+    color: #198754;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    position: relative;
+    padding-bottom: 0.5rem;
+}
+
+.section-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 50px;
+    height: 3px;
+    background: linear-gradient(90deg, #198754, #20c997);
+    border-radius: 2px;
+}
+
+.results-header {
+    background: white;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    margin-bottom: 2rem;
+}
+
+.btn-map {
+    background: linear-gradient(135deg, #198754, #20c997);
+    border: none;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-map:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(25, 135, 84, 0.3);
+    color: white;
+}
+
+/* Dropdown fixes for locations list page */
+.search-card {
+    overflow: visible !important;
+    position: relative !important;
+    z-index: 9999 !important;
+}
+
+.search-card .row {
+    overflow: visible !important;
+}
+
+.search-card .col-md-3, .search-card .col-md-4 {
+    overflow: visible !important;
+    position: relative !important;
+}
+
+.form-floating {
+    overflow: visible !important;
+    position: relative !important;
+}
+
+.form-select {
+    position: relative !important;
+    z-index: 9999 !important;
+}
+
+.form-select option {
+    background: white !important;
+    color: #333 !important;
+    padding: 0.5rem !important;
+}
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="container py-4">
-    <div class="row mb-4">
-        <div class="col">
-            <h1 class="mb-3">Bălți de pescuit</h1>
-            <p class="lead">Descoperă cele mai bune locuri de pescuit din România</p>
-        </div>
-    </div>
+<!-- Hero Section -->
+<section class="locations-hero">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center">
+                <h1 class="display-4 fw-bold mb-3">Descoperă Locurile de Pescuit</h1>
+                <p class="lead mb-4">Găsește cele mai bune bălți și lacuri de pescuit din România</p>
 
-    <div class="row mb-4">
-        <div class="col">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <p class="mb-0">{{ lakes.count }} locații disponibile</p>
-                </div>
-                <div>
-                    <a href="{% url 'main:locations_map' %}" class="btn btn-outline-success">
-                        <i class="fas fa-map-marker-alt me-2"></i>Vezi pe hartă
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Counties -->
-    <div class="row mb-4">
-        <div class="col">
-            <h4 class="mb-3">Județe</h4>
-            <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3">
-                {% for county in counties %}
-                <div class="col">
-                    <a href="{% url 'main:county_lakes' county.slug %}" class="text-decoration-none">
-                        <div class="card h-100">
-                            <div class="card-body">
-                                <h5 class="card-title text-success mb-0">{{ county.name }}</h5>
-                                <small class="text-muted">{{ county.lakes.count }} locații</small>
+                <!-- Search Card -->
+                <div class="search-card">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <div class="form-floating">
+                                <input type="text" class="form-control" id="searchLocation" placeholder="Caută locație...">
+                                <label for="searchLocation">
+                                    <i class="fas fa-search me-2"></i>Caută locație...
+                                </label>
                             </div>
                         </div>
-                    </a>
+                        <div class="col-md-3">
+                            <div class="form-floating">
+                                <select class="form-select" id="filterCounty">
+                                    <option value="">Toate județele</option>
+                                    {% for county in counties %}
+                                    <option value="{{ county.slug }}">{{ county.name }}</option>
+                                    {% endfor %}
+                                </select>
+                                <label for="filterCounty">
+                                    <i class="fas fa-map-marker-alt me-2"></i>Județ
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-floating">
+                                <select class="form-select" id="sortBy">
+                                    <option value="name">Nume A-Z</option>
+                                    <option value="price_asc">Preț crescător</option>
+                                    <option value="price_desc">Preț descrescător</option>
+                                    <option value="rating">Rating</option>
+                                </select>
+                                <label for="sortBy">
+                                    <i class="fas fa-sort me-2"></i>Sortează
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <a href="{% url 'main:locations_map' %}" class="btn btn-map w-100 h-100 d-flex align-items-center justify-content-center">
+                                <i class="fas fa-map me-2"></i>Hartă
+                            </a>
+                        </div>
+                    </div>
                 </div>
-                {% endfor %}
             </div>
         </div>
     </div>
+</section>
 
-    <!-- Lakes -->
-    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-        {% for lake in lakes %}
-        <div class="col">
-            <div class="card h-100">
-                {% with display_image=lake.get_display_image %}
-                {% if display_image %}
-                <img src="{{ display_image.url }}" class="card-img-top" alt="{{ lake.name }}" style="height: 200px; object-fit: cover;">
-                {% else %}
-                <img src="{% static 'images/lake-placeholder.jpg' %}" class="card-img-top" alt="{{ lake.name }}" style="height: 200px; object-fit: cover;">
-                {% endif %}
-                {% endwith %}
-                <div class="card-body">
-                    <h5 class="card-title">{{ lake.name }}</h5>
-                    <p class="card-text">{{ lake.description|truncatechars:100 }}</p>
+<!-- Counties Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <h2 class="section-title text-center">Explorează după Județ</h2>
+                <p class="text-center text-muted mb-5">Selectează județul pentru a vedea toate locațiile de pescuit disponibile</p>
+            </div>
+        </div>
 
-                    <!-- Rating Display -->
-                    {% if lake.total_reviews > 0 %}
-                    <div class="mb-2">
-                        <div class="d-flex align-items-center gap-2">
+        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-6 g-4">
+            {% for county in counties %}
+            <div class="col">
+                <a href="{% url 'main:county_lakes' county.slug %}" class="county-card">
+                    <div class="county-icon">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <h6 class="fw-bold mb-1">{{ county.name }}</h6>
+                    <small class="text-muted">{{ county.lakes.count }} {% if county.lakes.count == 1 %}locație{% else %}locații{% endif %}</small>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Results Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <!-- Results Header -->
+        <div class="results-header">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h3 class="mb-0">Locații de Pescuit</h3>
+                    <p class="text-muted mb-0" id="resultsCount">{{ lakes.count }} {% if lakes.count == 1 %}locație găsită{% else %}locații găsite{% endif %}</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-outline-success active" id="gridView">
+                            <i class="fas fa-th-large"></i>
+                        </button>
+                        <button type="button" class="btn btn-outline-success" id="listView">
+                            <i class="fas fa-list"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lakes Grid -->
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" id="lakesContainer">
+            {% for lake in lakes %}
+            <div class="col lake-item"
+                 data-name="{{ lake.name|lower }}"
+                 data-county="{{ lake.county.slug }}"
+                 data-price="{{ lake.price_per_day }}"
+                 data-rating="{{ lake.average_rating|default:0 }}">
+                <div class="lake-card">
+                    <div class="position-relative">
+                        {% with display_image=lake.get_display_image %}
+                        {% if display_image %}
+                        <img src="{{ display_image.url }}" class="lake-image" alt="{{ lake.name }}">
+                        {% else %}
+                        <img src="{% static 'images/lake-placeholder.jpg' %}" class="lake-image" alt="{{ lake.name }}">
+                        {% endif %}
+                        {% endwith %}
+
+                        <!-- Lake Type Badge -->
+                        <div class="lake-type-badge">
+                            {{ lake.get_lake_type_display }}
+                        </div>
+                    </div>
+
+                    <div class="p-3">
+                        <h5 class="fw-bold mb-2">{{ lake.name }}</h5>
+                        <p class="text-muted small mb-3">{{ lake.description|truncatechars:80 }}</p>
+
+                        <!-- Rating Display -->
+                        {% if lake.total_reviews > 0 %}
+                        <div class="d-flex align-items-center gap-2 mb-3">
                             <div class="rating-stars">
                                 {% for i in "12345" %}
                                     {% if forloop.counter <= lake.average_rating %}
@@ -76,31 +396,155 @@
                                 {% endfor %}
                             </div>
                             <span class="fw-bold" style="color: #ffc107;">{{ lake.average_rating }}</span>
-                            <small class="text-muted">({{ lake.total_reviews }})</small>
+                            <small class="text-muted">({{ lake.total_reviews }} {% if lake.total_reviews == 1 %}recenzie{% else %}recenzii{% endif %})</small>
                         </div>
-                    </div>
-                    {% endif %}
+                        {% endif %}
 
-                    <ul class="list-unstyled">
-                        <li><i class="fas fa-fish me-2"></i>{% for fish in lake.fish_species.all %}{{ fish.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</li>
-                        <li><i class="fas fa-coins me-2"></i>{{ lake.price_per_day }} Lei/zi</li>
-                        <li><i class="fas fa-map-marker-alt me-2"></i>{{ lake.address }}</li>
-                    </ul>
-                    <div class="d-grid">
-                        <a href="{% url 'main:lake_detail' lake.slug %}" class="btn btn-success">
-                            Vezi detalii
-                        </a>
+                        <!-- Fish Species -->
+                        {% if lake.fish_species.all %}
+                        <div class="fish-species-container">
+                            {% for fish in lake.fish_species.all|slice:":4" %}
+                            <span class="fish-badge">
+                                <i class="fas fa-fish me-1"></i>{{ fish.name }}
+                            </span>
+                            {% endfor %}
+                            {% if lake.fish_species.count > 4 %}
+                            <span class="fish-badge">+{{ lake.fish_species.count|add:"-4" }}</span>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+
+                        <!-- Stats -->
+                        <div class="stats-container">
+                            <div class="stat-item">
+                                <i class="fas fa-coins stat-icon"></i>
+                                <span class="fw-bold">{{ lake.price_per_day }} Lei</span>
+                                <small class="text-muted">/zi</small>
+                            </div>
+                            <div class="stat-item">
+                                <i class="fas fa-map-marker-alt stat-icon"></i>
+                                <span>{{ lake.address }}</span>
+                            </div>
+                            {% if lake.contact_phone %}
+                            <div class="stat-item">
+                                <i class="fas fa-phone stat-icon"></i>
+                                <span>{{ lake.contact_phone }}</span>
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="d-grid">
+                            <a href="{% url 'main:lake_detail' lake.slug %}" class="btn btn-success">
+                                <i class="fas fa-eye me-2"></i>Vezi detalii
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        {% empty %}
-        <div class="col-12">
-            <div class="alert alert-info">
-                Nu există bălți de pescuit înregistrate momentan.
+            {% empty %}
+            <div class="col-12">
+                <div class="text-center py-5">
+                    <div class="mb-4">
+                        <i class="fas fa-fish" style="font-size: 4rem; color: #e9ecef;"></i>
+                    </div>
+                    <h4 class="text-muted">Nu există locații disponibile</h4>
+                    <p class="text-muted">Nu am găsit nicio baltă de pescuit care să corespundă criteriilor tale.</p>
+                </div>
             </div>
+            {% endfor %}
         </div>
-        {% endfor %}
     </div>
-</div>
+</section>
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('searchLocation');
+    const countyFilter = document.getElementById('filterCounty');
+    const sortSelect = document.getElementById('sortBy');
+    const lakesContainer = document.getElementById('lakesContainer');
+    const resultsCount = document.getElementById('resultsCount');
+    const gridViewBtn = document.getElementById('gridView');
+    const listViewBtn = document.getElementById('listView');
+
+    // Search and filter functionality
+    function filterLakes() {
+        const searchTerm = searchInput.value.toLowerCase();
+        const selectedCounty = countyFilter.value;
+        const sortBy = sortSelect.value;
+
+        let lakes = Array.from(document.querySelectorAll('.lake-item'));
+        let visibleCount = 0;
+
+        // Filter lakes
+        lakes.forEach(lake => {
+            const name = lake.dataset.name;
+            const county = lake.dataset.county;
+
+            const matchesSearch = name.includes(searchTerm);
+            const matchesCounty = !selectedCounty || county === selectedCounty;
+
+            if (matchesSearch && matchesCounty) {
+                lake.style.display = 'block';
+                visibleCount++;
+            } else {
+                lake.style.display = 'none';
+            }
+        });
+
+        // Sort visible lakes
+        const visibleLakes = lakes.filter(lake => lake.style.display !== 'none');
+
+        visibleLakes.sort((a, b) => {
+            switch(sortBy) {
+                case 'name':
+                    return a.dataset.name.localeCompare(b.dataset.name);
+                case 'price_asc':
+                    return parseFloat(a.dataset.price) - parseFloat(b.dataset.price);
+                case 'price_desc':
+                    return parseFloat(b.dataset.price) - parseFloat(a.dataset.price);
+                case 'rating':
+                    return parseFloat(b.dataset.rating) - parseFloat(a.dataset.rating);
+                default:
+                    return 0;
+            }
+        });
+
+        // Reorder DOM elements
+        visibleLakes.forEach(lake => {
+            lakesContainer.appendChild(lake);
+        });
+
+        // Update results count
+        resultsCount.textContent = `${visibleCount} ${visibleCount === 1 ? 'locație găsită' : 'locații găsite'}`;
+    }
+
+    // View toggle functionality
+    function toggleView(viewType) {
+        if (viewType === 'grid') {
+            lakesContainer.className = 'row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4';
+            gridViewBtn.classList.add('active');
+            listViewBtn.classList.remove('active');
+        } else {
+            lakesContainer.className = 'row g-4';
+            listViewBtn.classList.add('active');
+            gridViewBtn.classList.remove('active');
+
+            // Make all items full width in list view
+            document.querySelectorAll('.lake-item').forEach(item => {
+                item.className = 'col-12 lake-item';
+            });
+        }
+    }
+
+    // Event listeners
+    searchInput.addEventListener('input', filterLakes);
+    countyFilter.addEventListener('change', filterLakes);
+    sortSelect.addEventListener('change', filterLakes);
+
+    gridViewBtn.addEventListener('click', () => toggleView('grid'));
+    listViewBtn.addEventListener('click', () => toggleView('list'));
+});
+</script>
+{% endblock %}
 {% endblock %}

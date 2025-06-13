@@ -60,4 +60,7 @@ urlpatterns = [
     path('api/solunar-data/', views.solunar_data, name='solunar_data'),
     path('solunar-calendar/', views.solunar_calendar, name='solunar_calendar'),
     path('terms/', views.terms, name='terms'),
+
+    # Test iframe
+    path('test-iframe/', views.test_iframe, name='test_iframe'),
 ]

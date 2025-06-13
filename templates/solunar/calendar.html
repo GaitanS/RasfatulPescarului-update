@@ -5,6 +5,167 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/solunar.css' %}">
+<style>
+/* Clean Filter Controls Styles */
+.filter-controls {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(15px);
+    border-radius: 20px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.filter-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    align-items: center;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 200px;
+}
+
+.filter-label {
+    color: white;
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.filter-select {
+    background: white;
+    border: 2px solid rgba(25, 135, 84, 0.3);
+    border-radius: 12px;
+    padding: 0.875rem 1.25rem;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #333;
+    width: 100%;
+    min-width: 180px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 0.75rem center;
+    background-repeat: no-repeat;
+    background-size: 1.5em 1.5em;
+    padding-right: 3rem;
+}
+
+.filter-select:hover {
+    border-color: #198754;
+    box-shadow: 0 0 0 3px rgba(25, 135, 84, 0.1);
+    transform: translateY(-1px);
+}
+
+.filter-select:focus {
+    outline: none;
+    border-color: #198754;
+    box-shadow: 0 0 0 4px rgba(25, 135, 84, 0.2);
+}
+
+.filter-select option {
+    background: white;
+    color: #333;
+    padding: 0.5rem;
+}
+
+.filter-info {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.9rem;
+    margin-top: 1rem;
+}
+
+.filter-hint {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 0.75rem 1.5rem;
+    margin-bottom: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Responsive Design */
+@media (min-width: 768px) {
+    .filter-form {
+        flex-direction: row;
+        justify-content: center;
+        gap: 3rem;
+    }
+
+    .filter-group {
+        min-width: 220px;
+    }
+}
+
+@media (max-width: 767px) {
+    .filter-controls {
+        padding: 1.5rem 1rem;
+        margin: 0 0.5rem 2rem 0.5rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    .filter-group {
+        width: 100%;
+        min-width: auto;
+    }
+
+    .filter-select {
+        min-width: auto;
+        width: 100%;
+        font-size: 16px;
+    }
+
+    /* Mobile navbar overlap prevention */
+    .solunar-calendar {
+        padding-top: 1rem !important;
+        margin-top: 0 !important;
+    }
+
+    .solunar-calendar .container {
+        padding-top: 1rem !important;
+    }
+
+    /* Ensure proper spacing from top */
+    body.solunar-page {
+        padding-top: 0 !important;
+    }
+
+    /* Additional mobile fixes */
+    .navbar {
+        z-index: 1030 !important;
+    }
+
+    .filter-controls,
+    .solunar-calendar {
+        z-index: 1 !important;
+        position: relative !important;
+    }
+}
+
+
+
+/* Success States */
+.filter-select.success {
+    border-color: #198754;
+    box-shadow: 0 0 0 3px rgba(25, 135, 84, 0.2);
+}
+
+
+
+
+</style>
 {% endblock %}
 
 {% block content %}
@@ -82,27 +243,46 @@
         </div>
         
         <!-- Filter Controls -->
-        <div class="filter-controls mb-5">
-            <form class="row justify-content-center g-3" method="get">
-                <div class="col-12 col-md-auto">
-                    <select name="month" class="form-select" id="monthSelect">
+        <div class="filter-controls">
+            <div class="filter-hint text-center">
+                <h5 class="text-white mb-2">
+                    <i class="fas fa-calendar-alt me-2"></i>Selectează Luna și Anul
+                </h5>
+                <p class="text-light mb-0" style="font-size: 0.9rem;">
+                    Alege luna și anul pentru a vedea datele solunar specifice
+                </p>
+            </div>
+
+            <form method="get" class="filter-form" id="solunarFilterForm">
+                <div class="filter-group">
+                    <label class="filter-label" for="monthSelect">
+                        <i class="fas fa-calendar me-1"></i>Luna
+                    </label>
+                    <select name="month" id="monthSelect" class="filter-select" title="Selectează luna pentru calendar">
                         {% for m_num, m_name in months %}
-                            <option value="{{ m_num }}" {% if m_num == current_month %}selected{% endif %}>
-                                {{ m_name }}
-                            </option>
+                        <option value="{{ m_num }}" {% if m_num == current_month %}selected{% endif %}>{{ m_name }}</option>
                         {% endfor %}
                     </select>
                 </div>
-                <div class="col-12 col-md-auto">
-                    <select name="year" class="form-select" id="yearSelect">
+
+                <div class="filter-group">
+                    <label class="filter-label" for="yearSelect">
+                        <i class="fas fa-calendar-week me-1"></i>Anul
+                    </label>
+                    <select name="year" id="yearSelect" class="filter-select" title="Selectează anul pentru calendar">
                         {% for y in years_range %}
-                            <option value="{{ y }}" {% if y == current_year %}selected{% endif %}>
-                                {{ y }}
-                            </option>
+                        <option value="{{ y }}" {% if y == current_year %}selected{% endif %}>{{ y }}</option>
                         {% endfor %}
                     </select>
                 </div>
             </form>
+
+            <div class="filter-info">
+                <small class="text-light">
+                    <i class="fas fa-info-circle me-1"></i>
+                    Calendarul se va actualiza automat după selectarea unei noi luni sau an
+                </small>
+            </div>
         </div>
 
         <!-- Calendar Grid -->
@@ -189,46 +369,6 @@
 </section>
 
 {% block extra_js %}
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Calendar update functionality
-    const monthSelect = document.getElementById('monthSelect');
-    const yearSelect = document.getElementById('yearSelect');
-    
-    function updateCalendar() {
-        const month = monthSelect.value;
-        const year = yearSelect.value;
-        window.location.href = `?month=${month}&year=${year}`;
-    }
-    
-    monthSelect.addEventListener('change', updateCalendar);
-    yearSelect.addEventListener('change', updateCalendar);
-
-    // Legend toggle functionality
-    const toggleBtn = document.getElementById('toggleLegend');
-    const legendContent = document.querySelector('.legend-content');
-    const legendIcon = toggleBtn.querySelector('i');
-    let isLegendVisible = true;
-
-    function toggleLegend() {
-        isLegendVisible = !isLegendVisible;
-        legendContent.style.display = isLegendVisible ? 'block' : 'none';
-        legendIcon.style.transform = isLegendVisible ? 'rotate(0deg)' : 'rotate(180deg)';
-        
-        // Save preference to localStorage
-        localStorage.setItem('solunarLegendVisible', isLegendVisible);
-    }
-
-    // Load saved preference
-    const savedPreference = localStorage.getItem('solunarLegendVisible');
-    if (savedPreference !== null) {
-        isLegendVisible = savedPreference === 'true';
-        legendContent.style.display = isLegendVisible ? 'block' : 'none';
-        legendIcon.style.transform = isLegendVisible ? 'rotate(0deg)' : 'rotate(180deg)';
-    }
-
-    toggleBtn.addEventListener('click', toggleLegend);
-});
-</script>
+<script src="{% static 'js/solunar.js' %}"></script>
 {% endblock %}
 {% endblock %}

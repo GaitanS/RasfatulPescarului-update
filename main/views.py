@@ -352,7 +352,10 @@ def add_review(request, lake_id):
 def tutorials(request):
     """View pentru lista de tutoriale video"""
     videos = Video.objects.filter(is_active=True).order_by('-created_at')
-    
+
+    # Get featured videos for sidebar
+    featured_videos = Video.objects.filter(is_active=True, is_featured=True).order_by('-created_at')[:4]
+
     # Pagination
     paginator = Paginator(videos, 12)
     page = request.GET.get('page')
@@ -362,8 +365,14 @@ def tutorials(request):
         videos = paginator.page(1)
     except EmptyPage:
         videos = paginator.page(paginator.num_pages)
-    
-    return render(request, 'tutorials/list.html', {'videos': videos})
+
+    context = {
+        'videos': videos,
+        'featured_videos': featured_videos,
+        'categories': [],  # Add categories here if you have a Category model
+    }
+
+    return render(request, 'tutorials/list.html', context)
 
 def video_detail(request, video_id):
     """View pentru detaliile unui tutorial video"""
@@ -390,7 +399,7 @@ def contact(request):
         email = request.POST.get('email')
         subject = request.POST.get('subject')
         message = request.POST.get('message')
-        
+
         # Store form data in case of error
         form_data = {
             'name': name,
@@ -398,20 +407,46 @@ def contact(request):
             'subject': subject,
             'message': message
         }
-        
+
         # Basic validation
         if not all([name, email, subject, message]):
             messages.error(
                 request,
                 'Te rugăm să completezi toate câmpurile obligatorii.'
             )
-            return render(request, 'pages/contact.html', {'form_data': form_data})
-        
+            # Get contact settings for error case
+            from .models import ContactSettings
+            contact_settings = ContactSettings.get_settings()
+            context = {
+                'form_data': form_data,
+                'contact_settings': contact_settings
+            }
+            return render(request, 'pages/contact.html', context)
+
         try:
+            # Get client IP address
+            def get_client_ip(request):
+                x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+                if x_forwarded_for:
+                    ip = x_forwarded_for.split(',')[0]
+                else:
+                    ip = request.META.get('REMOTE_ADDR')
+                return ip
+
+            # Save contact message to database
+            from .models import ContactMessage
+            contact_message = ContactMessage.objects.create(
+                name=name,
+                email=email,
+                subject=subject,
+                message=message,
+                ip_address=get_client_ip(request)
+            )
+
             # Send contact emails
             send_contact_confirmation_email(email, name)
             send_contact_admin_email(name, email, subject, message)
-            
+
             messages.success(
                 request,
                 'Mesajul tău a fost trimis cu succes! Te vom contacta în curând.'
@@ -420,16 +455,29 @@ def contact(request):
         except Exception as e:
             import logging
             logger = logging.getLogger(__name__)
-            logger.error(f'Error sending contact form emails: {str(e)}')
+            logger.error(f'Error processing contact form: {str(e)}')
             logger.exception('Full traceback:')
-            
+
             messages.error(
                 request,
                 'A apărut o eroare la trimiterea mesajului. Te rugăm să încerci din nou.'
             )
-            return render(request, 'pages/contact.html', {'form_data': form_data})
-    
-    return render(request, 'pages/contact.html')
+            # Get contact settings for error case
+            contact_settings = ContactSettings.get_settings()
+            context = {
+                'form_data': form_data,
+                'contact_settings': contact_settings
+            }
+            return render(request, 'pages/contact.html', context)
+
+    # Get contact settings
+    from .models import ContactSettings
+    contact_settings = ContactSettings.get_settings()
+
+    context = {
+        'contact_settings': contact_settings
+    }
+    return render(request, 'pages/contact.html', context)
 
 @require_http_methods(['GET'])
 def solunar_data(request):
@@ -496,3 +544,7 @@ def terms(request):
 def privacy(request):
     """View function for the privacy policy page."""
     return render(request, 'pages/privacy.html')
+
+def test_iframe(request):
+    """Test iframe page"""
+    return render(request, 'test_iframe.html')

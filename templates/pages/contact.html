@@ -3,90 +3,214 @@
 
 {% block title %}Contact - Răsfățul Pescarului{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/contact.css' %}">
+<style>
+/* Force form visibility */
+.contact-form-body {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+.form-floating {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    margin-bottom: 1.5rem !important;
+}
+
+.form-floating > .form-control {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    width: 100% !important;
+    height: auto !important;
+}
+
+.form-floating > label {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+.btn-contact {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="container py-5 mt-5">
-    <div class="row">
-        <div class="col-lg-8">
-            <h1 class="mb-4">Contact</h1>
-
-            {% if messages %}
-            {% for message in messages %}
-            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-            {% endfor %}
-            {% endif %}
-
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <form method="post">
-                        {% csrf_token %}
-                        <div class="mb-3">
-                            <label for="name" class="form-label">Nume complet *</label>
-                            <input type="text" class="form-control" id="name" name="name" 
-                                   value="{{ form_data.name|default:'' }}" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="email" class="form-label">Email *</label>
-                            <input type="email" class="form-control" id="email" name="email" 
-                                   value="{{ form_data.email|default:'' }}" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="subject" class="form-label">Subiect *</label>
-                            <input type="text" class="form-control" id="subject" name="subject" 
-                                   value="{{ form_data.subject|default:'' }}" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="message" class="form-label">Mesaj *</label>
-                            <textarea class="form-control" id="message" name="message" rows="5" required>{{ form_data.message|default:'' }}</textarea>
-                        </div>
-                        <button type="submit" class="btn btn-success">
-                            <i class="fas fa-paper-plane me-2"></i>Trimite mesajul
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-lg-4">
-            <div class="card shadow-sm mb-4">
-                <div class="card-body">
-                    <h5 class="card-title">Informații de contact</h5>
-                    <hr>
-                    <p class="mb-2">
-                        <i class="fas fa-map-marker-alt me-2"></i>{{ settings.COMPANY_ADDRESS }}
-                    </p>
-                    <p class="mb-2">
-                        <i class="fas fa-phone me-2"></i>{{ settings.COMPANY_PHONE }}
-                    </p>
-                    <p class="mb-2">
-                        <i class="fas fa-envelope me-2"></i>{{ settings.COMPANY_EMAIL }}
-                    </p>
-                </div>
-            </div>
-
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title">Program de lucru</h5>
-                    <hr>
-                    <p class="mb-2">
-                        <strong>Luni - Vineri:</strong><br>
-                        09:00 - 18:00
-                    </p>
-                    <p class="mb-2">
-                        <strong>Sâmbătă:</strong><br>
-                        10:00 - 14:00
-                    </p>
-                    <p class="mb-0">
-                        <strong>Duminică:</strong><br>
-                        Închis
-                    </p>
-                </div>
+<!-- Hero Section -->
+<section class="contact-hero">
+    <div class="container">
+        <div class="row justify-content-center text-center">
+            <div class="col-lg-8">
+                <h1>Contactează-ne</h1>
+                <p class="lead">Suntem aici pentru a răspunde la toate întrebările tale despre pescuit și să te ajutăm să găsești locația perfectă.</p>
             </div>
         </div>
     </div>
-</div>
+</section>
+
+<!-- Contact Content -->
+<section class="contact-content">
+    <div class="container">
+        <!-- Messages -->
+        {% if messages %}
+        <div class="row justify-content-center mb-4">
+            <div class="col-lg-10">
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-modern alert-dismissible fade show" role="alert">
+                    <i class="fas fa-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'error' %}exclamation-triangle{% else %}info-circle{% endif %} me-2"></i>
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="row">
+            <!-- Contact Form -->
+            <div class="col-lg-8 mb-4">
+                <div class="contact-form-card">
+                    <div class="contact-form-header">
+                        <h2><i class="fas fa-envelope me-2"></i>Trimite-ne un mesaj</h2>
+                    </div>
+                    <div class="contact-form-body">
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="form-floating">
+                                <input type="text" class="form-control" id="name" name="name"
+                                       placeholder="Nume complet" value="{{ form_data.name|default:'' }}" required>
+                                <label for="name">Nume complet *</label>
+                            </div>
+                            <div class="form-floating">
+                                <input type="email" class="form-control" id="email" name="email"
+                                       placeholder="Email" value="{{ form_data.email|default:'' }}" required>
+                                <label for="email">Adresa de email *</label>
+                            </div>
+                            <div class="form-floating">
+                                <input type="text" class="form-control" id="subject" name="subject"
+                                       placeholder="Subiect" value="{{ form_data.subject|default:'' }}" required>
+                                <label for="subject">Subiectul mesajului *</label>
+                            </div>
+                            <div class="form-floating">
+                                <textarea class="form-control" id="message" name="message"
+                                          placeholder="Mesaj" style="height: 150px" required>{{ form_data.message|default:'' }}</textarea>
+                                <label for="message">Mesajul tău *</label>
+                            </div>
+                            <button type="submit" class="btn-contact">
+                                <i class="fas fa-paper-plane me-2"></i>Trimite mesajul
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Information -->
+            <div class="col-lg-4">
+                <!-- Contact Details -->
+                <div class="contact-info-card">
+                    <h5 class="mb-4 text-center">
+                        <i class="fas fa-address-book me-2 text-success"></i>Informații de contact
+                    </h5>
+
+                    <div class="contact-info-item">
+                        <div class="contact-info-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div class="contact-info-text">
+                            <h6>Adresa</h6>
+                            <p>{{ contact_settings.address|default:"România" }}</p>
+                        </div>
+                    </div>
+
+                    <div class="contact-info-item">
+                        <div class="contact-info-icon">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <div class="contact-info-text">
+                            <h6>Telefon</h6>
+                            <p>{{ contact_settings.phone|default:"+40 700 000 000" }}</p>
+                        </div>
+                    </div>
+
+                    <div class="contact-info-item">
+                        <div class="contact-info-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="contact-info-text">
+                            <h6>Email</h6>
+                            <p>{{ contact_settings.email|default:"contact@rasfatulpescarului.ro" }}</p>
+                        </div>
+                    </div>
+
+                    <!-- Social Media Links -->
+                    {% if contact_settings.facebook_url or contact_settings.instagram_url or contact_settings.youtube_url %}
+                    <div class="social-links">
+                        {% if contact_settings.facebook_url %}
+                        <a href="{{ contact_settings.facebook_url }}" target="_blank" class="social-link" title="Facebook">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        {% endif %}
+                        {% if contact_settings.instagram_url %}
+                        <a href="{{ contact_settings.instagram_url }}" target="_blank" class="social-link" title="Instagram">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        {% endif %}
+                        {% if contact_settings.youtube_url %}
+                        <a href="{{ contact_settings.youtube_url }}" target="_blank" class="social-link" title="YouTube">
+                            <i class="fab fa-youtube"></i>
+                        </a>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Working Hours -->
+                <div class="working-hours-card">
+                    <div class="working-hours-header">
+                        <h5><i class="fas fa-clock me-2"></i>Program de lucru</h5>
+                    </div>
+                    <div class="working-hours-body">
+                        <div class="working-hours-item">
+                            <span class="working-hours-day">Luni - Vineri</span>
+                            <span class="working-hours-time">{{ contact_settings.monday_friday_hours|default:"09:00 – 18:00" }}</span>
+                        </div>
+                        <div class="working-hours-item">
+                            <span class="working-hours-day">Sâmbătă</span>
+                            <span class="working-hours-time">{{ contact_settings.saturday_hours|default:"10:00 – 14:00" }}</span>
+                        </div>
+                        <div class="working-hours-item">
+                            <span class="working-hours-day">Duminică</span>
+                            <span class="working-hours-time">{{ contact_settings.sunday_hours|default:"Închis" }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Map Section (if available) -->
+        {% if contact_settings.map_embed_code %}
+        <div class="row mt-5">
+            <div class="col-12">
+                <div class="contact-info-card">
+                    <h5 class="mb-4 text-center">
+                        <i class="fas fa-map me-2 text-success"></i>Locația noastră
+                    </h5>
+                    <div class="ratio ratio-16x9">
+                        {{ contact_settings.map_embed_code|safe }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
 
 {% block scripts %}
 <script>

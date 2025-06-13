@@ -8,18 +8,47 @@
 
 {% block compressed_css %}
 <style>
+    /* Hero Section */
+    .map-hero {
+        background: linear-gradient(135deg, #198754 0%, #20c997 100%);
+        color: white;
+        padding: 3rem 0;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .map-hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('{% static "images/hero.png" %}') center/cover;
+        opacity: 0.1;
+        z-index: 1;
+    }
+
+    .map-hero .container {
+        position: relative;
+        z-index: 2;
+    }
+
     /* Map container */
     #map {
-        height: 600px;
+        height: 70vh;
+        min-height: 500px;
         width: 100%;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        border-radius: 1rem;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
         background: #198754 !important;
         overflow: hidden;
+        border: 3px solid white;
     }
 
     .leaflet-container {
         background: #198754 !important;
+        border-radius: 1rem;
     }
 
     .leaflet-tile-container {
@@ -32,6 +61,25 @@
 
     .leaflet-control-attribution {
         display: none;
+    }
+
+    /* Map controls styling */
+    .leaflet-control-zoom {
+        border: none !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
+    }
+
+    .leaflet-control-zoom a {
+        background: white !important;
+        color: #198754 !important;
+        border: none !important;
+        font-weight: bold !important;
+        transition: all 0.3s ease !important;
+    }
+
+    .leaflet-control-zoom a:hover {
+        background: #198754 !important;
+        color: white !important;
     }
 
     .marker {
@@ -58,31 +106,449 @@
         display: block;
     }
 
-    /* Nearby lakes section */
-    .nearby-lakes {
-        margin-top: 2rem;
-        padding: 1rem;
-        background: #fff;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    /* Filters sidebar */
+    .filters-card {
+        background: white;
+        border-radius: 1rem;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        border: none;
+        overflow: hidden;
+        position: sticky;
+        top: 2rem;
     }
 
-    .nearby-lake-card {
+    .filters-header {
+        background: linear-gradient(135deg, #198754, #20c997);
+        color: white;
+        padding: 1.5rem;
+        margin: 0;
+    }
+
+    .filters-body {
+        padding: 1.5rem;
+    }
+
+    .filter-group {
+        margin-bottom: 1.5rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .filter-group:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+
+    .filter-label {
+        font-weight: 600;
+        color: #198754;
+        margin-bottom: 0.75rem;
+        display: block;
+    }
+
+    .form-check {
+        margin-bottom: 0.5rem;
+    }
+
+    .form-check-input:checked {
+        background-color: #198754;
+        border-color: #198754;
+    }
+
+    .form-range::-webkit-slider-thumb {
+        background: #198754;
+    }
+
+    .form-range::-moz-range-thumb {
+        background: #198754;
+        border: none;
+    }
+
+    .btn-apply-filters {
+        background: linear-gradient(135deg, #198754, #20c997);
+        border: none;
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.75rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        width: 100%;
+    }
+
+    .btn-apply-filters:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(25, 135, 84, 0.3);
+        color: white;
+    }
+
+    /* Fix dropdown styling */
+    .form-select {
         border: 1px solid #e9ecef;
-        border-radius: 8px;
-        padding: 1rem;
-        margin-bottom: 1rem;
+        border-radius: 0.5rem;
+        padding: 0.75rem;
+        background-color: white;
+        color: #495057;
+        transition: all 0.3s ease;
+        width: 100%;
+        box-sizing: border-box;
+        appearance: menulist;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m1 6 7 7 7-7'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 0.75rem center;
+        background-size: 16px 12px;
+        padding-right: 2.5rem;
+    }
+
+    .form-select:focus {
+        border-color: #198754;
+        box-shadow: 0 0 0 0.2rem rgba(25, 135, 84, 0.25);
+        outline: none;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23198754' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m1 6 7 7 7-7'/%3e%3c/svg%3e");
+    }
+
+    .form-select option {
+        padding: 0.5rem;
+        background-color: white;
+        color: #495057;
+    }
+
+    /* Prevent dropdown overflow */
+    .form-select {
+        overflow: hidden;
+    }
+
+    /* Fix dropdown positioning and overflow */
+    .filters-card {
+        position: static !important;
+        overflow: visible !important;
+        z-index: 1050;
+    }
+
+    .filters-body {
+        position: static !important;
+        overflow: visible !important;
+    }
+
+    .filter-group {
+        position: static !important;
+        overflow: visible !important;
+    }
+
+    /* Force dropdown to stay within viewport */
+    .form-select {
+        position: static !important;
+        z-index: 9999 !important;
+    }
+
+    /* Container fixes */
+    .col-lg-3 {
+        position: static !important;
+        overflow: visible !important;
+        z-index: 9999 !important;
+    }
+
+    .container {
+        overflow: visible !important;
+    }
+
+    .row {
+        overflow: visible !important;
+    }
+
+    /* Custom dropdown styles */
+    .custom-dropdown {
+        position: relative;
+        width: 100%;
+    }
+
+    .custom-dropdown-toggle {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #e9ecef;
+        border-radius: 0.5rem;
+        background-color: white;
+        color: #495057;
+        text-align: left;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
         transition: all 0.3s ease;
     }
 
+    .custom-dropdown-toggle:hover {
+        border-color: #198754;
+    }
+
+    .custom-dropdown-toggle:focus {
+        border-color: #198754;
+        box-shadow: 0 0 0 0.2rem rgba(25, 135, 84, 0.25);
+        outline: none;
+    }
+
+    .dropdown-arrow {
+        transition: transform 0.3s ease;
+        color: #6c757d;
+    }
+
+    .custom-dropdown-toggle.active .dropdown-arrow {
+        transform: rotate(180deg);
+        color: #198754;
+    }
+
+    .custom-dropdown-menu {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: white;
+        border: 1px solid #e9ecef;
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        max-height: 200px;
+        overflow-y: auto;
+        z-index: 9999;
+        display: none;
+        margin-top: 2px;
+    }
+
+    .custom-dropdown-menu.show {
+        display: block;
+    }
+
+    .dropdown-item {
+        padding: 0.5rem 0.75rem;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+        border-bottom: 1px solid #f8f9fa;
+    }
+
+    .dropdown-item:last-child {
+        border-bottom: none;
+    }
+
+    .dropdown-item:hover {
+        background-color: #f8f9fa;
+        color: #198754;
+    }
+
+    .dropdown-item.selected {
+        background-color: #198754;
+        color: white;
+    }
+
+    /* Mobile fixes */
+    @media (max-width: 768px) {
+        /* Navbar mobile fixes */
+        .navbar {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            z-index: 1030 !important;
+            width: 100% !important;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1) !important;
+        }
+
+        .navbar .container {
+            padding-left: 15px !important;
+            padding-right: 15px !important;
+        }
+
+        .navbar-brand {
+            margin: 0 auto !important;
+            position: absolute !important;
+            left: 50% !important;
+            transform: translateX(-50%) !important;
+        }
+
+        .navbar-toggler {
+            position: relative !important;
+            z-index: 1031 !important;
+        }
+
+        /* Add top padding to body to account for fixed navbar */
+        body {
+            padding-top: 76px !important;
+        }
+
+        /* Map hero section adjustments */
+        .map-hero {
+            margin-top: 0 !important;
+            padding-top: 2rem !important;
+        }
+
+        /* Filters card mobile positioning */
+        .filters-card {
+            position: static !important;
+            overflow: visible !important;
+            top: auto !important;
+            margin-bottom: 2rem !important;
+            z-index: 1020 !important;
+        }
+
+        /* Custom dropdown mobile optimization */
+        .custom-dropdown-menu {
+            max-height: 50vh !important;
+            overflow-y: auto !important;
+            position: fixed !important;
+            left: 10px !important;
+            right: 10px !important;
+            width: auto !important;
+            z-index: 9999 !important;
+            border-radius: 0.75rem !important;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3) !important;
+            border: 2px solid #198754 !important;
+        }
+
+        /* Mobile dropdown items styling */
+        .custom-dropdown-menu .dropdown-item {
+            padding: 1rem 1.25rem !important;
+            font-size: 1rem !important;
+            border-bottom: 1px solid #f0f0f0 !important;
+            transition: all 0.2s ease !important;
+        }
+
+        .custom-dropdown-menu .dropdown-item:hover,
+        .custom-dropdown-menu .dropdown-item:focus {
+            background-color: #f8f9fa !important;
+            color: #198754 !important;
+            font-weight: 600 !important;
+        }
+
+        .custom-dropdown-menu .dropdown-item.selected {
+            background-color: #198754 !important;
+            color: white !important;
+            font-weight: 600 !important;
+        }
+
+        .custom-dropdown-menu.show {
+            display: block !important;
+        }
+
+        /* Prevent body scroll when dropdown is open */
+        body.dropdown-open {
+            overflow: hidden !important;
+        }
+
+        /* Mobile dropdown backdrop */
+        .dropdown-backdrop {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: 0 !important;
+            background: rgba(0,0,0,0.5) !important;
+            z-index: 9998 !important;
+            display: none !important;
+            backdrop-filter: blur(2px) !important;
+            -webkit-backdrop-filter: blur(2px) !important;
+        }
+
+        .dropdown-backdrop.show {
+            display: block !important;
+        }
+
+        /* Mobile map adjustments */
+        #map {
+            height: 60vh !important;
+            min-height: 400px !important;
+        }
+
+        /* Mobile filter adjustments */
+        .col-lg-3 {
+            order: 2 !important;
+        }
+
+        .col-lg-9 {
+            order: 1 !important;
+        }
+
+        /* Mobile nearby lakes section */
+        .nearby-lakes {
+            margin-top: 1rem !important;
+            padding: 1rem !important;
+        }
+
+        .nearby-lake-card {
+            padding: 1rem !important;
+        }
+    }
+
+    /* User location tooltip styling */
+    .user-location-tooltip {
+        background: rgba(25, 135, 84, 0.9) !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 6px !important;
+        font-weight: 600 !important;
+        font-size: 0.9rem !important;
+        padding: 0.5rem 0.75rem !important;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.2) !important;
+    }
+
+    .user-location-tooltip::before {
+        border-top-color: rgba(25, 135, 84, 0.9) !important;
+    }
+
+    /* Nearby lakes section */
+    .nearby-lakes {
+        margin-top: 2rem;
+        padding: 2rem;
+        background: white;
+        border-radius: 1rem;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    }
+
+    .nearby-lakes-header {
+        border-bottom: 2px solid #f8f9fa;
+        padding-bottom: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .nearby-lake-card {
+        background: white;
+        border: 1px solid #e9ecef;
+        border-radius: 1rem;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+
     .nearby-lake-card:hover {
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(25, 135, 84, 0.15);
+        transform: translateY(-3px);
+        border-color: #198754;
     }
 
     .nearby-lake-card .distance {
-        color: #198653;
-        font-weight: 600;
+        color: #198754;
+        font-weight: 700;
+        background: rgba(25, 135, 84, 0.1);
+        padding: 0.25rem 0.75rem;
+        border-radius: 1rem;
+        font-size: 0.875rem;
+    }
+
+    .nearby-lake-card h5 {
+        color: #198754;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+
+    .lake-info-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.5rem;
+        color: #6c757d;
+    }
+
+    .lake-info-item i {
+        color: #198754;
+        width: 20px;
+        margin-right: 0.5rem;
     }
 
     /* Location permission modal */
@@ -246,118 +712,202 @@
 {% endblock %}
 
 {% block content %}
-<div class="container py-4">
-    <div class="row mb-4">
-        <div class="col">
-            <h1 class="mb-3">Bălți de pescuit</h1>
-            <p class="lead">Descoperă cele mai bune locuri de pescuit din România</p>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-md-3 mb-4">
-            <!-- Filters -->
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title mb-3">Filtrează</h5>
-                    <form id="filterForm">
-                        <!-- County Filter -->
-                        <div class="mb-3">
-                            <label for="county" class="form-label">Județ</label>
-                            <select class="form-select" id="county" name="county">
-                                <option value="">Toate județele</option>
-                                {% for county in counties %}
-                                <option value="{{ county.id }}">{{ county.name }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-
-                        <!-- Fish Types Filter -->
-                        <div class="mb-3">
-                            <label class="form-label">Specii de pești</label>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="Crap" id="crapCheck">
-                                <label class="form-check-label" for="crapCheck">Crap</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="Caras" id="carasCheck">
-                                <label class="form-check-label" for="carasCheck">Caras</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="Știucă" id="stiucaCheck">
-                                <label class="form-check-label" for="stiucaCheck">Știucă</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="Șalău" id="salauCheck">
-                                <label class="form-check-label" for="salauCheck">Șalău</label>
-                            </div>
-                        </div>
-
-                        <!-- Price Range Filter -->
-                        <div class="mb-3">
-                            <label for="priceRange" class="form-label">Preț maxim/zi: <span id="priceValue">100</span> Lei</label>
-                            <input type="range" class="form-range" id="priceRange" min="0" max="200" step="10" value="100">
-                        </div>
-
-                        <!-- Rating Filter -->
-                        <div class="mb-3">
-                            <label for="ratingFilter" class="form-label">Rating minim</label>
-                            <select class="form-select" id="ratingFilter" name="min_rating">
-                                <option value="">Toate rating-urile</option>
-                                <option value="1">⭐ 1+ stele</option>
-                                <option value="2">⭐⭐ 2+ stele</option>
-                                <option value="3">⭐⭐⭐ 3+ stele</option>
-                                <option value="4">⭐⭐⭐⭐ 4+ stele</option>
-                                <option value="5">⭐⭐⭐⭐⭐ 5 stele</option>
-                            </select>
-                        </div>
-
-                        <!-- Facilities Filter -->
-                        <div class="mb-3">
-                            <label class="form-label">Facilități</label>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="Parcare" id="parkingCheck">
-                                <label class="form-check-label" for="parkingCheck">Parcare</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="Cazare" id="accommodationCheck">
-                                <label class="form-check-label" for="accommodationCheck">Cazare</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="Restaurant" id="restaurantCheck">
-                                <label class="form-check-label" for="restaurantCheck">Restaurant</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="Toalete" id="toiletsCheck">
-                                <label class="form-check-label" for="toiletsCheck">Toalete</label>
-                            </div>
-                        </div>
-
-                        <button type="submit" class="btn btn-success w-100">Aplică filtre</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-9">
-            <!-- Map -->
-            <div id="map"></div>
-
-            <!-- Nearby Lakes Section -->
-            <div class="nearby-lakes d-none" id="nearbyLakesSection">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h3 class="mb-0">Bălți și lacuri în apropiere</h3>
-                    <button class="btn btn-outline-success" onclick="requestLocation()">
-                        <i class="fas fa-location-crosshairs me-2"></i>Actualizează locația
-                    </button>
-                </div>
-                <div id="nearbyLakesList" class="row">
-                    <!-- Nearby lakes will be populated here -->
-                </div>
+<!-- Hero Section -->
+<section class="map-hero">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center">
+                <h1 class="display-4 fw-bold mb-3">Harta Locurilor de Pescuit</h1>
+                <p class="lead mb-0">Explorează și filtrează cele mai bune bălți din România</p>
             </div>
         </div>
     </div>
-</div>
+</section>
+
+<!-- Main Content -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3 mb-4">
+                <!-- Filters -->
+                <div class="filters-card">
+                    <div class="filters-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-filter me-2"></i>Filtrează Locațiile
+                        </h5>
+                    </div>
+                    <div class="filters-body">
+                        <form id="filterForm">
+                            <!-- County Filter -->
+                            <div class="filter-group">
+                                <label for="county" class="filter-label">
+                                    <i class="fas fa-map-marker-alt me-2"></i>Județ
+                                </label>
+                                <div class="custom-dropdown">
+                                    <button type="button" class="custom-dropdown-toggle" id="countyDropdown">
+                                        <span class="dropdown-text">Toate județele</span>
+                                        <i class="fas fa-chevron-down dropdown-arrow"></i>
+                                    </button>
+                                    <div class="custom-dropdown-menu" id="countyDropdownMenu">
+                                        <div class="dropdown-item" data-value="">Toate județele</div>
+                                        {% for county in counties %}
+                                        <div class="dropdown-item" data-value="{{ county.id }}">{{ county.name }}</div>
+                                        {% endfor %}
+                                    </div>
+                                    <input type="hidden" id="county" name="county" value="">
+                                </div>
+                            </div>
+
+                            <!-- Fish Types Filter -->
+                            <div class="filter-group">
+                                <label class="filter-label">
+                                    <i class="fas fa-fish me-2"></i>Specii de pești
+                                </label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="Crap" id="crapCheck">
+                                    <label class="form-check-label" for="crapCheck">
+                                        <i class="fas fa-fish me-1"></i>Crap
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="Caras" id="carasCheck">
+                                    <label class="form-check-label" for="carasCheck">
+                                        <i class="fas fa-fish me-1"></i>Caras
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="Știucă" id="stiucaCheck">
+                                    <label class="form-check-label" for="stiucaCheck">
+                                        <i class="fas fa-fish me-1"></i>Știucă
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="Șalău" id="salauCheck">
+                                    <label class="form-check-label" for="salauCheck">
+                                        <i class="fas fa-fish me-1"></i>Șalău
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Price Range Filter -->
+                            <div class="filter-group">
+                                <label for="priceRange" class="filter-label">
+                                    <i class="fas fa-coins me-2"></i>Preț maxim/zi: <span id="priceValue" class="text-success fw-bold">100</span> Lei
+                                </label>
+                                <input type="range" class="form-range" id="priceRange" min="0" max="200" step="10" value="100">
+                                <div class="d-flex justify-content-between text-muted small">
+                                    <span>0 Lei</span>
+                                    <span>200 Lei</span>
+                                </div>
+                            </div>
+
+                            <!-- Rating Filter -->
+                            <div class="filter-group">
+                                <label for="ratingFilter" class="filter-label">
+                                    <i class="fas fa-star me-2"></i>Rating minim
+                                </label>
+                                <div class="custom-dropdown">
+                                    <button type="button" class="custom-dropdown-toggle" id="ratingDropdown">
+                                        <span class="dropdown-text">Toate rating-urile</span>
+                                        <i class="fas fa-chevron-down dropdown-arrow"></i>
+                                    </button>
+                                    <div class="custom-dropdown-menu" id="ratingDropdownMenu">
+                                        <div class="dropdown-item" data-value="">Toate rating-urile</div>
+                                        <div class="dropdown-item" data-value="1">⭐ 1+ stele</div>
+                                        <div class="dropdown-item" data-value="2">⭐⭐ 2+ stele</div>
+                                        <div class="dropdown-item" data-value="3">⭐⭐⭐ 3+ stele</div>
+                                        <div class="dropdown-item" data-value="4">⭐⭐⭐⭐ 4+ stele</div>
+                                        <div class="dropdown-item" data-value="5">⭐⭐⭐⭐⭐ 5 stele</div>
+                                    </div>
+                                    <input type="hidden" id="ratingFilter" name="min_rating" value="">
+                                </div>
+                            </div>
+
+                            <!-- Facilities Filter -->
+                            <div class="filter-group">
+                                <label class="filter-label">
+                                    <i class="fas fa-cogs me-2"></i>Facilități
+                                </label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="Parcare" id="parkingCheck">
+                                    <label class="form-check-label" for="parkingCheck">
+                                        <i class="fas fa-parking me-1"></i>Parcare
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="Cazare" id="accommodationCheck">
+                                    <label class="form-check-label" for="accommodationCheck">
+                                        <i class="fas fa-bed me-1"></i>Cazare
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="Restaurant" id="restaurantCheck">
+                                    <label class="form-check-label" for="restaurantCheck">
+                                        <i class="fas fa-utensils me-1"></i>Restaurant
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="Toalete" id="toiletsCheck">
+                                    <label class="form-check-label" for="toiletsCheck">
+                                        <i class="fas fa-restroom me-1"></i>Toalete
+                                    </label>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn-apply-filters">
+                                <i class="fas fa-search me-2"></i>Aplică Filtre
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-9">
+                <!-- Map Container -->
+                <div class="position-relative">
+                    <div id="map"></div>
+
+                    <!-- Map Legend -->
+                    <div class="position-absolute top-0 end-0 m-3" style="z-index: 1000;">
+                        <div class="bg-white rounded-3 p-3 shadow-sm">
+                            <h6 class="mb-2 fw-bold text-success">
+                                <i class="fas fa-info-circle me-1"></i>Legendă
+                            </h6>
+                            <div class="d-flex align-items-center mb-1">
+                                <div class="bg-success rounded-circle me-2" style="width: 12px; height: 12px;"></div>
+                                <small>Bălți de pescuit</small>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <div class="bg-white border border-success rounded-circle me-2" style="width: 12px; height: 12px;"></div>
+                                <small>Locația mea</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nearby Lakes Section -->
+                <div class="nearby-lakes d-none" id="nearbyLakesSection">
+                    <div class="nearby-lakes-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h3 class="mb-1 text-success fw-bold">
+                                    <i class="fas fa-location-dot me-2"></i>Bălți în Apropiere
+                                </h3>
+                                <p class="text-muted mb-0">Locațiile de pescuit din zona ta</p>
+                            </div>
+                            <button class="btn btn-outline-success" onclick="requestLocation()">
+                                <i class="fas fa-location-crosshairs me-2"></i>Actualizează Locația
+                            </button>
+                        </div>
+                    </div>
+                    <div id="nearbyLakesList" class="row">
+                        <!-- Nearby lakes will be populated here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
 <!-- Location Permission Modal -->
 <div class="modal fade location-modal" id="locationModal" tabindex="-1">
@@ -490,6 +1040,117 @@
             priceValue.textContent = this.value;
         });
 
+        // Custom dropdown functionality
+        function initCustomDropdown(dropdownId, menuId, inputId) {
+            const dropdown = document.getElementById(dropdownId);
+            const dropdownMenu = document.getElementById(menuId);
+            const dropdownText = dropdown.querySelector('.dropdown-text');
+            const hiddenInput = document.getElementById(inputId);
+            const dropdownItems = dropdownMenu.querySelectorAll('.dropdown-item');
+
+            // Create backdrop for mobile
+            let backdrop = document.querySelector('.dropdown-backdrop');
+            if (!backdrop) {
+                backdrop = document.createElement('div');
+                backdrop.className = 'dropdown-backdrop';
+                document.body.appendChild(backdrop);
+            }
+
+            // Toggle dropdown
+            dropdown.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                // Close other dropdowns first
+                document.querySelectorAll('.custom-dropdown-toggle.active').forEach(toggle => {
+                    if (toggle !== dropdown) {
+                        toggle.classList.remove('active');
+                        toggle.parentNode.querySelector('.custom-dropdown-menu').classList.remove('show');
+                    }
+                });
+
+                const isOpening = !dropdown.classList.contains('active');
+
+                dropdown.classList.toggle('active');
+                dropdownMenu.classList.toggle('show');
+
+                // Mobile specific handling
+                if (window.innerWidth <= 768) {
+                    if (isOpening) {
+                        backdrop.classList.add('show');
+                        document.body.classList.add('dropdown-open');
+
+                        // Position dropdown menu properly on mobile
+                        const rect = dropdown.getBoundingClientRect();
+                        dropdownMenu.style.top = (rect.bottom + window.scrollY + 5) + 'px';
+                    } else {
+                        backdrop.classList.remove('show');
+                        document.body.classList.remove('dropdown-open');
+                    }
+                }
+            });
+
+            // Handle item selection
+            dropdownItems.forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    // Remove previous selection
+                    dropdownItems.forEach(i => i.classList.remove('selected'));
+
+                    // Add selection to clicked item
+                    this.classList.add('selected');
+
+                    // Update display text and hidden input
+                    dropdownText.textContent = this.textContent;
+                    hiddenInput.value = this.getAttribute('data-value');
+
+                    // Close dropdown
+                    dropdown.classList.remove('active');
+                    dropdownMenu.classList.remove('show');
+
+                    // Close mobile backdrop
+                    if (window.innerWidth <= 768) {
+                        backdrop.classList.remove('show');
+                        document.body.classList.remove('dropdown-open');
+                    }
+                });
+            });
+
+            // Close dropdown when clicking outside or on backdrop
+            document.addEventListener('click', function(e) {
+                // Exclude navbar and its elements from dropdown close logic
+                const navbar = document.querySelector('.navbar');
+                const isNavbarClick = navbar && navbar.contains(e.target);
+
+                if (!dropdown.contains(e.target) &&
+                    !dropdownMenu.contains(e.target) &&
+                    !isNavbarClick) {
+                    dropdown.classList.remove('active');
+                    dropdownMenu.classList.remove('show');
+
+                    // Close mobile backdrop
+                    if (window.innerWidth <= 768) {
+                        backdrop.classList.remove('show');
+                        document.body.classList.remove('dropdown-open');
+                    }
+                }
+            });
+
+            // Close dropdown when clicking backdrop
+            backdrop.addEventListener('click', function() {
+                dropdown.classList.remove('active');
+                dropdownMenu.classList.remove('show');
+                backdrop.classList.remove('show');
+                document.body.classList.remove('dropdown-open');
+            });
+        }
+
+        // Initialize custom dropdowns
+        initCustomDropdown('countyDropdown', 'countyDropdownMenu', 'county');
+        initCustomDropdown('ratingDropdown', 'ratingDropdownMenu', 'ratingFilter');
+
         // Store all markers in an array
         var markers = [];
         var userLocationMarker = null;
@@ -593,20 +1254,37 @@
                                 }
 
                                 return `
-                                    <div class="col-md-6 mb-3">
+                                    <div class="col-lg-6 mb-4">
                                         <div class="nearby-lake-card">
-                                            <h5>${lake.name}</h5>
-                                            <p class="mb-2"><i class="fas fa-map-marker-alt me-2"></i>${lake.address}</p>
-                                            <p class="mb-2"><i class="fas fa-fish me-2"></i>${lake.fish_species.map(fish => fish.name).join(', ')}</p>
+                                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                                <h5 class="mb-0">${lake.name}</h5>
+                                                <span class="distance">${lake.distance} km</span>
+                                            </div>
+
+                                            <div class="lake-info-item">
+                                                <i class="fas fa-map-marker-alt"></i>
+                                                <span>${lake.address}</span>
+                                            </div>
+
+                                            <div class="lake-info-item">
+                                                <i class="fas fa-fish"></i>
+                                                <span>${lake.fish_species.map(fish => fish.name).join(', ')}</span>
+                                            </div>
+
+                                            <div class="lake-info-item">
+                                                <i class="fas fa-coins"></i>
+                                                <span class="fw-bold text-success">${lake.price_per_day} Lei/zi</span>
+                                            </div>
+
                                             ${ratingHtml}
-                                            <p class="distance mb-3"><i class="fas fa-route me-2"></i>${lake.distance} km</p>
-                                            <div class="d-flex gap-2">
+
+                                            <div class="d-flex gap-2 mt-3">
                                                 <a href="/locations/lake/${lake.slug}/" class="btn btn-success flex-grow-1">
-                                                    Vezi detalii
+                                                    <i class="fas fa-eye me-1"></i>Vezi detalii
                                                 </a>
                                                 <a href="https://www.google.com/maps/dir/?api=1&destination=${lake.latitude},${lake.longitude}"
-                                                   class="btn btn-outline-success" target="_blank">
-                                                    <i class="fab fa-google"></i> Navigare
+                                                   class="btn btn-outline-success" target="_blank" title="Navigare cu Google Maps">
+                                                    <i class="fas fa-directions"></i>
                                                 </a>
                                             </div>
                                         </div>
