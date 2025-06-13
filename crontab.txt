@@ -1,0 +1,28 @@
+# Crontab configuration for Răsfățul Pescarului on Hostinger
+# Add these entries to your crontab using: crontab -e
+
+# Backup database and files daily at 2:00 AM
+0 2 * * * /home/u123456789/domains/rasfatul-pescarului.ro/public_html/backup.sh >> /home/u123456789/backups/cron.log 2>&1
+
+# Clean up old log files weekly (every Sunday at 3:00 AM)
+0 3 * * 0 find /tmp -name "django*.log" -mtime +7 -delete
+
+# Update SSL certificate monthly (first day of month at 4:00 AM)
+# This is usually handled automatically by Hostinger, but you can add custom checks
+0 4 1 * * curl -s https://rasfatul-pescarului.ro > /dev/null && echo "$(date): SSL check passed" >> /home/u123456789/backups/ssl_check.log
+
+# Health check every hour (optional)
+0 * * * * curl -s -o /dev/null -w "%{http_code}" https://rasfatul-pescarului.ro | grep -q "200" || echo "$(date): Website down" >> /home/u123456789/backups/health_check.log
+
+# Clean up compressed static files cache weekly (every Monday at 1:00 AM)
+0 1 * * 1 find /home/u123456789/domains/rasfatul-pescarului.ro/public_html/staticfiles -name "*.gz" -mtime +7 -delete
+
+# Instructions for setup:
+# 1. SSH into your Hostinger server
+# 2. Run: crontab -e
+# 3. Copy and paste the relevant lines above
+# 4. Adjust paths and usernames as needed
+# 5. Save and exit
+
+# To view current crontab: crontab -l
+# To remove all cron jobs: crontab -r
