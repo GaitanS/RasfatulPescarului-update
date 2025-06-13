@@ -598,6 +598,75 @@ body {
     }
 }
 
+/* AdSense Styling */
+.ad-container {
+    margin: 2rem auto;
+    padding: 1rem;
+    max-width: 100%;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+    position: relative;
+}
+
+.ad-label {
+    margin-bottom: 0.5rem;
+    text-align: center;
+}
+
+.ad-label small {
+    font-size: 0.75rem;
+    color: #6c757d;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Responsive ad containers */
+.ad-banner {
+    margin: 1.5rem 0;
+    text-align: center;
+}
+
+.ad-sidebar {
+    margin: 1rem 0;
+    position: sticky;
+    top: 100px;
+}
+
+.ad-inline {
+    margin: 2rem 0;
+    padding: 1rem;
+    background: rgba(248, 249, 250, 0.8);
+    border-radius: 8px;
+    border-left: 4px solid #198754;
+}
+
+/* Mobile ad adjustments */
+@media (max-width: 768px) {
+    .ad-container {
+        margin: 1rem auto;
+        padding: 0.75rem;
+    }
+
+    .ad-sidebar {
+        position: static;
+        margin: 1rem 0;
+    }
+
+    .ad-inline {
+        margin: 1.5rem 0;
+        padding: 0.75rem;
+    }
+}
+
+/* Hide ads for users who haven't consented to cookies */
+body:not(.cookies-accepted) .ad-container,
+body:not(.cookies-accepted) .ad-banner,
+body:not(.cookies-accepted) .ad-sidebar,
+body:not(.cookies-accepted) .ad-inline {
+    display: none !important;
+}
+
 /* Desktop dropdown styles - restore normal Bootstrap behavior */
 @media (min-width: 992px) {
     .navbar .dropdown-menu {

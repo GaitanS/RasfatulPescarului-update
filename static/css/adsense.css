@@ -1,0 +1,244 @@
+/* Google AdSense Styling for Răsfățul Pescarului */
+
+/* Base Ad Container Styles */
+.ad-container,
+.ad-banner,
+.ad-sidebar,
+.ad-inline {
+    margin: 2rem auto;
+    padding: 1rem;
+    max-width: 100%;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.ad-container:hover,
+.ad-banner:hover,
+.ad-sidebar:hover,
+.ad-inline:hover {
+    background: #f1f3f4;
+    border-color: #dee2e6;
+}
+
+/* Ad Labels */
+.ad-label {
+    margin-bottom: 0.5rem;
+    text-align: center;
+}
+
+.ad-label small {
+    font-size: 0.75rem;
+    color: #6c757d;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 500;
+}
+
+/* Specific Ad Types */
+.ad-banner {
+    margin: 1.5rem 0;
+    text-align: center;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+.ad-sidebar {
+    margin: 1rem 0;
+    position: sticky;
+    top: 100px;
+    background: rgba(248, 249, 250, 0.95);
+    backdrop-filter: blur(5px);
+    border-left: 4px solid #198754;
+}
+
+.ad-inline {
+    margin: 2rem 0;
+    padding: 1.5rem;
+    background: rgba(248, 249, 250, 0.8);
+    border-radius: 12px;
+    border-left: 4px solid #198754;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* AdSense Responsive Units */
+.adsbygoogle {
+    display: block !important;
+    margin: 0 auto;
+    text-align: center;
+}
+
+/* Mobile Optimizations */
+@media (max-width: 768px) {
+    .ad-container,
+    .ad-banner,
+    .ad-inline {
+        margin: 1rem auto;
+        padding: 0.75rem;
+        border-radius: 6px;
+    }
+    
+    .ad-sidebar {
+        position: static;
+        margin: 1rem 0;
+        top: auto;
+    }
+    
+    .ad-inline {
+        margin: 1.5rem 0;
+        padding: 1rem;
+    }
+    
+    .ad-label small {
+        font-size: 0.7rem;
+    }
+}
+
+/* Tablet Optimizations */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .ad-sidebar {
+        top: 80px;
+    }
+    
+    .ad-container,
+    .ad-banner {
+        margin: 1.75rem auto;
+    }
+}
+
+/* Desktop Large Screen Optimizations */
+@media (min-width: 1200px) {
+    .ad-sidebar {
+        top: 120px;
+    }
+    
+    .ad-inline {
+        margin: 2.5rem 0;
+        padding: 2rem;
+    }
+}
+
+/* GDPR Compliance - Hide ads when cookies not accepted */
+body:not(.cookies-accepted) .ad-container,
+body:not(.cookies-accepted) .ad-banner,
+body:not(.cookies-accepted) .ad-sidebar,
+body:not(.cookies-accepted) .ad-inline {
+    display: none !important;
+}
+
+/* Loading States */
+.ad-container:empty::before,
+.ad-banner:empty::before,
+.ad-sidebar:empty::before,
+.ad-inline:empty::before {
+    content: "Se încarcă reclama...";
+    display: block;
+    text-align: center;
+    color: #6c757d;
+    font-size: 0.875rem;
+    padding: 2rem;
+    background: #f8f9fa;
+    border-radius: 4px;
+    border: 1px dashed #dee2e6;
+}
+
+/* Ad Spacing for Different Page Types */
+.locations-page .ad-banner {
+    margin: 2rem 0;
+}
+
+.lake-detail-page .ad-sidebar {
+    margin-top: 0;
+}
+
+.solunar-page .ad-inline {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+}
+
+.solunar-page .ad-label small {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* Accessibility */
+.ad-container:focus-within,
+.ad-banner:focus-within,
+.ad-sidebar:focus-within,
+.ad-inline:focus-within {
+    outline: 2px solid #198754;
+    outline-offset: 2px;
+}
+
+/* Print Styles - Hide ads when printing */
+@media print {
+    .ad-container,
+    .ad-banner,
+    .ad-sidebar,
+    .ad-inline {
+        display: none !important;
+    }
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+    .ad-container,
+    .ad-banner,
+    .ad-sidebar,
+    .ad-inline {
+        border: 2px solid #000;
+        background: #fff;
+    }
+    
+    .ad-label small {
+        color: #000;
+        font-weight: bold;
+    }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+    .ad-container,
+    .ad-banner,
+    .ad-sidebar,
+    .ad-inline {
+        transition: none;
+    }
+}
+
+/* Dark Mode Support (if implemented) */
+@media (prefers-color-scheme: dark) {
+    .ad-container,
+    .ad-banner,
+    .ad-sidebar,
+    .ad-inline {
+        background: #2d3748;
+        border-color: #4a5568;
+        color: #e2e8f0;
+    }
+    
+    .ad-label small {
+        color: #a0aec0;
+    }
+}
+
+/* Performance Optimizations */
+.ad-container,
+.ad-banner,
+.ad-sidebar,
+.ad-inline {
+    contain: layout style;
+    will-change: auto;
+}
+
+/* Fallback for browsers without backdrop-filter support */
+@supports not (backdrop-filter: blur(5px)) {
+    .ad-sidebar {
+        background: #f8f9fa;
+    }
+    
+    .solunar-page .ad-inline {
+        background: rgba(255, 255, 255, 0.9);
+    }
+}
